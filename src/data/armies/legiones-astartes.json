@@ -1,0 +1,357 @@
+{
+    "name": "Legiones Astartes",
+    "slug": "legiones-astartes",
+    "strategyRating": 5,
+    "specialRules": [],
+    "restrictions": [
+        {
+            "type": "max_group_percentage",
+            "group": "Support",
+            "maxPercentage": 30
+        }
+    ],
+    "detachments": [
+        {
+            "name": "Tactical",
+            "group": "Line",
+            "units": [
+                {
+                    "unitName": "Legionairs",
+                    "count": 6
+                }
+            ],
+            "availableUpgrades": [
+                "Transport",
+                "Support Tank",
+                "Tactical Support",
+                "Commander"
+            ],
+            "restrictions": []
+        },
+        {
+            "name": "Predators",
+            "group": "Support",
+            "units": [
+                {
+                    "unitName": "Predator",
+                    "min": 3,
+                    "max": 5
+                }
+            ],
+            "availableUpgrades": [
+                "Support Tank",
+                "Commander"
+            ],
+            "restrictions": []
+        },
+        {
+            "name": "Terminators",
+            "group": "Line",
+            "units": [
+                {
+                    "unitName": "Terminators",
+                    "count": 4
+                }
+            ],
+            "availableUpgrades": [
+                "Transport",
+                "Commander"
+            ],
+            "restrictions": []
+        }
+    ],
+    "upgrades": [
+        {
+            "name": "Tactical Support",
+            "type": "replace",
+            "replaces": {
+                "fromUnitName": "Legionairs",
+                "toUnitName": "Support Legionairs",
+                "max": 2
+            }
+        },
+        {
+            "name": "Transport",
+            "type": "add",
+            "transportWarning": true,
+            "adds": [
+                {
+                    "unitName": "Rhino",
+                    "min": 0,
+                    "max": 10
+                },
+                {
+                    "unitName": "Land Raider",
+                    "min": 0,
+                    "max": 10
+                }
+            ]
+        },
+        {
+            "name": "Support Tank",
+            "type": "add",
+            "adds": [
+                {
+                    "unitName": "Vindicator",
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "unitName": "Predator",
+                    "min": 1,
+                    "max": 2
+                }
+            ]
+        },
+        {
+            "name": "Commander",
+            "type": "character",
+            "characterNames": [
+                "Captain",
+                "Supreme Commander"
+            ]
+        }
+    ],
+    "units": [
+        {
+            "name": "Legionairs",
+            "cost": 30,
+            "type": "INF",
+            "speed": "15cm",
+            "armour": "4+",
+            "cc": "4+",
+            "ff": "4+",
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Bolters",
+                    "range": "(15cm)",
+                    "firepower": "Small Arms"
+                }
+            ],
+            "transportType": "marine",
+            "transportCapacity": []
+        },
+        {
+            "name": "Support Legionairs",
+            "cost": 40,
+            "type": "INF",
+            "speed": "15cm",
+            "armour": "4+",
+            "cc": "4+",
+            "ff": "4+",
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Missile Launchers",
+                    "range": "35cm",
+                    "firepower": "AT4+"
+                }
+            ],
+            "transportType": "marine",
+            "transportCapacity": []
+        },
+        {
+            "name": "Predator",
+            "cost": 70,
+            "type": "AV",
+            "speed": "20cm",
+            "armour": "4+",
+            "cc": "6+",
+            "ff": "4+",
+            "weaponSlots": [
+                {
+                    "kind": "choice",
+                    "name": "Turret",
+                    "choices": [
+                        {
+                            "weaponName": "Auto Cannon",
+                            "range": "45cm",
+                            "firepower": "AT5+ AP5+",
+                            "additionalCost": 0
+                        },
+                        {
+                            "weaponName": "Twin Lascannon",
+                            "range": "45cm",
+                            "firepower": "AT4+",
+                            "additionalCost": 2
+                        }
+                    ]
+                },
+                {
+                    "kind": "choice",
+                    "name": "Sponsons",
+                    "choices": [
+                        {
+                            "weaponName": "Heavy Bolters",
+                            "range": "30cm",
+                            "firepower": "AP5+",
+                            "additionalCost": 0
+                        },
+                        {
+                            "weaponName": "Lascannon",
+                            "range": "45cm",
+                            "firepower": "AT5+",
+                            "additionalCost": 4
+                        }
+                    ]
+                }
+            ],
+            "transportType": null,
+            "transportCapacity": []
+        },
+        {
+            "name": "Vindicator",
+            "cost": 40,
+            "type": "AV",
+            "speed": "20cm",
+            "armour": "3+",
+            "cc": "6+",
+            "ff": "3+",
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Siege Cannon",
+                    "range": "15cm",
+                    "firepower": "AP3+ AT5+"
+                }
+            ],
+            "transportType": null,
+            "transportCapacity": []
+        },
+        {
+            "name": "Rhino",
+            "cost": 35,
+            "type": "AV",
+            "speed": "30cm",
+            "armour": "5+",
+            "cc": "6+",
+            "ff": "6+",
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Bolters",
+                    "range": "(15cm)",
+                    "firepower": "Small Arms"
+                }
+            ],
+            "transportType": null,
+            "transportCapacity": [
+                {
+                    "transportType": "marine",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "name": "Terminators",
+            "cost": 45,
+            "type": "INF",
+            "speed": "15cm",
+            "armour": "4+",
+            "cc": "3+",
+            "ff": "3+",
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Bolters",
+                    "range": "(15cm)",
+                    "firepower": "Small Arms"
+                }
+            ],
+            "transportType": "terminator",
+            "transportCapacity": [],
+            "specialRuleNames": [
+                "Reinforced Armour",
+                "Teleport",
+                "Thick Rear Armour"
+            ]
+        },
+        {
+            "name": "Land Raider",
+            "cost": 50,
+            "type": "AV",
+            "speed": "35cm",
+            "armour": "4+",
+            "cc": "6+",
+            "ff": "4+",
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Twin Lascannon",
+                    "range": "45cm",
+                    "firepower": "AT4+",
+                    "count": 2
+                }
+            ],
+            "transportType": null,
+            "transportCapacity": [
+                {
+                    "transportType": "marine",
+                    "count": 2
+                },
+                {
+                    "transportType": "terminator",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "name": "Captain",
+            "cost": 50,
+            "type": "CH",
+            "speed": null,
+            "armour": null,
+            "cc": null,
+            "ff": null,
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Power Weapon",
+                    "range": "(BC)",
+                    "firepower": "MW"
+                },
+                {
+                    "kind": "fixed",
+                    "weaponName": "Assault Weapons",
+                    "range": "(BC)",
+                    "firepower": "EA(+1) MW"
+                }
+            ],
+            "transportType": null,
+            "transportCapacity": [],
+            "specialRuleNames": [
+                "Commander",
+                "Leader"
+            ]
+        },
+        {
+            "name": "Supreme Commander",
+            "cost": 100,
+            "type": "CH",
+            "speed": null,
+            "armour": null,
+            "cc": null,
+            "ff": null,
+            "weaponSlots": [
+                {
+                    "kind": "fixed",
+                    "weaponName": "Power Weapon",
+                    "range": "(BC)",
+                    "firepower": "MW"
+                },
+                {
+                    "kind": "fixed",
+                    "weaponName": "Assault Weapons",
+                    "range": "(BC)",
+                    "firepower": "EA(+1) MW"
+                }
+            ],
+            "transportType": null,
+            "transportCapacity": [],
+            "specialRuleNames": [
+                "Supreme Commander"
+            ]
+        }
+    ]
+}

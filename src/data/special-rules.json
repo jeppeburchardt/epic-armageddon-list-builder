@@ -1,0 +1,38 @@
+[
+    {
+        "title": "Reinforced Armour",
+        "paragraphs": [
+            "Units with reinforced armour are protected by armour many times thicker than that found on most armoured vehicles and have extremely robust internal construction too. Because of this they still take their saving throw when hit by macro-weapons (see 2.2.6). In addition, they may re-roll a failed save against any non-macro-weapon hit, including those inflicted during an assault."
+        ]
+    },
+    {
+        "title": "Teleport",
+        "paragraphs": [
+            "Units with the teleport ability can appear suddenly on the battlefield, either because they have access to technological or arcane devices that allow them to be instantaneously moved from one place to another, or because they are capable of hiding extremely well and then suddenly appear \"as if from nowhere\".",
+            "Formations where all of the units have this ability may be kept off the table, and can appear at the start of any turn. Simply place the unit anywhere you like on the table at the start of any turn, before determining who wins the strategy roll. The unit must be placed within 5cms of another unit from its own formation if there are any already in play. So, for example, if a whole formation teleported into play then the first unit could be placed anywhere, but any other units would need to be placed within 5cms of a unit that had already been placed. All units must be placed outside enemy zones of control. If placed in dangerous terrain then a dangerous terrain test must be taken when the unit is placed on the table.",
+            "Teleporting is an inherently dangerous business, and doesn’t always go as planned. To represent this roll a D6 for each unit that teleports into play. On a roll of a 1 the formation that the unit belongs to receives a Blast marker."
+        ]
+    },
+    {
+        "title": "Thick Rear Armour",
+        "paragraphs": []
+    },
+    {
+        "title": "Commander",
+        "paragraphs": [
+            "A formation that contains a Commander may re-roll a failed strategy roll once per turn."
+        ]
+    },
+    {
+        "title": "Leader",
+        "paragraphs": [
+            "A formation that contains a Leader ignores the first Blast marker it would receive each turn."
+        ]
+    },
+    {
+        "title": "Supreme Commander",
+        "paragraphs": [
+            "An army may only include one Supreme Commander. The formation containing the Supreme Commander may re-roll strategy rolls once per turn, and the army counts as having one extra strategy point for the purpose of breaking off from an engagement."
+        ]
+    }
+]
