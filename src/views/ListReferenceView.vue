@@ -4,7 +4,7 @@
     <Button label="Back to lists" @click="router.push('/')" />
   </div>
 
-  <div v-else class="reference-view">
+  <div v-else>
     <div class="reference-header">
       <h1 class="army-name">{{ armyDef.name }}</h1>
       <span class="army-meta">Strategy Rating: {{ armyDef.strategyRating }}</span>

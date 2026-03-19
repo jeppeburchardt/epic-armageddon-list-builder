@@ -5,17 +5,14 @@
   </div>
 
   <div v-else>
-    <!-- Header -->
-    <ListHeader :id>
-      <template #button>
-        <Button
+    <Teleport to="#list-header-cta">
+      <Button
           label="Add Detachment"
           icon="pi pi-plus"
           @click="showAddDetachment = true"
           fluid
         />
-      </template>
-    </ListHeader>
+    </Teleport>
 
     <!-- Validation warnings -->
     <ValidationWarnings :results="validationResults" />
@@ -56,14 +53,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, Teleport } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import DetachmentCard from '@/components/editor/DetachmentCard.vue'
 import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
 import { useListEditor } from '@/composables/useListEditor'
-import ListHeader from '@/components/shared/ListHeader.vue'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()

@@ -41,13 +41,14 @@ const value = computed(() => Math.ceil((totalPoints.value / (list.value?.pointsL
                 </template>
             </inplace> -->
         </div>
-        <div class="button"><slot name="button"></slot></div>
-        <div class="sub-title">{{ armyDef?.name }}</div>
         <div class="meta">
+            <div>
+                <progress-bar :value="value"></progress-bar>
+            </div>
             <div>
                  <Inplace>
                     <template #display>
-                        <span class="limit-display">{{ list?.pointsLimit }} pts / {{ totalPoints }}</span>
+                        <span class="limit-display">{{ totalPoints }} / {{ list?.pointsLimit }} pts</span>
                     </template>
                     <template #content="{ closeCallback }">
                     <input-number
@@ -63,10 +64,10 @@ const value = computed(() => Math.ceil((totalPoints.value / (list.value?.pointsL
                     </template>
                 </Inplace>
             </div>
-             <div>
-                <progress-bar :value="value"></progress-bar>
-            </div>
+           
         </div>
+        <div class="sub-title">{{ armyDef?.name }}</div>
+        <div class="button" id="list-header-cta"><slot name="button"></slot></div>
     </div>
 </template>
 
@@ -76,6 +77,7 @@ const value = computed(() => Math.ceil((totalPoints.value / (list.value?.pointsL
         display: grid;
         grid-template-columns: 3fr 1fr;
         gap: 0.5rem;
+        margin-top: 2rem;
         margin-bottom: 2rem;
     }
     .title {

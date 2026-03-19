@@ -5,12 +5,9 @@
   </div>
 
   <div v-else>
-    <!-- Header -->
-    <ListHeader :id>
-      <template #button>
-       <Button label="Print" icon="pi pi-print" @click="window.print()" fluid />
-      </template>
-    </ListHeader>
+    <Teleport to="#list-header-cta">
+      <Button label="Print" icon="pi pi-print" @click="window.print()" fluid />
+    </Teleport>
 
     <!-- Print header (visible on print) -->
     <div class="print-only-header">
@@ -57,7 +54,6 @@ import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
 import { useListEditor } from '@/composables/useListEditor'
-import ListHeader from '@/components/shared/ListHeader.vue'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()

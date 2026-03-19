@@ -1,9 +1,11 @@
 <template>
+  <ListHeader :id />
   <ListTabBar :list-id="id" />
   <RouterView />
 </template>
 
 <script setup lang="ts">
+import ListHeader from '@/components/shared/ListHeader.vue';
 import ListTabBar from '@/components/shared/ListTabBar.vue'
 
 defineProps<{ id: string }>()
