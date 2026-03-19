@@ -1,4 +1,8 @@
 /* Epic Armageddon Army Builder — global styles */
+:root {
+    /* TODO: figure out PrimeVue's var names */
+    --p-surface-ground: #f3f7f6;
+}
 
 *,
 *::before,

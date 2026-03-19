@@ -4,55 +4,18 @@
     <Button label="Back to lists" @click="router.push('/')" />
   </div>
 
-  <div v-else class="editor-view">
+  <div v-else>
     <!-- Header -->
-    <div class="editor-header no-print">
-      <div class="header-name">
-        <div class="army-name">
-          {{ armyDef.name }}
-        </div>
-        <Inplace>
-          <template #display>
-            <span class="name-display">{{ list.name }}</span>
-          </template>
-          <template #content="{ closeCallback }">
-            <InputText
-              :model-value="list.name"
-              autofocus
-              class="name-input"
-              @blur="(e) => { updateName((e.target as HTMLInputElement).value); closeCallback() }"
-              @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
-            />
-          </template>
-        </Inplace>
-      </div>
-
-      <div class="header-meta">
-        <div class="points-row">
-          <PointsBadge :used="totalPoints" :limit="list.pointsLimit" />
-        </div>
-        <div class="limit-row">
-          <label class="limit-label">Limit:</label>
-          <Inplace>
-            <template #display>
-              <span class="limit-display">{{ list.pointsLimit }} pts</span>
-            </template>
-            <template #content="{ closeCallback }">
-              <InputNumber
-                :model-value="list.pointsLimit"
-                :min="250"
-                :step="250"
-                autofocus
-                class="limit-input"
-                @update:model-value="(val: number | null) => val && updatePointsLimit(val)"
-                @blur="() => closeCallback()"
-              />
-            </template>
-          </Inplace>
-        </div>
-      </div>
-
-    </div>
+    <ListHeader :id>
+      <template #button>
+        <Button
+          label="Add Detachment"
+          icon="pi pi-plus"
+          @click="showAddDetachment = true"
+          fluid
+        />
+      </template>
+    </ListHeader>
 
     <!-- Validation warnings -->
     <ValidationWarnings :results="validationResults" />
@@ -81,12 +44,7 @@
 
     <!-- FAB: add detachment -->
     <div class="fab-area no-print">
-      <Button
-        label="Add Detachment"
-        icon="pi pi-plus"
-        rounded
-        @click="showAddDetachment = true"
-      />
+      
     </div>
 
     <AddDetachmentDialog
@@ -101,14 +59,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
-import Inplace from 'primevue/inplace'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
-import PointsBadge from '@/components/shared/PointsBadge.vue'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import DetachmentCard from '@/components/editor/DetachmentCard.vue'
 import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
 import { useListEditor } from '@/composables/useListEditor'
+import ListHeader from '@/components/shared/ListHeader.vue'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
@@ -116,10 +71,7 @@ const router = useRouter()
 const {
   list,
   armyDef,
-  totalPoints,
   validationResults,
-  updateName,
-  updatePointsLimit,
   addEntry,
   removeEntry,
   updateBaseUnitCount,
@@ -135,11 +87,6 @@ const showAddDetachment = ref(false)
 </script>
 
 <style scoped>
-.editor-view {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
 .not-found {
   text-align: center;
   padding: 3rem;

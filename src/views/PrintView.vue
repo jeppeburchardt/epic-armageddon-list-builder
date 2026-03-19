@@ -4,12 +4,13 @@
     <Button label="Back" @click="router.push('/')" class="no-print" />
   </div>
 
-  <div v-else class="print-view">
-    <!-- Header (hidden on print via CSS) -->
-    <div class="print-header no-print">
-      <h1 class="print-title">{{ list.name }}</h1>
-      <Button label="Print" icon="pi pi-print" @click="window.print()" />
-    </div>
+  <div v-else>
+    <!-- Header -->
+    <ListHeader :id>
+      <template #button>
+       <Button label="Print" icon="pi pi-print" @click="window.print()" fluid />
+      </template>
+    </ListHeader>
 
     <!-- Print header (visible on print) -->
     <div class="print-only-header">
@@ -56,6 +57,7 @@ import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
 import { useListEditor } from '@/composables/useListEditor'
+import ListHeader from '@/components/shared/ListHeader.vue'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
