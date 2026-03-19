@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useListEditor } from '@/composables/useListEditor';
+import { computed, inject } from 'vue';
+import { listEditorKey } from '@/composables/useListEditor';
 
 import Inplace from 'primevue/inplace';
 import ProgressBar from 'primevue/progressbar';
 // import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-
-const props = defineProps<{ id:string }>()
 
 const {
   list,
@@ -15,7 +13,7 @@ const {
   totalPoints,
 //   updateName,
   updatePointsLimit,
-} = useListEditor(props.id)
+} = inject(listEditorKey)!
 
 const value = computed(() => Math.ceil((totalPoints.value / (list.value?.pointsLimit ?? 0)) * 100))
 

@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, type InjectionKey } from 'vue'
 import { services } from '@/bootstrap'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 import type { ArmyList } from '@/entities/list'
@@ -149,3 +149,6 @@ export function useListEditor(listId: string) {
         updateCharacterUpgrade,
     }
 }
+
+export type ListEditorApi = ReturnType<typeof useListEditor>
+export const listEditorKey: InjectionKey<ListEditorApi> = Symbol('listEditor')

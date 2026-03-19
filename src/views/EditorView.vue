@@ -53,15 +53,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Teleport } from 'vue'
+import { ref, Teleport, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import DetachmentCard from '@/components/editor/DetachmentCard.vue'
 import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
-import { useListEditor } from '@/composables/useListEditor'
+import { listEditorKey } from '@/composables/useListEditor'
 
-const props = defineProps<{ id: string }>()
+defineProps<{ id: string }>()
 const router = useRouter()
 
 const {
@@ -77,7 +77,7 @@ const {
   updateAddUpgradeUnitCount,
   updateWeaponSelection,
   updateCharacterUpgrade,
-} = useListEditor(props.id)
+} = inject(listEditorKey)!
 
 const showAddDetachment = ref(false)
 </script>

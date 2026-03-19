@@ -58,18 +58,19 @@
 </template>
 
 <script setup lang="ts">
+import { inject } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
 import UpgradesTable from '@/components/army/UpgradesTable.vue'
 import UnitsTable from '@/components/army/UnitsTable.vue'
 import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
-import { useListEditor } from '@/composables/useListEditor'
+import { listEditorKey } from '@/composables/useListEditor'
 
-const props = defineProps<{ id: string }>()
+defineProps<{ id: string }>()
 const router = useRouter()
 
-const { armyDef } = useListEditor(props.id)
+const { armyDef } = inject(listEditorKey)!
 </script>
 
 <style scoped>

@@ -49,17 +49,18 @@
 </template>
 
 <script setup lang="ts">
+import { inject } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
-import { useListEditor } from '@/composables/useListEditor'
+import { listEditorKey } from '@/composables/useListEditor'
 
-const props = defineProps<{ id: string }>()
+defineProps<{ id: string }>()
 const router = useRouter()
 const window = globalThis.window
 
-const { list, armyDef, totalPoints, validationResults } = useListEditor(props.id)
+const { list, armyDef, totalPoints, validationResults } = inject(listEditorKey)!
 </script>
 
 <style scoped>
