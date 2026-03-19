@@ -118,43 +118,10 @@ function getUnitDef(unitName: string): UnitDef | undefined {
 
 /**
  * Returns a display UnitDef for the given unit.
- * For CH units, merges the character profile on top of the attached base unit:
- *   - stats: character value if non-null, else base unit value
- *   - weaponSlots: base unit slots + character slots
- *   - specialRuleNames: base + character (deduplicated)
  */
 function displayUnitDef(unitName: string): UnitDef | undefined {
   const def = getUnitDef(unitName)
-  if (!def || def.type !== 'CH') return def
-
-  // Find the character upgrade that placed this character
-  const charUpgrade = props.entry.appliedUpgrades.find(
-    (u) => u.type === 'character' && u.chosenCharacterName === unitName,
-  )
-  if (!charUpgrade || charUpgrade.type !== 'character' || !charUpgrade.attachedToUnitName) return def
-
-  const baseDef = getUnitDef(charUpgrade.attachedToUnitName)
-  if (!baseDef) return def
-
-  return {
-    ...baseDef,
-    name: def.name,
-    cost: def.cost,
-    type: def.type,
-    speed: def.speed ?? baseDef.speed,
-    armour: def.armour ?? baseDef.armour,
-    cc: def.cc ?? baseDef.cc,
-    ff: def.ff ?? baseDef.ff,
-    weaponSlots: [...baseDef.weaponSlots, ...def.weaponSlots],
-    specialRuleNames: [
-      ...new Set([
-        ...(baseDef.specialRuleNames ?? []),
-        ...(def.specialRuleNames ?? []),
-      ]),
-    ],
-    transportType: baseDef.transportType,
-    transportCapacity: baseDef.transportCapacity,
-  }
+  return def
 }
 
 function unitSpecialRules(unitName: string): SpecialRuleDef[] {

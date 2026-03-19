@@ -164,15 +164,6 @@ function isTransportUpgrade(upgradeName: string): boolean {
   return def?.type === 'add' && (def.transportWarning ?? false)
 }
 
-function getUnitDef(unitName: string) {
-  return props.armyDef.units.find((u) => u.name === unitName)
-}
-
-const nonCharacterUnitNames = computed(() =>
-  derivedUnits.value
-    .filter((ute) => getUnitDef(ute.unitName)?.type !== 'CH')
-    .map((ute) => ute.unitName),
-)
 </script>
 
 <style scoped>

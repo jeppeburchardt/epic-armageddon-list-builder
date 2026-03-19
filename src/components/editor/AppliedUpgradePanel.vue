@@ -125,7 +125,6 @@
 import { computed } from 'vue'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
-import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import type { ArmyDef } from '@/entities/army'
