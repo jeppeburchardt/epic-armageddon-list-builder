@@ -1,0 +1,46 @@
+name: Cleanup PR Preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Teardown Surge deployment
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          SURGE_DOMAIN="${{ vars.SURGE_DOMAIN }}"
+          
+          # Extract the base domain from SURGE_DOMAIN (remove protocol if present)
+          BASE_DOMAIN=$(echo "$SURGE_DOMAIN" | sed 's|https\?://||')
+          
+          # Create PR-specific subdomain
+          PR_DOMAIN="pr-${PR_NUMBER}-${BASE_DOMAIN}"
+          
+          echo "Tearing down: ${PR_DOMAIN}"
+          
+          # Teardown the Surge deployment (SURGE_TOKEN is read from environment)
+          npx surge teardown "$PR_DOMAIN"
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.issue.number;
+            const comment = `## 🧹 Preview Environment Cleaned Up
+            
+            The preview environment for PR #${prNumber} has been removed from Surge.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
