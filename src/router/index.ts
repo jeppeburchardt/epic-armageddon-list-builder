@@ -5,6 +5,7 @@ import PrintView from '@/views/PrintView.vue'
 import ArmyView from '@/views/ArmyView.vue'
 import ListLayout from '@/views/ListLayout.vue'
 import ListReferenceView from '@/views/ListReferenceView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -22,6 +23,7 @@ const router = createRouter({
                 { path: 'reference', name: 'list-reference', component: ListReferenceView, props: true },
             ],
         },
+        { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
     ],
 })
 
