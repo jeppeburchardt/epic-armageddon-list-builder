@@ -21,16 +21,22 @@ export type WeaponSlot =
     | { kind: 'fixed'; weaponName: string; range: string; firepower: string; count?: number }
     | { kind: 'choice'; name?: string; choices: WeaponOption[] }
 
-// ─── Transport capacity ───────────────────────────────────────────────────────
+// ─── Transportation ──────────────────────────────────────────────────────────
 
 /**
- * Transport capacity entry: which transport type can ride, and how many.
- * When multiple entries exist they are OR alternatives (e.g. Land Raider
- * carries marines:2 OR terminator:1).
+ * Transportation properties for a unit.
+ * Units that can be transported have a cost and type.
+ * Units that can transport others have a capacity and list of capabilities.
  */
-export interface TransportCapacityEntry {
-    transportType: string
-    count: number
+export interface Transportation {
+    /** How much capacity this unit requires to be transported (for transportable units) */
+    cost?: number
+    /** What kind of unit this is for transport purposes (for transportable units) */
+    type?: string
+    /** Total transport capacity this unit provides (for transport units) */
+    capacity?: number
+    /** List of unit types this transport can carry (for transport units) */
+    capabilities?: string[]
 }
 
 // ─── Unit definition ─────────────────────────────────────────────────────────
@@ -44,9 +50,8 @@ export interface UnitDef {
     cc: string | null
     ff: string | null
     weaponSlots: WeaponSlot[]
-    transportType: string | null
-    /** Empty array means no transport capacity. Multiple entries = OR alternatives. */
-    transportCapacity: TransportCapacityEntry[]
+    /** Transportation properties (cost/type for transportable units, capacity/capabilities for transports) */
+    transportation?: Transportation
     specialRuleNames?: string[]
 }
 

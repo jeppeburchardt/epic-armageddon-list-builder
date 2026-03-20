@@ -39,7 +39,7 @@
             <td>{{ wrow.firepower }}</td>
             <!-- Transport/capacity/special rules only on first weapon row -->
             <template v-if="wi === 0">
-              <td :rowspan="weaponRows(unit).length">{{ unit.transportType ?? '—' }}</td>
+              <td :rowspan="weaponRows(unit).length">{{ describeTransportType(unit) }}</td>
               <td :rowspan="weaponRows(unit).length">{{ describeCapacity(unit) }}</td>
               <td :rowspan="weaponRows(unit).length">{{ unit.specialRuleNames?.join(', ') ?? '—' }}</td>
             </template>
@@ -84,9 +84,16 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
   return rows.length > 0 ? rows : [{ label: '—', range: '—', firepower: '—', isAlternative: false }]
 }
 
+function describeTransportType(unit: UnitDef): string {
+  if (!unit.transportation?.type) return '—'
+  const cost = unit.transportation.cost ?? 0
+  return `${unit.transportation.type} (${cost})`
+}
+
 function describeCapacity(unit: UnitDef): string {
-  if (unit.transportCapacity.length === 0) return '—'
-  return unit.transportCapacity.map((c) => `${c.transportType}: ${c.count}`).join(' or ')
+  if (!unit.transportation?.capacity || !unit.transportation.capabilities) return '—'
+  const capabilities = unit.transportation.capabilities.join(', ')
+  return `${unit.transportation.capacity} (${capabilities})`
 }
 </script>
 

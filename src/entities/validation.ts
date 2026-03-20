@@ -42,7 +42,15 @@ export function validateArmyRestrictions(
 
 /**
  * Returns a warning if the transport capacity provided in the entry's add-upgrades
- * is insufficient or grossly excessive for the number of transportable units in the formation.
+ * is insufficient or excessive for the transportable units in the formation.
+ * 
+ * Per the new transportation model:
+ * - Transportable units have transportation.cost and transportation.type
+ * - Transport units have transportation.capacity and transportation.capabilities[]
+ * 
+ * Warnings are shown if:
+ * 1. Total cost is not met by total capacity
+ * 2. Total capacity exceeds total cost by the capacity of one transport unit
  */
 export function validateTransportCapacity(
     entry: Entry,
@@ -57,46 +65,69 @@ export function validateTransportCapacity(
 
     if (transportUpgrades.length === 0) return null
 
-    // Effective formation composition (excluding transport units themselves)
+    // Effective formation composition
     const formation = deriveFormationUnits(entry, armyDef)
 
-    // Count units needing transportation by transport type
-    const needsByType = new Map<string, number>()
+    // Calculate total cost by transport type for units needing transportation
+    const costByType = new Map<string, number>()
     for (const ute of formation) {
         const unitDef = armyDef.units.find((u) => u.name === ute.unitName)
-        if (!unitDef || !unitDef.transportType) continue
-        // Skip transport units themselves (they have no transportType that requires boarding)
-        const existing = needsByType.get(unitDef.transportType) ?? 0
-        needsByType.set(unitDef.transportType, existing + ute.instances.length)
+        if (!unitDef?.transportation?.type || !unitDef.transportation.cost) continue
+        
+        const type = unitDef.transportation.type
+        const cost = unitDef.transportation.cost
+        const existing = costByType.get(type) ?? 0
+        costByType.set(type, existing + cost * ute.instances.length)
     }
 
-    if (needsByType.size === 0) return null
+    if (costByType.size === 0) return null
 
-    // Count capacity provided by transport units in the add upgrades
+    // Calculate total capacity by transport type and track individual transport capacities
     const capacityByType = new Map<string, number>()
+    const individualTransportCapacities: number[] = []
+    
     for (const upgrade of transportUpgrades) {
         if (upgrade.type !== 'add') continue
         for (const ute of upgrade.addedUnits) {
             const transportDef = armyDef.units.find((u) => u.name === ute.unitName)
-            if (!transportDef) continue
-            for (const cap of transportDef.transportCapacity) {
-                const existing = capacityByType.get(cap.transportType) ?? 0
-                capacityByType.set(cap.transportType, existing + cap.count * ute.instances.length)
+            if (!transportDef?.transportation?.capacity || !transportDef.transportation.capabilities) continue
+            
+            const capacity = transportDef.transportation.capacity
+            const capabilities = transportDef.transportation.capabilities
+            
+            // Track individual transport capacity for excess calculation
+            for (let i = 0; i < ute.instances.length; i++) {
+                individualTransportCapacities.push(capacity)
+            }
+            
+            // Add capacity for each type this transport can carry
+            for (const type of capabilities) {
+                const existing = capacityByType.get(type) ?? 0
+                capacityByType.set(type, existing + capacity * ute.instances.length)
             }
         }
     }
 
+    // Validate each transport type
     const messages: string[] = []
-    for (const [transportType, needed] of needsByType) {
-        const available = capacityByType.get(transportType) ?? 0
-        if (available < needed) {
+    for (const [type, cost] of costByType) {
+        const capacity = capacityByType.get(type) ?? 0
+        
+        // Warning 1: Insufficient capacity
+        if (capacity < cost) {
             messages.push(
-                `Not enough transport capacity for ${transportType} units: need ${needed}, have ${available}.`,
+                `Not enough transport capacity for ${type} units: need ${cost}, have ${capacity}.`,
             )
-        } else if (available > needed * 2) {
-            messages.push(
-                `Excess transport capacity for ${transportType} units: need ${needed}, have ${available}.`,
-            )
+        }
+        // Warning 2: Excess capacity by more than one transport unit's worth
+        else {
+            // Find the minimum transport capacity that serves this type
+            const minTransportCapacity = Math.min(...individualTransportCapacities.filter(c => c > 0)) || 0
+            if (minTransportCapacity > 0 && capacity > cost + minTransportCapacity) {
+                messages.push(
+                    `Excess transport capacity for ${type} units: need ${cost}, have ${capacity}.`,
+                )
+            }
         }
     }
 
