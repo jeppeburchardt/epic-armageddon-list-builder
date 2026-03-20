@@ -82,9 +82,9 @@ export function validateTransportCapacity(
 
     if (costByType.size === 0) return null
 
-    // Calculate total capacity by transport type and track individual transport capacities
+    // Calculate total capacity by transport type and track individual transport capacities per type
     const capacityByType = new Map<string, number>()
-    const individualTransportCapacities: number[] = []
+    const minCapacityByType = new Map<string, number>()
     
     for (const upgrade of transportUpgrades) {
         if (upgrade.type !== 'add') continue
@@ -95,15 +95,14 @@ export function validateTransportCapacity(
             const capacity = transportDef.transportation.capacity
             const capabilities = transportDef.transportation.capabilities
             
-            // Track individual transport capacity for excess calculation
-            for (let i = 0; i < ute.instances.length; i++) {
-                individualTransportCapacities.push(capacity)
-            }
-            
             // Add capacity for each type this transport can carry
             for (const type of capabilities) {
                 const existing = capacityByType.get(type) ?? 0
                 capacityByType.set(type, existing + capacity * ute.instances.length)
+                
+                // Track minimum capacity for this type
+                const currentMin = minCapacityByType.get(type) ?? Infinity
+                minCapacityByType.set(type, Math.min(currentMin, capacity))
             }
         }
     }
@@ -119,11 +118,11 @@ export function validateTransportCapacity(
                 `Not enough transport capacity for ${type} units: need ${cost}, have ${capacity}.`,
             )
         }
-        // Warning 2: Excess capacity by more than one transport unit's worth
+        // Warning 2: Excess capacity by one or more transport unit's worth
         else {
             // Find the minimum transport capacity that serves this type
-            const minTransportCapacity = Math.min(...individualTransportCapacities.filter(c => c > 0)) || 0
-            if (minTransportCapacity > 0 && capacity > cost + minTransportCapacity) {
+            const minTransportCapacity = minCapacityByType.get(type) ?? 0
+            if (minTransportCapacity > 0 && capacity >= cost + minTransportCapacity) {
                 messages.push(
                     `Excess transport capacity for ${type} units: need ${cost}, have ${capacity}.`,
                 )
