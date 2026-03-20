@@ -28,6 +28,8 @@ jobs:
 
       - name: Deploy to Surge.sh
         id: deploy
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           SURGE_DOMAIN="${{ vars.SURGE_DOMAIN }}"
@@ -41,8 +43,8 @@ jobs:
           echo "Deploying to: ${PR_DOMAIN}"
           echo "pr_domain=${PR_DOMAIN}" >> $GITHUB_OUTPUT
           
-          # Deploy to Surge
-          npx surge dist "$PR_DOMAIN" --token ${{ secrets.SURGE_TOKEN }}
+          # Deploy to Surge (SURGE_TOKEN is read from environment)
+          npx surge dist "$PR_DOMAIN"
 
       - name: Comment PR
         uses: actions/github-script@v7
@@ -51,7 +53,9 @@ jobs:
             const prDomain = '${{ steps.deploy.outputs.pr_domain }}';
             const previewUrl = `https://${prDomain}`;
             
-            const comment = `## 🚀 Preview Deployed!
+            // Comment template
+            const COMMENT_MARKER = '🚀 Preview Deployed!';
+            const comment = `## ${COMMENT_MARKER}
             
             Your preview environment is ready:
             
@@ -68,7 +72,7 @@ jobs:
             
             const botComment = comments.find(comment => 
               comment.user.type === 'Bot' && 
-              comment.body.includes('🚀 Preview Deployed!')
+              comment.body.includes(COMMENT_MARKER)
             );
             
             if (botComment) {

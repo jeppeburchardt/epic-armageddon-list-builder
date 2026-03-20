@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - name: Teardown Surge deployment
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           SURGE_DOMAIN="${{ vars.SURGE_DOMAIN }}"
@@ -24,8 +26,8 @@ jobs:
           
           echo "Tearing down: ${PR_DOMAIN}"
           
-          # Teardown the Surge deployment
-          npx surge teardown "$PR_DOMAIN" --token ${{ secrets.SURGE_TOKEN }}
+          # Teardown the Surge deployment (SURGE_TOKEN is read from environment)
+          npx surge teardown "$PR_DOMAIN"
 
       - name: Comment PR
         uses: actions/github-script@v7
