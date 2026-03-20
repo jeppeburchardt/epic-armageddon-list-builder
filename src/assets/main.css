@@ -169,15 +169,17 @@ small {
 
 /* Secondary Button - Standard movements */
 .p-button-secondary,
-.p-button.p-button-secondary {
-    background: var(--primary-container);
-    color: var(--on-primary-container);
+.p-button.p-button-secondary,
+.p-button:not(.p-button-primary):not(.p-button-text):not(.p-button-outlined) {
+    background: var(--secondary);
+    color: var(--on-secondary);
     border: none;
 }
 
 .p-button-secondary:hover,
-.p-button.p-button-secondary:hover {
-    filter: brightness(1.1);
+.p-button.p-button-secondary:hover,
+.p-button:not(.p-button-primary):not(.p-button-text):not(.p-button-outlined):hover {
+    filter: brightness(1.2);
 }
 
 /* Input Fields - Data Entry with Ghost Border */
@@ -205,11 +207,19 @@ small {
 
 /* Cards - Unit Rosters with Tonal Layering */
 .p-card {
-    background: var(--surface-container-low);
+    background: var(--surface-container-low) !important;
     border: none;
     border-radius: 0 !important;
     box-shadow: none;
     position: relative;
+}
+
+.p-card .p-card-body {
+    background: transparent !important;
+}
+
+.p-card .p-card-content {
+    background: transparent !important;
 }
 
 /* Status Ribbon - 4px vertical bar on left edge */
@@ -230,7 +240,7 @@ small {
 
 /* Dialog/Modal - Floating Comms with Glassmorphism */
 .p-dialog {
-    background: rgba(51, 53, 51, 0.8) !important;
+    background: var(--surface-container-high) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: none;
