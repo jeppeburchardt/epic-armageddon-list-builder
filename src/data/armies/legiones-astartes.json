@@ -129,8 +129,10 @@
                     "firepower": "Small Arms"
                 }
             ],
-            "transportType": "marine",
-            "transportCapacity": []
+            "transportation": {
+                "cost": 1,
+                "type": "marine"
+            }
         },
         {
             "name": "Support Legionairs",
@@ -148,8 +150,10 @@
                     "firepower": "AT4+"
                 }
             ],
-            "transportType": "marine",
-            "transportCapacity": []
+            "transportation": {
+                "cost": 1,
+                "type": "marine"
+            }
         },
         {
             "name": "Predator",
@@ -196,9 +200,7 @@
                         }
                     ]
                 }
-            ],
-            "transportType": null,
-            "transportCapacity": []
+            ]
         },
         {
             "name": "Vindicator",
@@ -215,9 +217,7 @@
                     "range": "15cm",
                     "firepower": "AP3+ AT5+"
                 }
-            ],
-            "transportType": null,
-            "transportCapacity": []
+            ]
         },
         {
             "name": "Rhino",
@@ -235,13 +235,10 @@
                     "firepower": "Small Arms"
                 }
             ],
-            "transportType": null,
-            "transportCapacity": [
-                {
-                    "transportType": "marine",
-                    "count": 2
-                }
-            ]
+            "transportation": {
+                "capacity": 2,
+                "capabilities": ["marine"]
+            }
         },
         {
             "name": "Terminators",
@@ -259,8 +256,10 @@
                     "firepower": "Small Arms"
                 }
             ],
-            "transportType": "terminator",
-            "transportCapacity": [],
+            "transportation": {
+                "cost": 2,
+                "type": "terminator"
+            },
             "specialRuleNames": [
                 "Reinforced Armour",
                 "Teleport",
@@ -284,17 +283,10 @@
                     "count": 2
                 }
             ],
-            "transportType": null,
-            "transportCapacity": [
-                {
-                    "transportType": "marine",
-                    "count": 2
-                },
-                {
-                    "transportType": "terminator",
-                    "count": 1
-                }
-            ]
+            "transportation": {
+                "capacity": 2,
+                "capabilities": ["marine", "terminator"]
+            }
         },
         {
             "name": "Captain",
@@ -318,8 +310,6 @@
                     "firepower": "EA(+1) MW"
                 }
             ],
-            "transportType": null,
-            "transportCapacity": [],
             "specialRuleNames": [
                 "Commander",
                 "Leader"
@@ -347,8 +337,6 @@
                     "firepower": "EA(+1) MW"
                 }
             ],
-            "transportType": null,
-            "transportCapacity": [],
             "specialRuleNames": [
                 "Supreme Commander"
             ]
