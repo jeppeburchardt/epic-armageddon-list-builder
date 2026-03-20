@@ -7,7 +7,6 @@ import ConfirmationService from 'primevue/confirmationservice'
 import App from './App.vue'
 import router from './router'
 import 'primeicons/primeicons.css'
-import './assets/main.css'
 
 const app = createApp(App)
 
@@ -23,5 +22,8 @@ app.use(PrimeVue, {
 })
 app.use(ToastService)
 app.use(ConfirmationService)
+
+// Import main.css after PrimeVue to allow overrides
+import('./assets/main.css')
 
 app.mount('#app')

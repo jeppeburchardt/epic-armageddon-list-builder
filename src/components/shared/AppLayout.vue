@@ -7,6 +7,16 @@
         <nav class="header-nav desktop-only">
           <RouterLink to="/">Lists</RouterLink>
         </nav>
+        <div class="header-actions">
+          <Button
+            :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
+            text
+            rounded
+            @click="toggleDarkMode"
+            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            class="theme-toggle"
+          />
+        </div>
       </div>
     </header>
 
@@ -26,6 +36,10 @@
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
+import { useTheme } from '@/composables/useTheme'
+
+const { isDark, toggleDarkMode } = useTheme()
 </script>
 
 <style scoped>
@@ -53,6 +67,16 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
+}
+
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle {
+  color: var(--p-primary-contrast-color);
 }
 
 .app-title {
