@@ -72,7 +72,7 @@ export function validateTransportCapacity(
     const costByType = new Map<string, number>()
     for (const ute of formation) {
         const unitDef = armyDef.units.find((u) => u.name === ute.unitName)
-        if (!unitDef?.transportation?.type || !unitDef.transportation.cost) continue
+        if (!unitDef?.transportation?.type || unitDef.transportation.cost === undefined) continue
         
         const type = unitDef.transportation.type
         const cost = unitDef.transportation.cost
@@ -82,7 +82,9 @@ export function validateTransportCapacity(
 
     if (costByType.size === 0) return null
 
-    // Calculate total capacity by transport type and track individual transport capacities per type
+    // Calculate total capacity by transport type and track minimum capacity per type
+    // The minimum capacity is used to determine the threshold for excess capacity warnings
+    // (if capacity exceeds cost by one transport unit's worth)
     const capacityByType = new Map<string, number>()
     const minCapacityByType = new Map<string, number>()
     

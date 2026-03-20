@@ -29,7 +29,10 @@ export type WeaponSlot =
  * Units that can transport others have a capacity and list of capabilities.
  */
 export interface Transportation {
-    /** How much capacity this unit requires to be transported (for transportable units) */
+    /** 
+     * How much capacity this unit requires to be transported (for transportable units).
+     * Must be a positive number. Zero or undefined means the unit does not require transport.
+     */
     cost?: number
     /** What kind of unit this is for transport purposes (for transportable units) */
     type?: string
