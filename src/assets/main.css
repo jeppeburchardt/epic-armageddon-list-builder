@@ -12,7 +12,7 @@
     --surface-container-low: #1a1c1a;
     --surface-container: #1e201e;
     --surface-container-high: #282a28;
-    --surface-container-highest: #33353;
+    --surface-container-highest: #333533;
     
     /* Primary - Olive Drab */
     --primary: #535C40;
@@ -406,7 +406,7 @@ small {
 
 /* Status Ribbon Variants */
 .status-active::before {
-    background: var(--primary) !important; /* Green - Unit Active */
+    background: var(--primary) !important; /* Olive Drab - Unit Active */
 }
 
 .status-suppressed::before {
