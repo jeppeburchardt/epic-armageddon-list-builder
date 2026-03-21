@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="upgrades">
-          <Accordion>
+          <Accordion v-model:value="activePanel">
             <AccordionPanel value="0">
               <AccordionHeader>Base units 
                 <Tag severity="secondary" v-for="unit in deriveBaseUnits(entry)">
@@ -93,7 +93,7 @@
     :detachment-name="entry.detachmentName"
     :army-def="armyDef"
     :applied-upgrade-names="entry.appliedUpgrades.map((u) => u.upgradeName)"
-    @add="(upgDef) => emit('add-upgrade', upgDef)"
+    @add="handleAddUpgrade"
   />
 </template>
 
@@ -133,6 +133,12 @@ const emit = defineEmits<{
 }>()
 
 const showUpgradePicker = ref(false)
+const activePanel = ref<string | undefined>(undefined)
+
+function handleAddUpgrade(upgDef: UpgradeDef) {
+  activePanel.value = upgDef.name
+  emit('add-upgrade', upgDef)
+}
 
 const detachmentDef = computed(() =>
   props.armyDef.detachments.find((d) => d.name === props.entry.detachmentName),
