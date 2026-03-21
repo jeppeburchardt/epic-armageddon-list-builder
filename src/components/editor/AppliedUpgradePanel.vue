@@ -42,19 +42,14 @@
     </div>
 
     <!-- Character upgrade -->
-    <div v-else-if="upgrade.type === 'character' && characterUpgrade" class="character-section">
-      <div class="character-picker">
-        <button
-          v-for="charName in characterUpgradeDef?.characterNames ?? []"
-          :key="charName"
-          class="char-btn"
-          :class="{ 'char-btn--active': characterUpgrade.chosenCharacterName === charName }"
-          type="button"
-          @click="onCharacterClick(charName)"
-        >
-          {{ charName }}
-        </button>
-      </div>
+    <div v-else-if="upgrade.type === 'character' && characterUpgrade">
+      <Select
+        :model-value="characterUpgrade.chosenCharacterName"
+        :options="characterUpgradeDef?.characterNames ?? []"
+        placeholder="Select character…"
+        show-clear
+        @update:model-value="(val: string | null) => emit('update-character', val ?? null)"
+      />
     </div>
 
     <!-- Add upgrade -->
@@ -101,6 +96,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import InputNumber from 'primevue/inputnumber'
+import Select from 'primevue/select'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { AppliedUpgrade } from '@/entities/list'
@@ -133,17 +129,6 @@ const characterUpgradeDef = computed(() => {
   const def = upgradeDef.value
   return def?.type === 'character' ? def : null
 })
-
-function onCharacterClick(charName: string) {
-  const cu = characterUpgrade.value
-  if (!cu) return
-  if (cu.chosenCharacterName === charName) {
-    // Deselect
-    emit('update-character', null)
-  } else {
-    emit('update-character', charName)
-  }
-}
 
 const upgradeDef = computed(() =>
   props.armyDef.upgrades.find((u) => u.name === props.upgrade.upgradeName),
@@ -267,39 +252,6 @@ function hasChoices(unitName: string): boolean {
   flex-direction: column;
 }
 
-.character-section {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-}
-
-.character-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-}
-
-.char-btn {
-  border: 1px solid var(--p-surface-border);
-  border-radius: .375rem;
-  padding: .3rem .7rem;
-  background: var(--p-surface-0);
-  cursor: pointer;
-  font-size: .875rem;
-  transition: border-color .15s, background .15s, color .15s;
-  color: var(--p-text-color);
-}
-
-.char-btn:hover {
-  border-color: var(--p-primary-color);
-  background: var(--p-primary-50);
-}
-
-.char-btn--active {
-  border-color: var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
-}
 
 .attach-row {
   display: flex;
