@@ -164,7 +164,7 @@ export function applyUpgrade(
                 newUpgrade = {
                     type: 'character',
                     upgradeName: upgradeDef.name,
-                    chosenCharacterName: null,
+                    chosenCharacterName: upgradeDef.characterNames[0] ?? null,
                 }
             } else {
                 const addedUnits: UnitTypeEntry[] = upgradeDef.adds.map((addSpec: AddSpec) => {
