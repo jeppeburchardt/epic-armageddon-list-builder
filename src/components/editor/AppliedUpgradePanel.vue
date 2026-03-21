@@ -101,7 +101,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import InputNumber from 'primevue/inputnumber'
-import Tag from 'primevue/tag'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { AppliedUpgrade } from '@/entities/list'
