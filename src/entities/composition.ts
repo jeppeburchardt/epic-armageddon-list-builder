@@ -1,5 +1,5 @@
 import type { ArmyDef } from './army'
-import type { Entry, UnitTypeEntry } from './list'
+import type { AppliedUpgrade, Entry, UnitTypeEntry } from './list'
 
 /**
  * Derives the effective unit composition of a detachment entry by
@@ -63,4 +63,27 @@ export function deriveFormationUnits(entry: Entry, armyDef: ArmyDef): UnitTypeEn
     }
 
     return Array.from(result.values())
+}
+
+/**
+ * Returns the units contributed by a single applied upgrade,
+ * normalised to UnitTypeEntry[].
+ *
+ * - 'add'       → the added units
+ * - 'replace'   → the replacing units (wrapped in an array)
+ * - 'character' → the chosen character as a single-instance entry, or [] if
+ *                 no character has been selected yet
+ */
+export function deriveUpgradeUnits(upgrade: AppliedUpgrade): UnitTypeEntry[] {
+    let unitTypeEntries: UnitTypeEntry[] = [];
+    if (upgrade.type === 'add') {
+        unitTypeEntries = upgrade.addedUnits
+    } else if (upgrade.type === 'replace') {
+        unitTypeEntries = [upgrade.replacingUnits]
+    } else {
+        if (upgrade.chosenCharacterName) {
+            unitTypeEntries = [{ unitName: upgrade.chosenCharacterName, instances: [{ weaponSelections: [] }] }]
+        }
+    }
+    return unitTypeEntries.filter(u => u.instances.length > 0)
 }

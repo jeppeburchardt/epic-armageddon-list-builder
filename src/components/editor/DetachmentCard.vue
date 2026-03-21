@@ -1,5 +1,5 @@
 <template>
-  <Card class="detachment-card">
+  <Card :class="{ warning: transportWarning }">
     <template #header>
       <div class="card-header">
         <div class="card-header-left">
@@ -22,77 +22,60 @@
     </template>
 
     <template #content>
-      <!-- Transport warning -->
-      <Tag
-        v-if="transportWarning"
-        severity="warn"
-        value="⚠ Transport capacity warning"
-        class="transport-tag"
-      />
-
-      <!-- Collapsed: derived composition summary -->
-      <div v-if="!expanded" class="composition-summary" @click="expanded = true">
-        <span
-          v-for="ute in derivedUnits"
-          :key="ute.unitName"
-          class="composition-chip"
-        >
-          {{ ute.instances.length }}× {{ ute.unitName }}
-        </span>
-        <span class="expand-hint">Tap to edit</span>
-      </div>
-
-      <!-- Expanded: full edit UI -->
-      <div v-else class="edit-body">
-        <div class="section">
-          <h4 class="section-title">Base Units</h4>
-          <BaseUnitsPanel
-            :base-units="entry.baseUnits"
-            :detachment-name="entry.detachmentName"
-            :army-def="armyDef"
-            @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
-            @weapon-change="(unitName, instIdx, slotIdx, weapon) => emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)"
-          />
-        </div>
-
-        <Divider v-if="entry.appliedUpgrades.length > 0" />
-
-        <div v-if="entry.appliedUpgrades.length > 0" class="section">
-          <h4 class="section-title">Upgrades</h4>
-          <div class="upgrades-list">
+      <Accordion>
+         <AccordionPanel value="0">
+          <AccordionHeader>{{ entry.detachmentName }}</AccordionHeader>
+          <AccordionContent>
+            <BaseUnitsPanel
+              :base-units="entry.baseUnits"
+              :detachment-name="entry.detachmentName"
+              :army-def="armyDef"
+              @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
+              @weapon-change="(unitName, instIdx, slotIdx, weapon) => emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+        <AccordionPanel :value="upgrade.upgradeName"  v-for="upgrade in entry.appliedUpgrades" :key="upgrade.upgradeName" :class="{warning:isTransportUpgrade(upgrade.upgradeName) && !!transportWarning}">
+          <AccordionHeader>
+            <span class="tag-list">
+              {{ upgrade.upgradeName }}:
+              <Tag v-for="unit in deriveUpgradeUnits(upgrade)">
+                {{unit.instances.length}}x{{ unit.unitName }}
+              </Tag>
+            </span>
+             <Button
+                icon="pi pi-times"
+                severity="danger"
+                text
+                size="small"
+                rounded
+                aria-label="Remove upgrade"
+                @click="emit('remove-upgrade', upgrade.upgradeName)"
+              />
+          </AccordionHeader>
+          <AccordionContent>
             <AppliedUpgradePanel
-              v-for="upgrade in entry.appliedUpgrades"
-              :key="upgrade.upgradeName"
               :upgrade="upgrade"
               :army-def="armyDef"
-              :transport-warning="isTransportUpgrade(upgrade.upgradeName) && !!transportWarning"
               @remove="emit('remove-upgrade', upgrade.upgradeName)"
               @replace-count-change="(count) => emit('replace-count-change', upgrade.upgradeName, count)"
               @add-count-change="(unitName, count) => emit('add-count-change', upgrade.upgradeName, unitName, count)"
               @weapon-change="(_upgName, unitName, instIdx, slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)"
               @update-character="(charName) => emit('update-character', upgrade.upgradeName, charName)"
             />
-          </div>
-        </div>
-
-        <div class="add-upgrade-row">
-          <Button
-            v-if="availableUpgradesCount > 0"
-            label="Add Upgrade"
-            icon="pi pi-plus"
-            size="small"
-            severity="secondary"
-            @click="showUpgradePicker = true"
-          />
-          <Button
-            label="Collapse"
-            icon="pi pi-chevron-up"
-            size="small"
-            text
-            @click="expanded = false"
-          />
-        </div>
-      </div>
+          </AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+    </template>
+    <template #footer>
+      <Button
+        v-if="availableUpgradesCount > 0"
+        label="Add Upgrade"
+        icon="pi pi-plus"
+        size="small"
+        severity="secondary"
+        @click="showUpgradePicker = true"
+      />
     </template>
   </Card>
 
@@ -110,7 +93,10 @@ import { ref, computed } from 'vue'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
-import Divider from 'primevue/divider'
+import Accordion from 'primevue/accordion';
+import AccordionPanel from 'primevue/accordionpanel';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionContent from 'primevue/accordioncontent';
 import PointsBadge from '@/components/shared/PointsBadge.vue'
 import BaseUnitsPanel from './BaseUnitsPanel.vue'
 import AppliedUpgradePanel from './AppliedUpgradePanel.vue'
@@ -118,7 +104,7 @@ import UpgradePickerDialog from './UpgradePickerDialog.vue'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 import type { Entry } from '@/entities/list'
 import { calculateEntryPoints } from '@/entities/points'
-import { deriveFormationUnits } from '@/entities/composition'
+import { deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
 
 const props = defineProps<{
@@ -137,7 +123,6 @@ const emit = defineEmits<{
   (e: 'update-character', upgradeName: string, chosenCharacterName: string | null): void
 }>()
 
-const expanded = ref(false)
 const showUpgradePicker = ref(false)
 
 const detachmentDef = computed(() =>
@@ -145,8 +130,6 @@ const detachmentDef = computed(() =>
 )
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
-
-const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
 
 const transportWarning = computed(() => {
   const result = validateTransportCapacity(props.entry, props.armyDef)
@@ -167,16 +150,19 @@ function isTransportUpgrade(upgradeName: string): boolean {
 </script>
 
 <style scoped>
-.detachment-card {
-  margin-bottom: .75rem;
-}
-
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: .5rem .75rem;
   gap: .5rem;
+}
+
+.tag-list {
+  gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  flex: 1 2 auto;
 }
 
 .card-header-left {

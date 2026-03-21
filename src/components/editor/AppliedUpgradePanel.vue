@@ -1,26 +1,4 @@
 <template>
-  <div class="applied-upgrade-panel">
-    <div class="upgrade-header">
-      <span class="upgrade-name">{{ upgrade.upgradeName }}</span>
-      <Button
-        icon="pi pi-times"
-        severity="danger"
-        text
-        size="small"
-        rounded
-        aria-label="Remove upgrade"
-        @click="emit('remove')"
-      />
-    </div>
-
-    <!-- Transport warning badge -->
-    <Tag
-      v-if="transportWarning"
-      severity="warn"
-      value="⚠ Transport capacity warning"
-      class="transport-tag"
-    />
-
     <!-- Replace upgrade -->
     <div v-if="upgrade.type === 'replace' && replaceUpgrade" class="replace-section">
       <div class="replace-control">
@@ -118,12 +96,10 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import Tag from 'primevue/tag'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
@@ -133,7 +109,6 @@ import type { AppliedUpgrade } from '@/entities/list'
 const props = defineProps<{
   upgrade: AppliedUpgrade
   armyDef: ArmyDef
-  transportWarning?: boolean
 }>();
 
 const emit = defineEmits<{

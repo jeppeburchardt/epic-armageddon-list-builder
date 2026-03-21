@@ -10,6 +10,7 @@
           label="Add Detachment"
           icon="pi pi-plus"
           @click="showAddDetachment = true"
+          severity="primary"
           fluid
         />
     </Teleport>
