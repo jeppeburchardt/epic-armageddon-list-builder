@@ -5,8 +5,8 @@
       :key="slotIdx"
       class="weapon-slot"
     >
-      <label class="slot-label">{{ slotLabel(slot, slotIdx) }}</label>
       <Select
+        :placeholder="slotLabel(slot, slotIdx)"
         :model-value="currentChoice(slotIdx)"
         :options="slot.choices"
         option-label="label"

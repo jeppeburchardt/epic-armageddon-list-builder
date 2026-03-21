@@ -35,7 +35,7 @@
                 {
                     "unitName": "Predator",
                     "min": 3,
-                    "max": 5
+                    "max": 6
                 }
             ],
             "availableUpgrades": [
@@ -238,7 +238,9 @@
             ],
             "transportation": {
                 "capacity": 2,
-                "capabilities": ["marine"]
+                "capabilities": [
+                    "marine"
+                ]
             }
         },
         {
@@ -286,7 +288,10 @@
             ],
             "transportation": {
                 "capacity": 2,
-                "capabilities": ["marine", "terminator"]
+                "capabilities": [
+                    "marine",
+                    "terminator"
+                ]
             }
         },
         {

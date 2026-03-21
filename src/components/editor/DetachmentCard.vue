@@ -39,7 +39,7 @@
           <AccordionHeader>
             <span class="tag-list">
               {{ upgrade.upgradeName }}:
-              <Tag v-for="unit in deriveUpgradeUnits(upgrade)">
+              <Tag severity="secondary" v-for="unit in deriveUpgradeUnits(upgrade)">
                 {{unit.instances.length}}x{{ unit.unitName }}
               </Tag>
             </span>

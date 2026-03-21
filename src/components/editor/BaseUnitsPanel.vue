@@ -1,29 +1,25 @@
 <template>
   <div class="base-units-panel">
     <div v-for="ute in baseUnits" :key="ute.unitName" class="unit-type-row">
-      <div class="unit-type-header">
-        <span class="unit-name">{{ ute.unitName }}</span>
-        <div class="unit-count-control" v-if="isVariable(ute.unitName)">
+      <div class="unit-header">
           <InputNumber
+            v-if="isVariable(ute.unitName)"
             :model-value="ute.instances.length"
             :min="getMin(ute.unitName)"
             :max="getMax(ute.unitName)"
             show-buttons
             button-layout="horizontal"
             :step="1"
-            class="count-input"
             @update:model-value="(val: number | null) => val !== null && emit('count-change', ute.unitName, val)"
           >
-            <template #decrementbuttonicon>
-              <span class="pi pi-minus" />
-            </template>
-            <template #incrementbuttonicon>
-              <span class="pi pi-plus" />
-            </template>
+            <template #decrementbuttonicon><span class="pi pi-minus" /></template>
+            <template #incrementbuttonicon><span class="pi pi-plus" /></template>
           </InputNumber>
+          <span v-else>
+            {{ ute.instances.length }}
+          </span>
+          <span class="unit-name">{{ ute.unitName }}</span>
         </div>
-        <span v-else class="unit-fixed-count">{{ ute.instances.length }}×</span>
-      </div>
 
       <!-- Per-instance weapon editors (only for units with choice slots) -->
       <div
@@ -33,7 +29,7 @@
         <div
           v-for="(inst, instIdx) in ute.instances"
           :key="instIdx"
-          class="instance-row"
+          class="instance-item"
         >
           <span class="instance-label">Unit {{ instIdx + 1 }}</span>
           <UnitInstanceEditor
@@ -100,11 +96,12 @@ function hasChoices(unitName: string): boolean {
   gap: .75rem;
 }
 
-.unit-type-header {
+.unit-header {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: .75rem;
-  margin-bottom: .3rem;
+
 }
 
 .unit-name {
@@ -125,13 +122,18 @@ function hasChoices(unitName: string): boolean {
 
 .instances-list {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: .5rem;
-  padding-left: .75rem;
+
+  padding-top: 1rem;
   border-left: 2px solid var(--p-surface-border);
 }
 
-.instance-row {
+.instance-item {
+  flex-basis: 32%;
+  flex-shrink: 1;
+
   display: flex;
   flex-direction: column;
   gap: .2rem;
