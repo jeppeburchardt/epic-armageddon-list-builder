@@ -10,14 +10,14 @@ body {
     padding: 0;
     font-family: var(--p-font-family, system-ui, sans-serif);
     font-weight: 400;
-    background-color: var(--p-surface-0);
+    background-color: var(--p-surface-100);
     color: var(--p-text-color);
     min-height: 100dvh;
 }
 
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: var(--p-surface-950);
+        background-color: var(--p-surface-800);
     }
 }
 

@@ -66,6 +66,13 @@ export function deriveFormationUnits(entry: Entry, armyDef: ArmyDef): UnitTypeEn
 }
 
 /**
+ * Returns the base units of an entry, filtered to those with at least one instance.
+ */
+export function deriveBaseUnits(entry: Entry): UnitTypeEntry[] {
+    return entry.baseUnits.filter((u) => u.instances.length > 0)
+}
+
+/**
  * Returns the units contributed by a single applied upgrade,
  * normalised to UnitTypeEntry[].
  *

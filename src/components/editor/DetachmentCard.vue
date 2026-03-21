@@ -1,81 +1,90 @@
 <template>
-  <Card :class="{ warning: transportWarning }">
-    <template #header>
-      <div class="card-header">
-        <div class="card-header-left">
-          <Tag :value="detachmentDef?.group ?? ''" severity="secondary" class="group-tag" />
-          <span class="det-name">{{ entry.detachmentName }}</span>
-        </div>
-        <div class="card-header-right">
+  <Card :class="{ warning: transportWarning  }">
+    <template #content>
+      <div class="entry">
+        <div class="info">
+          <h3 class="name">{{ entry.detachmentName }}</h3>
           <PointsBadge :used="entryPoints" />
+          <Button
+            v-if="availableUpgradesCount > 0"
+            label="Add Upgrade"
+            icon="pi pi-plus"
+            severity="primary"
+            @click="showUpgradePicker = true"
+            fluid
+          />
           <Button
             icon="pi pi-trash"
             severity="danger"
-            text
-            rounded
-            size="small"
-            aria-label="Remove detachment"
+            label="Remove"
+            variant="outlined"
             @click="emit('remove')"
+            fluid
           />
+          <div class="instance" v-for="unit in deriveFormationUnits(entry, armyDef)">
+            <span class="amount">
+              {{unit.instances.length}}
+            </span>
+            <span class="name">
+              {{ unit.unitName }}
+            </span>
+          </div>
+        </div>
+        <div class="upgrades">
+          <Accordion>
+            <AccordionPanel value="0">
+              <AccordionHeader>Base units 
+                <Tag severity="secondary" v-for="unit in deriveBaseUnits(entry)">
+                  {{unit.instances.length}}x{{ unit.unitName }}
+                </Tag>
+              </AccordionHeader>
+              <AccordionContent>
+                <BaseUnitsPanel
+                  :base-units="entry.baseUnits"
+                  :detachment-name="entry.detachmentName"
+                  :army-def="armyDef"
+                  @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
+                  @weapon-change="(unitName, instIdx, slotIdx, weapon) => emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)"
+                />
+              </AccordionContent>
+            </AccordionPanel>
+            <AccordionPanel :value="upgrade.upgradeName"  v-for="upgrade in entry.appliedUpgrades" :key="upgrade.upgradeName" :class="{warning:isTransportUpgrade(upgrade.upgradeName) && !!transportWarning}">
+              <AccordionHeader>
+                <span class="tag-list">
+                  {{ upgrade.upgradeName }}
+                  <Tag severity="secondary" v-for="unit in deriveUpgradeUnits(upgrade)">
+                    {{unit.instances.length}}x{{ unit.unitName }}
+                  </Tag>
+                </span>
+                <Button
+                    icon="pi pi-times"
+                    severity="danger"
+                    text
+                    size="small"
+                    rounded
+                    aria-label="Remove upgrade"
+                    @click="emit('remove-upgrade', upgrade.upgradeName)"
+                  />
+              </AccordionHeader>
+              <AccordionContent>
+                <AppliedUpgradePanel
+                  :upgrade="upgrade"
+                  :army-def="armyDef"
+                  @remove="emit('remove-upgrade', upgrade.upgradeName)"
+                  @replace-count-change="(count) => emit('replace-count-change', upgrade.upgradeName, count)"
+                  @add-count-change="(unitName, count) => emit('add-count-change', upgrade.upgradeName, unitName, count)"
+                  @weapon-change="(_upgName, unitName, instIdx, slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)"
+                  @update-character="(charName) => emit('update-character', upgrade.upgradeName, charName)"
+                />
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>      
         </div>
       </div>
-    </template>
 
-    <template #content>
-      <Accordion>
-         <AccordionPanel value="0">
-          <AccordionHeader>{{ entry.detachmentName }}</AccordionHeader>
-          <AccordionContent>
-            <BaseUnitsPanel
-              :base-units="entry.baseUnits"
-              :detachment-name="entry.detachmentName"
-              :army-def="armyDef"
-              @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
-              @weapon-change="(unitName, instIdx, slotIdx, weapon) => emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)"
-            />
-          </AccordionContent>
-        </AccordionPanel>
-        <AccordionPanel :value="upgrade.upgradeName"  v-for="upgrade in entry.appliedUpgrades" :key="upgrade.upgradeName" :class="{warning:isTransportUpgrade(upgrade.upgradeName) && !!transportWarning}">
-          <AccordionHeader>
-            <span class="tag-list">
-              {{ upgrade.upgradeName }}:
-              <Tag severity="secondary" v-for="unit in deriveUpgradeUnits(upgrade)">
-                {{unit.instances.length}}x{{ unit.unitName }}
-              </Tag>
-            </span>
-             <Button
-                icon="pi pi-times"
-                severity="danger"
-                text
-                size="small"
-                rounded
-                aria-label="Remove upgrade"
-                @click="emit('remove-upgrade', upgrade.upgradeName)"
-              />
-          </AccordionHeader>
-          <AccordionContent>
-            <AppliedUpgradePanel
-              :upgrade="upgrade"
-              :army-def="armyDef"
-              @remove="emit('remove-upgrade', upgrade.upgradeName)"
-              @replace-count-change="(count) => emit('replace-count-change', upgrade.upgradeName, count)"
-              @add-count-change="(unitName, count) => emit('add-count-change', upgrade.upgradeName, unitName, count)"
-              @weapon-change="(_upgName, unitName, instIdx, slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)"
-              @update-character="(charName) => emit('update-character', upgrade.upgradeName, charName)"
-            />
-          </AccordionContent>
-        </AccordionPanel>
-      </Accordion>
     </template>
     <template #footer>
-      <Button
-        v-if="availableUpgradesCount > 0"
-        label="Add Upgrade"
-        icon="pi pi-plus"
-        size="small"
-        severity="secondary"
-        @click="showUpgradePicker = true"
-      />
+      
     </template>
   </Card>
 
@@ -104,7 +113,7 @@ import UpgradePickerDialog from './UpgradePickerDialog.vue'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 import type { Entry } from '@/entities/list'
 import { calculateEntryPoints } from '@/entities/points'
-import { deriveUpgradeUnits } from '@/entities/composition'
+import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
 
 const props = defineProps<{
@@ -150,12 +159,39 @@ function isTransportUpgrade(upgradeName: string): boolean {
 </script>
 
 <style scoped>
-.card-header {
+
+.entry {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: .5rem .75rem;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.info {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: .5rem;
+}
+
+.name {
+  margin: 0;
+}
+
+.upgrades {
+  flex: 1 2 auto;
+}
+
+.instance {
+  /* TODO */
+}
+.amount {
+  /* TODO */
+}
+.name {
+  /* TODO */
 }
 
 .tag-list {
@@ -191,63 +227,5 @@ function isTransportUpgrade(upgradeName: string): boolean {
   flex-shrink: 0;
 }
 
-.transport-tag {
-  font-size: .75rem;
-  margin-bottom: .5rem;
-}
 
-.composition-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-  cursor: pointer;
-  align-items: center;
-}
-
-.composition-chip {
-  background: var(--p-surface-100);
-  border-radius: 1rem;
-  padding: .15rem .6rem;
-  font-size: .8rem;
-}
-
-.expand-hint {
-  font-size: .75rem;
-  color: var(--p-text-muted-color);
-  margin-left: auto;
-}
-
-.edit-body {
-  display: flex;
-  flex-direction: column;
-  gap: .75rem;
-}
-
-.section-title {
-  margin: 0 0 .5rem;
-  font-size: .85rem;
-  font-weight: 600;
-  color: var(--p-text-muted-color);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-.section {
-  display: flex;
-  flex-direction: column;
-}
-
-.upgrades-list {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-}
-
-.add-upgrade-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: .5rem;
-  margin-top: .25rem;
-}
 </style>

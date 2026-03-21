@@ -171,6 +171,7 @@ const showAddDetachment = ref(false)
 .entries-list {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .fab-area {
