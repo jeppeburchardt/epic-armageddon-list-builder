@@ -85,6 +85,11 @@ export type UpgradeDef =
         adds: AddSpec[]
         /** True if the added units are transports and should trigger transport capacity warnings */
         transportWarning?: boolean
+        /**
+         * Optional cap on the total number of units that can be added across all AddSpecs.
+         * When specified, the combined count of all added unit types must not exceed this value.
+         */
+        maxTotal?: number
     }
     | {
         name: string
