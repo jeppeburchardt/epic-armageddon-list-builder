@@ -90,15 +90,16 @@
         {
             "name": "Support Tank",
             "type": "add",
+            "maxTotal": 2,
             "adds": [
                 {
                     "unitName": "Vindicator",
-                    "min": 1,
+                    "min": 0,
                     "max": 2
                 },
                 {
                     "unitName": "Predator",
-                    "min": 1,
+                    "min": 0,
                     "max": 2
                 }
             ]

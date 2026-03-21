@@ -155,7 +155,14 @@ function getAddMin(unitName: string): number {
 function getAddMax(unitName: string): number {
   const def = upgradeDef.value
   if (!def || def.type !== 'add') return 10
-  return def.adds.find((a) => a.unitName === unitName)?.max ?? 10
+  const specMax = def.adds.find((a) => a.unitName === unitName)?.max ?? 10
+  if (def.maxTotal === undefined) return specMax
+  const upgrade = props.upgrade
+  if (upgrade.type !== 'add') return specMax
+  const otherUnitsTotal = upgrade.addedUnits
+    .filter((u) => u.unitName !== unitName)
+    .reduce((sum, u) => sum + u.instances.length, 0)
+  return Math.min(specMax, Math.max(0, def.maxTotal - otherUnitsTotal))
 }
 
 function getWeaponSlots(unitName: string) {

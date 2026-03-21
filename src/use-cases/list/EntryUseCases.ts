@@ -268,17 +268,32 @@ export function updateAddUpgradeUnitCount(
                 ...entry,
                 appliedUpgrades: entry.appliedUpgrades.map((upgrade) => {
                     if (upgrade.upgradeName !== upgradeName || upgrade.type !== 'add') return upgrade
+
+                    // Enforce maxTotal: clamp newCount so the total across all AddSpecs stays within maxTotal
+                    const upgradeDef = armyDef.upgrades.find((u) => u.name === upgradeName)
+                    let clampedCount = newCount
+                    if (upgradeDef && upgradeDef.type === 'add' && upgradeDef.maxTotal !== undefined) {
+                        const addSpec = upgradeDef.adds.find((a) => a.unitName === unitName)
+                        const otherUnitsTotal = upgrade.addedUnits
+                            .filter((u) => u.unitName !== unitName)
+                            .reduce((sum, u) => sum + u.instances.length, 0)
+                        const remaining = Math.max(0, upgradeDef.maxTotal - otherUnitsTotal)
+                        const specMax = addSpec?.max ?? upgradeDef.maxTotal
+                        clampedCount = Math.min(newCount, remaining, specMax)
+                        clampedCount = Math.max(clampedCount, addSpec?.min ?? 0)
+                    }
+
                     return {
                         ...upgrade,
                         addedUnits: upgrade.addedUnits.map((ute) => {
                             if (ute.unitName !== unitName) return ute
                             const currentCount = ute.instances.length
-                            if (newCount === currentCount) return ute
-                            if (newCount > currentCount) {
-                                const extra = makeInstances(unitName, newCount - currentCount, armyDef)
+                            if (clampedCount === currentCount) return ute
+                            if (clampedCount > currentCount) {
+                                const extra = makeInstances(unitName, clampedCount - currentCount, armyDef)
                                 return { ...ute, instances: [...ute.instances, ...extra] }
                             }
-                            return { ...ute, instances: ute.instances.slice(0, newCount) }
+                            return { ...ute, instances: ute.instances.slice(0, clampedCount) }
                         }),
                     }
                 }),
