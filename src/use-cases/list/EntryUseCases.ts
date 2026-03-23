@@ -328,7 +328,7 @@ export function updateCharacterUpgrade(
 
 // ─── Weapon selections ────────────────────────────────────────────────────────
 
-export type WeaponSelectionSource = 'base' | string // 'base' or upgradeName
+export type WeaponSelectionSource = string // 'base' or upgradeName
 
 export function updateUnitWeaponSelection(
     repo: ListRepository,

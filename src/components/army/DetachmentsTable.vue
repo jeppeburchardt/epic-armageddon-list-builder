@@ -42,11 +42,7 @@ function describeUnits(det: DetachmentDef): string {
 
 function describeRestrictions(det: DetachmentDef): string {
   return det.restrictions
-    .map((r) => {
-      if (r.type === 'max_per_list') return `Max ${r.value} per list`
-      return ''
-    })
-    .filter(Boolean)
+    .map((r) => `Max ${r.value} per list`)
     .join('; ')
 }
 </script>

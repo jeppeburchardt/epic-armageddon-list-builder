@@ -1,14 +1,13 @@
 import { computed, ref, type InjectionKey } from 'vue'
 import { services } from '@/bootstrap'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
-import type { ArmyList } from '@/entities/list'
 import { calculateListPoints } from '@/entities/points'
 import { validateList } from '@/entities/validation'
 import type { AddUpgradeQuantities, WeaponSelectionSource } from '@/use-cases/list/EntryUseCases'
 
 export function useListEditor(listId: string) {
     // Reactive snapshot of the list
-    const list = ref<ArmyList | undefined>(services.getList(listId))
+    const list = ref(services.getList(listId))
 
     function refresh() {
         list.value = services.getList(listId)

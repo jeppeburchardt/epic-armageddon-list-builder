@@ -62,7 +62,7 @@ function getArmyDef(slug: string) {
 
 function handleCreate(name: string, pointsLimit: number, armySlug: string): void {
   const list = createList({ name, pointsLimit, armySlug })
-  router.push({ name: 'list-edit', params: { id: list.id } })
+  void router.push({ name: 'list-edit', params: { id: list.id } })
 }
 
 function confirmDelete(id: string) {
@@ -70,7 +70,7 @@ function confirmDelete(id: string) {
     message: 'Delete this army list? This cannot be undone.',
     header: 'Delete List',
     icon: 'pi pi-exclamation-triangle',
-    accept: () => deleteList(id),
+    accept: () => { deleteList(id) },
   })
 }
 </script>

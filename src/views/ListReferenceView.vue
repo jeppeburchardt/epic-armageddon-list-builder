@@ -70,7 +70,9 @@ import { listEditorKey } from '@/composables/useListEditor'
 defineProps<{ id: string }>()
 const router = useRouter()
 
-const { armyDef } = inject(listEditorKey)!
+const injected = inject(listEditorKey)
+if (!injected) throw new Error('listEditorKey not provided')
+const { armyDef } = injected
 </script>
 
 <style scoped>

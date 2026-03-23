@@ -9,9 +9,9 @@
       <Button
           label="Add Detachment"
           icon="pi pi-plus"
-          @click="showAddDetachment = true"
           severity="primary"
           fluid
+          @click="showAddDetachment = true"
         />
     </Teleport>
 
@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Teleport, inject } from 'vue'
+import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
@@ -65,6 +65,8 @@ import { listEditorKey } from '@/composables/useListEditor'
 defineProps<{ id: string }>()
 const router = useRouter()
 
+const injected = inject(listEditorKey)
+if (!injected) throw new Error('listEditorKey not provided')
 const {
   list,
   armyDef,
@@ -78,7 +80,7 @@ const {
   updateAddUpgradeUnitCount,
   updateWeaponSelection,
   updateCharacterUpgrade,
-} = inject(listEditorKey)!
+} = injected
 
 const showAddDetachment = ref(false)
 </script>

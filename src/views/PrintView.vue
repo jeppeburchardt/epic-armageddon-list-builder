@@ -1,12 +1,12 @@
 <template>
   <div v-if="!list || !armyDef" class="not-found">
     <p>List not found.</p>
-    <Button label="Back" @click="router.push('/')" class="no-print" />
+    <Button label="Back" class="no-print" @click="router.push('/')" />
   </div>
 
   <div v-else>
     <Teleport to="#list-header-cta">
-      <Button label="Print" icon="pi pi-print" @click="window.print()" fluid />
+      <Button label="Print" icon="pi pi-print" fluid @click="window.print()" />
     </Teleport>
 
     <!-- Print header (visible on print) -->
@@ -60,7 +60,9 @@ defineProps<{ id: string }>()
 const router = useRouter()
 const window = globalThis.window
 
-const { list, armyDef, totalPoints, validationResults } = inject(listEditorKey)!
+const injected = inject(listEditorKey)
+if (!injected) throw new Error('listEditorKey not provided')
+const { list, armyDef, totalPoints, validationResults } = injected
 </script>
 
 <style scoped>

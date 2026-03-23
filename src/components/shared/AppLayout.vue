@@ -25,8 +25,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 .app-layout {
@@ -43,7 +42,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .header-inner {
@@ -60,7 +59,7 @@
   font-weight: 700;
   color: inherit;
   text-decoration: none;
-  letter-spacing: .02em;
+  letter-spacing: 0.02em;
 }
 
 .header-nav {
@@ -71,8 +70,8 @@
 .header-nav a {
   color: inherit;
   text-decoration: none;
-  opacity: .85;
-  font-size: .9rem;
+  opacity: 0.85;
+  font-size: 0.9rem;
 }
 
 .header-nav a:hover,
@@ -114,11 +113,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .2rem;
-  font-size: .7rem;
+  gap: 0.2rem;
+  font-size: 0.7rem;
   text-decoration: none;
   color: var(--p-text-muted-color);
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
 }
 
 .bottom-nav-item.router-link-active {
@@ -139,7 +138,11 @@
 }
 
 @media (min-width: 768px) {
-  .desktop-only { display: flex; }
-  .mobile-only { display: none; }
+  .desktop-only {
+    display: flex;
+  }
+  .mobile-only {
+    display: none;
+  }
 }
 </style>

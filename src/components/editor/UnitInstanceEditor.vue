@@ -69,8 +69,7 @@ function currentChoice(choiceSlotIdx: number): string {
   const realIdx = choiceSlots.value[choiceSlotIdx].realIndex
   return (
     props.instance.weaponSelections.find((s) => s.slotIndex === realIdx)?.chosenWeaponName ??
-    choiceSlots.value[choiceSlotIdx].choices[0]?.weaponName ??
-    ''
+    choiceSlots.value[choiceSlotIdx].choices[0].weaponName
   )
 }
 </script>

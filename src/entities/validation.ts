@@ -1,7 +1,7 @@
 import type { ArmyDef } from './army'
 import type { ArmyList, Entry } from './list'
 import { deriveFormationUnits } from './composition'
-import { calculateGroupPoints, calculateListPoints } from './points'
+import { calculateGroupPoints } from './points'
 
 export interface ValidationResult {
     type: 'warning' | 'error'
@@ -16,22 +16,15 @@ export function validateArmyRestrictions(
     armyDef: ArmyDef,
 ): ValidationResult[] {
     const results: ValidationResult[] = []
-    const totalPoints = calculateListPoints(list, armyDef)
 
     for (const restriction of armyDef.restrictions) {
-        if (restriction.type === 'max_group_percentage') {
-            const groupPoints = calculateGroupPoints(list.entries, restriction.group, armyDef)
-            const threshold = list.pointsLimit * (restriction.maxPercentage / 100)
-            if (groupPoints > threshold) {
-                results.push({
-                    type: 'warning',
-                    message: `${restriction.group} detachments cost ${groupPoints}pts — max ${restriction.maxPercentage}% of ${list.pointsLimit}pts (${threshold}pts).`,
-                })
-            }
-            // Also warn if they exceed against actual spent points (secondary check)
-            if (totalPoints > 0 && groupPoints / totalPoints > restriction.maxPercentage / 100) {
-                // Only add if not already added (threshold check above is the canonical one)
-            }
+        const groupPoints = calculateGroupPoints(list.entries, restriction.group, armyDef)
+        const threshold = list.pointsLimit * (restriction.maxPercentage / 100)
+        if (groupPoints > threshold) {
+            results.push({
+                type: 'warning',
+                message: `${restriction.group} detachments cost ${groupPoints}pts — max ${restriction.maxPercentage}% of ${list.pointsLimit}pts (${threshold}pts).`,
+            })
         }
     }
 
@@ -73,7 +66,7 @@ export function validateTransportCapacity(
     for (const ute of formation) {
         const unitDef = armyDef.units.find((u) => u.name === ute.unitName)
         if (!unitDef?.transportation?.type || unitDef.transportation.cost === undefined) continue
-        
+
         const type = unitDef.transportation.type
         const cost = unitDef.transportation.cost
         const existing = costByType.get(type) ?? 0
@@ -87,21 +80,21 @@ export function validateTransportCapacity(
     // (if capacity exceeds cost by one transport unit's worth)
     const capacityByType = new Map<string, number>()
     const minCapacityByType = new Map<string, number>()
-    
+
     for (const upgrade of transportUpgrades) {
         if (upgrade.type !== 'add') continue
         for (const ute of upgrade.addedUnits) {
             const transportDef = armyDef.units.find((u) => u.name === ute.unitName)
             if (!transportDef?.transportation?.capacity || !transportDef.transportation.capabilities) continue
-            
+
             const capacity = transportDef.transportation.capacity
             const capabilities = transportDef.transportation.capabilities
-            
+
             // Add capacity for each type this transport can carry
             for (const type of capabilities) {
                 const existing = capacityByType.get(type) ?? 0
                 capacityByType.set(type, existing + capacity * ute.instances.length)
-                
+
                 // Track minimum capacity for this type
                 const currentMin = minCapacityByType.get(type) ?? Infinity
                 minCapacityByType.set(type, Math.min(currentMin, capacity))
@@ -113,7 +106,7 @@ export function validateTransportCapacity(
     const messages: string[] = []
     for (const [type, cost] of costByType) {
         const capacity = capacityByType.get(type) ?? 0
-        
+
         // Warning 1: Insufficient capacity
         if (capacity < cost) {
             messages.push(

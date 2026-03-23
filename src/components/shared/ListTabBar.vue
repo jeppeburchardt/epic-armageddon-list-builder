@@ -45,14 +45,16 @@ const route = useRoute()
 .tab-item {
   display: flex;
   align-items: center;
-  gap: .4rem;
-  padding: .6rem 1.25rem;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
   text-decoration: none;
   color: var(--p-text-muted-color);
-  font-size: .875rem;
+  font-size: 0.875rem;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: color .15s, border-color .15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
   white-space: nowrap;
 }
 
@@ -67,6 +69,6 @@ const route = useRoute()
 }
 
 .tab-item .pi {
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 </style>

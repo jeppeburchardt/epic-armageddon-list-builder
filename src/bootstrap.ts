@@ -19,7 +19,7 @@ export const services = {
         ListUseCases.createList(listRepo, input),
     updateList: (id: string, input: ListUseCases.UpdateListInput) =>
         ListUseCases.updateList(listRepo, id, input),
-    deleteList: (id: string) => ListUseCases.deleteList(listRepo, id),
+    deleteList: (id: string) => { ListUseCases.deleteList(listRepo, id) },
 
     // Entries
     addEntry: (listId: string, detachmentName: string, armyDef: import('@/entities/army').ArmyDef) =>

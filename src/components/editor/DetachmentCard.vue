@@ -10,18 +10,18 @@
             label="Add Upgrade"
             icon="pi pi-plus"
             severity="primary"
-            @click="showUpgradePicker = true"
             fluid
+            @click="showUpgradePicker = true"
           />
           <Button
             icon="pi pi-trash"
             severity="danger"
             label="Remove"
             variant="outlined"
-            @click="emit('remove')"
             fluid
+            @click="emit('remove')"
           />
-          <div class="instance" v-for="unit in deriveFormationUnits(entry, armyDef)">
+          <div v-for="unit in deriveFormationUnits(entry, armyDef)" :key="unit.unitName" class="instance">
             <span class="amount">
               {{unit.instances.length}}
             </span>
@@ -34,7 +34,7 @@
           <Accordion v-model:value="activePanel">
             <AccordionPanel value="0">
               <AccordionHeader>Base units 
-                <Tag severity="secondary" v-for="unit in deriveBaseUnits(entry)">
+                <Tag v-for="unit in deriveBaseUnits(entry)" :key="unit.unitName" severity="secondary">
                   {{unit.instances.length}}x{{ unit.unitName }}
                 </Tag>
               </AccordionHeader>
@@ -48,11 +48,11 @@
                 />
               </AccordionContent>
             </AccordionPanel>
-            <AccordionPanel :value="upgrade.upgradeName"  v-for="upgrade in entry.appliedUpgrades" :key="upgrade.upgradeName" :class="{warning:isTransportUpgrade(upgrade.upgradeName) && !!transportWarning}">
+            <AccordionPanel v-for="upgrade in entry.appliedUpgrades"  :key="upgrade.upgradeName" :value="upgrade.upgradeName" :class="{warning:isTransportUpgrade(upgrade.upgradeName) && !!transportWarning}">
               <AccordionHeader>
                 <span class="tag-list">
                   {{ upgrade.upgradeName }}
-                  <Tag severity="secondary" v-for="unit in deriveUpgradeUnits(upgrade)">
+                  <Tag v-for="unit in deriveUpgradeUnits(upgrade)" :key="unit.unitName" severity="secondary">
                     {{unit.instances.length}}x{{ unit.unitName }}
                   </Tag>
                 </span>
@@ -122,14 +122,14 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'remove'): void
-  (e: 'base-count-change', unitName: string, count: number): void
-  (e: 'weapon-change', source: string, unitName: string, instanceIndex: number, slotIndex: number, weapon: string): void
-  (e: 'add-upgrade', upgradeDef: UpgradeDef): void
-  (e: 'remove-upgrade', upgradeName: string): void
-  (e: 'replace-count-change', upgradeName: string, count: number): void
-  (e: 'add-count-change', upgradeName: string, unitName: string, count: number): void
-  (e: 'update-character', upgradeName: string, chosenCharacterName: string | null): void
+  'remove': []
+  'base-count-change': [unitName: string, count: number]
+  'weapon-change': [source: string, unitName: string, instanceIndex: number, slotIndex: number, weapon: string]
+  'add-upgrade': [upgradeDef: UpgradeDef]
+  'remove-upgrade': [upgradeName: string]
+  'replace-count-change': [upgradeName: string, count: number]
+  'add-count-change': [upgradeName: string, unitName: string, count: number]
+  'update-character': [upgradeName: string, chosenCharacterName: string | null]
 }>()
 
 const showUpgradePicker = ref(false)

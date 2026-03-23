@@ -11,8 +11,8 @@
           button-layout="horizontal"
           :step="1"
           class="count-input"
-          @update:model-value="(val: number | null) => val !== null && emit('replace-count-change', val)"
           fluid
+          @update:model-value="(val: number | null) => val !== null && emit('replace-count-change', val)"
         >
           <template #decrementbuttonicon><span class="pi pi-minus" /></template>
           <template #incrementbuttonicon><span class="pi pi-plus" /></template>
@@ -69,8 +69,8 @@
           button-layout="horizontal"
           :step="1"
           class="count-input"
-          @update:model-value="(val: number | null) => val !== null && emit('add-count-change', ute.unitName, val)"
           fluid
+          @update:model-value="(val: number | null) => val !== null && emit('add-count-change', ute.unitName, val)"
           >
             <template #decrementbuttonicon><span class="pi pi-minus" /></template>
             <template #incrementbuttonicon><span class="pi pi-plus" /></template>

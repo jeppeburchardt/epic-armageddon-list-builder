@@ -30,8 +30,8 @@
           size="small"
           severity="danger"
           outlined
-          @click="$emit('delete', list.id)"
           aria-label="Delete list"
+          @click="$emit('delete', list.id)"
         />
       </div>
     </template>
@@ -53,9 +53,9 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'edit', id: string): void
-  (e: 'view', id: string): void
-  (e: 'delete', id: string): void
+  'edit': [id: string]
+  'view': [id: string]
+  'delete': [id: string]
 }>()
 
 const usedPoints = computed(() => {

@@ -33,10 +33,10 @@
                     <Tag
                       v-for="rule in unitSpecialRules(ute.unitName)"
                       :key="rule.title"
+                      v-tooltip="rule.paragraphs.join(' ') || undefined"
                       :value="rule.title"
                       severity="secondary"
                       class="unit-rule-tag"
-                      v-tooltip="rule.paragraphs.join(' ') || undefined"
                     />
                   </div>
                 </td>
@@ -63,10 +63,10 @@
                       <Tag
                         v-for="rule in unitSpecialRules(ute.unitName)"
                         :key="rule.title"
+                        v-tooltip="rule.paragraphs.join(' ') || undefined"
                         :value="rule.title"
                         severity="secondary"
                         class="unit-rule-tag"
-                        v-tooltip="rule.paragraphs.join(' ') || undefined"
                       />
                     </div>
                   </td>
@@ -158,7 +158,7 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
     }
     const sel = instance.weaponSelections.find((s) => s.slotIndex === idx)
     const chosen = slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
-    return { label: chosen?.weaponName ?? '—', range: chosen?.range ?? '—', firepower: chosen?.firepower ?? '—' }
+    return { label: chosen.weaponName, range: chosen.range, firepower: chosen.firepower }
   })
 }
 </script>
