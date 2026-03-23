@@ -1,3 +1,13 @@
+<script setup lang="ts">
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import type { SpecialRuleDef } from '@/entities/army'
+
+defineProps<{
+  rules: SpecialRuleDef[]
+}>()
+</script>
+
 <template>
   <DataTable :value="rules" striped-rows size="small">
     <Column field="title" header="Rule" style="min-width: 160px" />
@@ -8,13 +18,3 @@
     </Column>
   </DataTable>
 </template>
-
-<script setup lang="ts">
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import type { SpecialRuleDef } from '@/entities/army'
-
-defineProps<{
-  rules: SpecialRuleDef[]
-}>()
-</script>

@@ -1,42 +1,3 @@
-<template>
-  <Dialog
-    v-model:visible="visible"
-    modal
-    header="Add Detachment"
-    :style="{ width: '95vw', maxWidth: '520px' }"
-    :draggable="false"
-  >
-    <div v-if="detachmentOptions.length === 0" class="empty">
-      No detachments defined for this army.
-    </div>
-
-    <div v-else class="det-list">
-      <div
-        v-for="det in detachmentOptions"
-        :key="det.name"
-        class="det-option"
-        :class="{ selected: selectedDetachment === det.name }"
-        @click="selectedDetachment = det.name"
-      >
-        <div class="det-header">
-          <span class="det-name">{{ det.name }}</span>
-          <Tag :value="det.group" severity="secondary" class="group-tag" />
-        </div>
-        <p class="det-units">{{ describeUnits(det) }}</p>
-      </div>
-    </div>
-
-    <template #footer>
-      <Button label="Cancel" severity="secondary" @click="close" />
-      <Button
-        label="Add"
-        :disabled="!selectedDetachment"
-        @click="confirm"
-      />
-    </template>
-  </Dialog>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
@@ -77,6 +38,45 @@ function confirm() {
   close()
 }
 </script>
+
+<template>
+  <Dialog
+    v-model:visible="visible"
+    modal
+    header="Add Detachment"
+    :style="{ width: '95vw', maxWidth: '520px' }"
+    :draggable="false"
+  >
+    <div v-if="detachmentOptions.length === 0" class="empty">
+      No detachments defined for this army.
+    </div>
+
+    <div v-else class="det-list">
+      <div
+        v-for="det in detachmentOptions"
+        :key="det.name"
+        class="det-option"
+        :class="{ selected: selectedDetachment === det.name }"
+        @click="selectedDetachment = det.name"
+      >
+        <div class="det-header">
+          <span class="det-name">{{ det.name }}</span>
+          <Tag :value="det.group" severity="secondary" class="group-tag" />
+        </div>
+        <p class="det-units">{{ describeUnits(det) }}</p>
+      </div>
+    </div>
+
+    <template #footer>
+      <Button label="Cancel" severity="secondary" @click="close" />
+      <Button
+        label="Add"
+        :disabled="!selectedDetachment"
+        @click="confirm"
+      />
+    </template>
+  </Dialog>
+</template>
 
 <style scoped>
 .det-list {

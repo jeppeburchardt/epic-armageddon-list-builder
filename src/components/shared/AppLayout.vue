@@ -1,3 +1,5 @@
+<script setup lang="ts"></script>
+
 <template>
   <div class="app-layout">
     <!-- Top nav bar -->
@@ -24,8 +26,6 @@
     </nav>
   </div>
 </template>
-
-<script setup lang="ts"></script>
 
 <style scoped>
 .app-layout {

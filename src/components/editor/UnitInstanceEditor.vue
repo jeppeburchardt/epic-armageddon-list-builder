@@ -1,23 +1,3 @@
-<template>
-  <div class="unit-instance-editor">
-    <div
-      v-for="(slot, slotIdx) in choiceSlots"
-      :key="slotIdx"
-      class="weapon-slot"
-    >
-      <Select
-        :placeholder="slotLabel(slot, slotIdx)"
-        :model-value="currentChoice(slotIdx)"
-        :options="slot.choices"
-        option-label="label"
-        option-value="weaponName"
-        class="weapon-select"
-        @update:model-value="(val: string) => emit('weapon-change', realSlotIndex(slotIdx), val)"
-      />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import Select from 'primevue/select'
@@ -73,6 +53,26 @@ function currentChoice(choiceSlotIdx: number): string {
   )
 }
 </script>
+
+<template>
+  <div class="unit-instance-editor">
+    <div
+      v-for="(slot, slotIdx) in choiceSlots"
+      :key="slotIdx"
+      class="weapon-slot"
+    >
+      <Select
+        :placeholder="slotLabel(slot, slotIdx)"
+        :model-value="currentChoice(slotIdx)"
+        :options="slot.choices"
+        option-label="label"
+        option-value="weaponName"
+        class="weapon-select"
+        @update:model-value="(val: string) => emit('weapon-change', realSlotIndex(slotIdx), val)"
+      />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .unit-instance-editor {

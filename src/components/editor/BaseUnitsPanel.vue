@@ -1,48 +1,3 @@
-<template>
-  <div class="base-units-panel">
-    <div v-for="ute in baseUnits" :key="ute.unitName" class="unit-type-row">
-      <div class="unit-header">
-          <InputNumber
-            v-if="isVariable(ute.unitName)"
-            :model-value="ute.instances.length"
-            :min="getMin(ute.unitName)"
-            :max="getMax(ute.unitName)"
-            show-buttons
-            button-layout="horizontal"
-            :step="1"
-            @update:model-value="(val: number | null) => val !== null && emit('count-change', ute.unitName, val)"
-          >
-            <template #decrementbuttonicon><span class="pi pi-minus" /></template>
-            <template #incrementbuttonicon><span class="pi pi-plus" /></template>
-          </InputNumber>
-          <span v-else>
-            {{ ute.instances.length }}
-          </span>
-          <span class="unit-name">{{ ute.unitName }}</span>
-        </div>
-
-      <!-- Per-instance weapon editors (only for units with choice slots) -->
-      <div
-        v-if="hasChoices(ute.unitName)"
-        class="instances-list"
-      >
-        <div
-          v-for="(inst, instIdx) in ute.instances"
-          :key="instIdx"
-          class="instance-item"
-        >
-          <span class="instance-label">Unit {{ instIdx + 1 }}</span>
-          <UnitInstanceEditor
-            :weapon-slots="getUnitDef(ute.unitName)?.weaponSlots ?? []"
-            :instance="inst"
-            @weapon-change="(slotIdx, weapon) => emit('weapon-change', ute.unitName, instIdx, slotIdx, weapon)"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import InputNumber from 'primevue/inputnumber'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
@@ -57,7 +12,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'count-change', unitName: string, count: number): void
-  (e: 'weapon-change', unitName: string, instanceIndex: number, slotIndex: number, weapon: string): void
+  (
+    e: 'weapon-change',
+    unitName: string,
+    instanceIndex: number,
+    slotIndex: number,
+    weapon: string,
+  ): void
 }>()
 
 function getDetachmentUnit(unitName: string) {
@@ -89,19 +50,60 @@ function hasChoices(unitName: string): boolean {
 }
 </script>
 
+<template>
+  <div class="base-units-panel">
+    <div v-for="ute in baseUnits" :key="ute.unitName" class="unit-type-row">
+      <div class="unit-header">
+        <InputNumber
+          v-if="isVariable(ute.unitName)"
+          :model-value="ute.instances.length"
+          :min="getMin(ute.unitName)"
+          :max="getMax(ute.unitName)"
+          show-buttons
+          button-layout="horizontal"
+          :step="1"
+          @update:model-value="
+            (val: number | null) => val !== null && emit('count-change', ute.unitName, val)
+          "
+        >
+          <template #decrementbuttonicon><span class="pi pi-minus" /></template>
+          <template #incrementbuttonicon><span class="pi pi-plus" /></template>
+        </InputNumber>
+        <span v-else>
+          {{ ute.instances.length }}
+        </span>
+        <span class="unit-name">{{ ute.unitName }}</span>
+      </div>
+
+      <!-- Per-instance weapon editors (only for units with choice slots) -->
+      <div v-if="hasChoices(ute.unitName)" class="instances-list">
+        <div v-for="(inst, instIdx) in ute.instances" :key="instIdx" class="instance-item">
+          <span class="instance-label">Unit {{ instIdx + 1 }}</span>
+          <UnitInstanceEditor
+            :weapon-slots="getUnitDef(ute.unitName)?.weaponSlots ?? []"
+            :instance="inst"
+            @weapon-change="
+              (slotIdx, weapon) => emit('weapon-change', ute.unitName, instIdx, slotIdx, weapon)
+            "
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
 .base-units-panel {
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: 0.75rem;
 }
 
 .unit-header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: .75rem;
-
+  gap: 0.75rem;
 }
 
 .unit-name {
@@ -110,7 +112,7 @@ function hasChoices(unitName: string): boolean {
 }
 
 .unit-fixed-count {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--p-text-muted-color);
   min-width: 2rem;
   text-align: right;
@@ -124,7 +126,7 @@ function hasChoices(unitName: string): boolean {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: .5rem;
+  gap: 0.5rem;
 
   padding-top: 1rem;
   border-left: 2px solid var(--p-surface-border);
@@ -136,11 +138,11 @@ function hasChoices(unitName: string): boolean {
 
   display: flex;
   flex-direction: column;
-  gap: .2rem;
+  gap: 0.2rem;
 }
 
 .instance-label {
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: var(--p-text-muted-color);
 }
 </style>

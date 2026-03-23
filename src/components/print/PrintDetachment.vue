@@ -1,3 +1,77 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import Tag from 'primevue/tag'
+import Tooltip from 'primevue/tooltip'
+import type { ArmyDef, SpecialRuleDef, UnitDef } from '@/entities/army'
+import type { Entry, UnitInstance } from '@/entities/list'
+
+const vTooltip = Tooltip
+import { calculateEntryPoints } from '@/entities/points'
+import { deriveFormationUnits } from '@/entities/composition'
+
+const props = defineProps<{
+  entry: Entry
+  armyDef: ArmyDef
+}>()
+
+const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
+const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
+
+const detGroup = computed(
+  () => props.armyDef.detachments.find((d) => d.name === props.entry.detachmentName)?.group ?? '',
+)
+
+function getUnitDef(unitName: string): UnitDef | undefined {
+  return props.armyDef.units.find((u) => u.name === unitName)
+}
+
+/**
+ * Returns a display UnitDef for the given unit.
+ */
+function displayUnitDef(unitName: string): UnitDef | undefined {
+  const def = getUnitDef(unitName)
+  return def
+}
+
+function unitSpecialRules(unitName: string): SpecialRuleDef[] {
+  const names = displayUnitDef(unitName)?.specialRuleNames ?? []
+  return props.armyDef.unitSpecialRules.filter((r) => names.includes(r.title))
+}
+
+function hasChoices(unitName: string): boolean {
+  return displayUnitDef(unitName)?.weaponSlots.some((s) => s.kind === 'choice') ?? false
+}
+
+interface WeaponRow { label: string; range: string; firepower: string }
+
+function fixedWeaponRows(unitName: string): WeaponRow[] {
+  const def = displayUnitDef(unitName)
+  if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
+  return def.weaponSlots.map((slot) => {
+    if (slot.kind === 'fixed') {
+      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      return { label, range: slot.range, firepower: slot.firepower }
+    }
+    // Should not be reached for non-choice units, but handle gracefully
+    return { label: slot.choices[0]?.weaponName ?? '—', range: slot.choices[0]?.range ?? '—', firepower: slot.choices[0]?.firepower ?? '—' }
+  })
+}
+
+function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow[] {
+  const def = displayUnitDef(unitName)
+  if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
+  return def.weaponSlots.map((slot, idx) => {
+    if (slot.kind === 'fixed') {
+      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      return { label, range: slot.range, firepower: slot.firepower }
+    }
+    const sel = instance.weaponSelections.find((s) => s.slotIndex === idx)
+    const chosen = slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
+    return { label: chosen.weaponName, range: chosen.range, firepower: chosen.firepower }
+  })
+}
+</script>
+
 <template>
   <div class="print-detachment">
     <h3 class="det-title">
@@ -88,80 +162,6 @@
     </table>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import Tag from 'primevue/tag'
-import Tooltip from 'primevue/tooltip'
-import type { ArmyDef, SpecialRuleDef, UnitDef } from '@/entities/army'
-import type { Entry, UnitInstance } from '@/entities/list'
-
-const vTooltip = Tooltip
-import { calculateEntryPoints } from '@/entities/points'
-import { deriveFormationUnits } from '@/entities/composition'
-
-const props = defineProps<{
-  entry: Entry
-  armyDef: ArmyDef
-}>()
-
-const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
-const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
-
-const detGroup = computed(
-  () => props.armyDef.detachments.find((d) => d.name === props.entry.detachmentName)?.group ?? '',
-)
-
-function getUnitDef(unitName: string): UnitDef | undefined {
-  return props.armyDef.units.find((u) => u.name === unitName)
-}
-
-/**
- * Returns a display UnitDef for the given unit.
- */
-function displayUnitDef(unitName: string): UnitDef | undefined {
-  const def = getUnitDef(unitName)
-  return def
-}
-
-function unitSpecialRules(unitName: string): SpecialRuleDef[] {
-  const names = displayUnitDef(unitName)?.specialRuleNames ?? []
-  return props.armyDef.unitSpecialRules.filter((r) => names.includes(r.title))
-}
-
-function hasChoices(unitName: string): boolean {
-  return displayUnitDef(unitName)?.weaponSlots.some((s) => s.kind === 'choice') ?? false
-}
-
-interface WeaponRow { label: string; range: string; firepower: string }
-
-function fixedWeaponRows(unitName: string): WeaponRow[] {
-  const def = displayUnitDef(unitName)
-  if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
-  return def.weaponSlots.map((slot) => {
-    if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
-      return { label, range: slot.range, firepower: slot.firepower }
-    }
-    // Should not be reached for non-choice units, but handle gracefully
-    return { label: slot.choices[0]?.weaponName ?? '—', range: slot.choices[0]?.range ?? '—', firepower: slot.choices[0]?.firepower ?? '—' }
-  })
-}
-
-function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow[] {
-  const def = displayUnitDef(unitName)
-  if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
-  return def.weaponSlots.map((slot, idx) => {
-    if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
-      return { label, range: slot.range, firepower: slot.firepower }
-    }
-    const sel = instance.weaponSelections.find((s) => s.slotIndex === idx)
-    const chosen = slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
-    return { label: chosen.weaponName, range: chosen.range, firepower: chosen.firepower }
-  })
-}
-</script>
 
 <style scoped>
 .print-detachment {

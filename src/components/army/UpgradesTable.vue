@@ -1,19 +1,3 @@
-<template>
-  <DataTable :value="upgrades" striped-rows size="small">
-    <Column field="name" header="Name" />
-    <Column header="Type">
-      <template #body="{ data }">
-        {{ data.type === 'replace' ? 'Replace' : data.type === 'character' ? 'Character' : 'Add' }}
-      </template>
-    </Column>
-    <Column header="Details">
-      <template #body="{ data }">
-        {{ describeUpgrade(data) }}
-      </template>
-    </Column>
-  </DataTable>
-</template>
-
 <script setup lang="ts">
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -33,3 +17,19 @@ function describeUpgrade(u: UpgradeDef): string {
   return u.adds.map((a) => `Add ${a.min}–${a.max}× ${a.unitName}`).join(', ')
 }
 </script>
+
+<template>
+  <DataTable :value="upgrades" striped-rows size="small">
+    <Column field="name" header="Name" />
+    <Column header="Type">
+      <template #body="{ data }">
+        {{ data.type === 'replace' ? 'Replace' : data.type === 'character' ? 'Character' : 'Add' }}
+      </template>
+    </Column>
+    <Column header="Details">
+      <template #body="{ data }">
+        {{ describeUpgrade(data) }}
+      </template>
+    </Column>
+  </DataTable>
+</template>

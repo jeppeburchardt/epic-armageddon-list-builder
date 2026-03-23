@@ -1,3 +1,84 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import InputNumber from 'primevue/inputnumber'
+import Select from 'primevue/select'
+import UnitInstanceEditor from './UnitInstanceEditor.vue'
+import type { ArmyDef } from '@/entities/army'
+import type { AppliedUpgrade } from '@/entities/list'
+
+const props = defineProps<{
+  upgrade: AppliedUpgrade
+  armyDef: ArmyDef
+}>();
+
+const emit = defineEmits<{
+  (e: 'remove'): void
+  (e: 'replace-count-change', count: number): void
+  (e: 'add-count-change', unitName: string, count: number): void
+  (e: 'weapon-change', upgradeName: string, unitName: string, instanceIndex: number, slotIndex: number, weapon: string): void
+  (e: 'update-character', chosenCharacterName: string | null): void
+}>()
+
+/** Narrows the prop to the replace variant for use in templates */
+const replaceUpgrade = computed(() =>
+  props.upgrade.type === 'replace' ? props.upgrade : null,
+)
+
+/** Narrows the prop to the character variant for use in templates */
+const characterUpgrade = computed(() =>
+  props.upgrade.type === 'character' ? props.upgrade : null,
+)
+
+/** Narrows the upgradeDef to the character variant */
+const characterUpgradeDef = computed(() => {
+  const def = upgradeDef.value
+  return def?.type === 'character' ? def : null
+})
+
+const upgradeDef = computed(() =>
+  props.armyDef.upgrades.find((u) => u.name === props.upgrade.upgradeName),
+)
+
+const fromUnitName = computed(() => {
+  const def = upgradeDef.value
+  if (!def || def.type !== 'replace') return ''
+  return def.replaces.fromUnitName
+})
+
+const replaceMax = computed(() => {
+  const def = upgradeDef.value
+  if (!def || def.type !== 'replace') return 0
+  return def.replaces.max
+})
+
+function getAddMin(unitName: string): number {
+  const def = upgradeDef.value
+  if (!def || def.type !== 'add') return 0
+  return def.adds.find((a) => a.unitName === unitName)?.min ?? 0
+}
+
+function getAddMax(unitName: string): number {
+  const def = upgradeDef.value
+  if (!def || def.type !== 'add') return 10
+  const specMax = def.adds.find((a) => a.unitName === unitName)?.max ?? 10
+  if (def.maxTotal === undefined) return specMax
+  const upgrade = props.upgrade
+  if (upgrade.type !== 'add') return specMax
+  const otherUnitsTotal = upgrade.addedUnits
+    .filter((u) => u.unitName !== unitName)
+    .reduce((sum, u) => sum + u.instances.length, 0)
+  return Math.min(specMax, Math.max(0, def.maxTotal - otherUnitsTotal))
+}
+
+function getWeaponSlots(unitName: string) {
+  return props.armyDef.units.find((u) => u.name === unitName)?.weaponSlots ?? []
+}
+
+function hasChoices(unitName: string): boolean {
+  return getWeaponSlots(unitName).some((s) => s.kind === 'choice')
+}
+</script>
+
 <template>
     <!-- Replace upgrade -->
     <div v-if="upgrade.type === 'replace' && replaceUpgrade" class="replace-section">
@@ -92,87 +173,6 @@
       </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import InputNumber from 'primevue/inputnumber'
-import Select from 'primevue/select'
-import UnitInstanceEditor from './UnitInstanceEditor.vue'
-import type { ArmyDef } from '@/entities/army'
-import type { AppliedUpgrade } from '@/entities/list'
-
-const props = defineProps<{
-  upgrade: AppliedUpgrade
-  armyDef: ArmyDef
-}>();
-
-const emit = defineEmits<{
-  (e: 'remove'): void
-  (e: 'replace-count-change', count: number): void
-  (e: 'add-count-change', unitName: string, count: number): void
-  (e: 'weapon-change', upgradeName: string, unitName: string, instanceIndex: number, slotIndex: number, weapon: string): void
-  (e: 'update-character', chosenCharacterName: string | null): void
-}>()
-
-/** Narrows the prop to the replace variant for use in templates */
-const replaceUpgrade = computed(() =>
-  props.upgrade.type === 'replace' ? props.upgrade : null,
-)
-
-/** Narrows the prop to the character variant for use in templates */
-const characterUpgrade = computed(() =>
-  props.upgrade.type === 'character' ? props.upgrade : null,
-)
-
-/** Narrows the upgradeDef to the character variant */
-const characterUpgradeDef = computed(() => {
-  const def = upgradeDef.value
-  return def?.type === 'character' ? def : null
-})
-
-const upgradeDef = computed(() =>
-  props.armyDef.upgrades.find((u) => u.name === props.upgrade.upgradeName),
-)
-
-const fromUnitName = computed(() => {
-  const def = upgradeDef.value
-  if (!def || def.type !== 'replace') return ''
-  return def.replaces.fromUnitName
-})
-
-const replaceMax = computed(() => {
-  const def = upgradeDef.value
-  if (!def || def.type !== 'replace') return 0
-  return def.replaces.max
-})
-
-function getAddMin(unitName: string): number {
-  const def = upgradeDef.value
-  if (!def || def.type !== 'add') return 0
-  return def.adds.find((a) => a.unitName === unitName)?.min ?? 0
-}
-
-function getAddMax(unitName: string): number {
-  const def = upgradeDef.value
-  if (!def || def.type !== 'add') return 10
-  const specMax = def.adds.find((a) => a.unitName === unitName)?.max ?? 10
-  if (def.maxTotal === undefined) return specMax
-  const upgrade = props.upgrade
-  if (upgrade.type !== 'add') return specMax
-  const otherUnitsTotal = upgrade.addedUnits
-    .filter((u) => u.unitName !== unitName)
-    .reduce((sum, u) => sum + u.instances.length, 0)
-  return Math.min(specMax, Math.max(0, def.maxTotal - otherUnitsTotal))
-}
-
-function getWeaponSlots(unitName: string) {
-  return props.armyDef.units.find((u) => u.name === unitName)?.weaponSlots ?? []
-}
-
-function hasChoices(unitName: string): boolean {
-  return getWeaponSlots(unitName).some((s) => s.kind === 'choice')
-}
-</script>
 
 <style scoped>
 .applied-upgrade-panel {

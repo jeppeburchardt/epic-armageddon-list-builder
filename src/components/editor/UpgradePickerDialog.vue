@@ -1,42 +1,3 @@
-<template>
-  <Dialog
-    v-model:visible="visible"
-    modal
-    header="Add Upgrade"
-    :style="{ width: '95vw', maxWidth: '480px' }"
-    :draggable="false"
-  >
-    <div v-if="availableUpgrades.length === 0" class="empty">
-      No upgrades available for this detachment.
-    </div>
-
-    <div v-else class="upgrade-list">
-      <div
-        v-for="upgDef in availableUpgrades"
-        :key="upgDef.name"
-        class="upgrade-option"
-        :class="{ selected: selectedUpgrade?.name === upgDef.name }"
-        @click="selectUpgrade(upgDef)"
-      >
-        <div class="option-header">
-          <span class="option-name">{{ upgDef.name }}</span>
-          <span class="option-type">{{ upgDef.type }}</span>
-        </div>
-        <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
-      </div>
-    </div>
-
-    <template #footer>
-      <Button label="Cancel" severity="secondary" @click="close" />
-      <Button
-        label="Add"
-        :disabled="!selectedUpgrade"
-        @click="confirm"
-      />
-    </template>
-  </Dialog>
-</template>
-
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import Dialog from 'primevue/dialog'
@@ -96,6 +57,45 @@ function confirm() {
   close()
 }
 </script>
+
+<template>
+  <Dialog
+    v-model:visible="visible"
+    modal
+    header="Add Upgrade"
+    :style="{ width: '95vw', maxWidth: '480px' }"
+    :draggable="false"
+  >
+    <div v-if="availableUpgrades.length === 0" class="empty">
+      No upgrades available for this detachment.
+    </div>
+
+    <div v-else class="upgrade-list">
+      <div
+        v-for="upgDef in availableUpgrades"
+        :key="upgDef.name"
+        class="upgrade-option"
+        :class="{ selected: selectedUpgrade?.name === upgDef.name }"
+        @click="selectUpgrade(upgDef)"
+      >
+        <div class="option-header">
+          <span class="option-name">{{ upgDef.name }}</span>
+          <span class="option-type">{{ upgDef.type }}</span>
+        </div>
+        <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
+      </div>
+    </div>
+
+    <template #footer>
+      <Button label="Cancel" severity="secondary" @click="close" />
+      <Button
+        label="Add"
+        :disabled="!selectedUpgrade"
+        @click="confirm"
+      />
+    </template>
+  </Dialog>
+</template>
 
 <style scoped>
 .upgrade-list {

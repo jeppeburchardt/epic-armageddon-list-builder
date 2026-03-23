@@ -1,3 +1,20 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
+import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
+import UpgradesTable from '@/components/army/UpgradesTable.vue'
+import UnitsTable from '@/components/army/UnitsTable.vue'
+import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
+import { useArmies } from '@/composables/useArmies'
+
+const props = defineProps<{ slug: string }>()
+const router = useRouter()
+const { getArmy } = useArmies()
+
+const army = computed(() => getArmy(props.slug))
+</script>
+
 <template>
   <div v-if="!army" class="not-found">
     <p>Army not found: "{{ slug }}"</p>
@@ -67,23 +84,6 @@
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
-import UpgradesTable from '@/components/army/UpgradesTable.vue'
-import UnitsTable from '@/components/army/UnitsTable.vue'
-import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
-import { useArmies } from '@/composables/useArmies'
-
-const props = defineProps<{ slug: string }>()
-const router = useRouter()
-const { getArmy } = useArmies()
-
-const army = computed(() => getArmy(props.slug))
-</script>
 
 <style scoped>
 .army-view {

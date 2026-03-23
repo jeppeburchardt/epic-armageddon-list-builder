@@ -1,3 +1,46 @@
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import Dialog from 'primevue/dialog'
+import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
+import Select from 'primevue/select'
+import Button from 'primevue/button'
+import { useArmies } from '@/composables/useArmies'
+
+const visible = defineModel<boolean>('visible', { default: false })
+
+const emit = defineEmits<{
+  (e: 'submit', name: string, pointsLimit: number, armySlug: string): void
+}>()
+
+const { armies } = useArmies()
+
+const name = ref('')
+const pointsLimit = ref(3000)
+const selectedArmySlug = ref<string | null>(null)
+
+const armyOptions = computed(() =>
+  armies.value.map((a) => ({ label: a.name, value: a.slug })),
+)
+
+const canCreate = computed(
+  () => name.value.trim().length > 0 && pointsLimit.value > 0 && selectedArmySlug.value !== null,
+)
+
+function close() {
+  visible.value = false
+  name.value = ''
+  pointsLimit.value = 3000
+  selectedArmySlug.value = null
+}
+
+function confirm() {
+  if (!canCreate.value || !selectedArmySlug.value) return
+  emit('submit', name.value.trim(), pointsLimit.value, selectedArmySlug.value)
+  close()
+}
+</script>
+
 <template>
   <Dialog
     v-model:visible="visible"
@@ -48,49 +91,6 @@
     </template>
   </Dialog>
 </template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue'
-import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
-import Select from 'primevue/select'
-import Button from 'primevue/button'
-import { useArmies } from '@/composables/useArmies'
-
-const visible = defineModel<boolean>('visible', { default: false })
-
-const emit = defineEmits<{
-  (e: 'submit', name: string, pointsLimit: number, armySlug: string): void
-}>()
-
-const { armies } = useArmies()
-
-const name = ref('')
-const pointsLimit = ref(3000)
-const selectedArmySlug = ref<string | null>(null)
-
-const armyOptions = computed(() =>
-  armies.value.map((a) => ({ label: a.name, value: a.slug })),
-)
-
-const canCreate = computed(
-  () => name.value.trim().length > 0 && pointsLimit.value > 0 && selectedArmySlug.value !== null,
-)
-
-function close() {
-  visible.value = false
-  name.value = ''
-  pointsLimit.value = 3000
-  selectedArmySlug.value = null
-}
-
-function confirm() {
-  if (!canCreate.value || !selectedArmySlug.value) return
-  emit('submit', name.value.trim(), pointsLimit.value, selectedArmySlug.value)
-  close()
-}
-</script>
 
 <style scoped>
 .form {

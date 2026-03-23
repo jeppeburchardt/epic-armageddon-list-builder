@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+
+defineProps<{ listId: string }>()
+
+const route = useRoute()
+</script>
+
 <template>
   <nav class="list-tab-bar no-print">
     <RouterLink
@@ -26,14 +34,6 @@
     </RouterLink>
   </nav>
 </template>
-
-<script setup lang="ts">
-import { useRoute } from 'vue-router'
-
-defineProps<{ listId: string }>()
-
-const route = useRoute()
-</script>
 
 <style scoped>
 .list-tab-bar {

@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import Message from 'primevue/message'
+import type { ValidationResult } from '@/entities/validation'
+
+defineProps<{
+  results: ValidationResult[]
+}>()
+</script>
+
 <template>
   <div v-if="results.length > 0" class="validation-warnings">
     <Message
@@ -10,15 +19,6 @@
     </Message>
   </div>
 </template>
-
-<script setup lang="ts">
-import Message from 'primevue/message'
-import type { ValidationResult } from '@/entities/validation'
-
-defineProps<{
-  results: ValidationResult[]
-}>()
-</script>
 
 <style scoped>
 .validation-warnings {

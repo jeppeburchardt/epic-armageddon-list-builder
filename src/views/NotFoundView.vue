@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+import Button from 'primevue/button'
+</script>
+
 <template>
   <div class="not-found-view">
     <div class="not-found-content">
@@ -8,11 +13,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import Button from 'primevue/button'
-</script>
 
 <style scoped>
 .not-found-view {

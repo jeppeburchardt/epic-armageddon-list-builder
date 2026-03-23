@@ -1,3 +1,46 @@
+<script setup lang="ts">
+import type { UnitDef } from '@/entities/army'
+
+defineProps<{
+  units: UnitDef[]
+}>()
+
+interface WeaponRow {
+  label: string
+  range: string
+  firepower: string
+  isAlternative: boolean
+}
+
+function weaponRows(unit: UnitDef): WeaponRow[] {
+  const rows: WeaponRow[] = []
+  for (const slot of unit.weaponSlots) {
+    if (slot.kind === 'fixed') {
+      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      rows.push({ label, range: slot.range, firepower: slot.firepower, isAlternative: false })
+    } else {
+      slot.choices.forEach((c, i) => {
+        const costSuffix = c.additionalCost > 0 ? ` +${c.additionalCost}pts` : ''
+        rows.push({ label: `${c.weaponName}${costSuffix}`, range: c.range, firepower: c.firepower, isAlternative: i > 0 })
+      })
+    }
+  }
+  return rows.length > 0 ? rows : [{ label: '—', range: '—', firepower: '—', isAlternative: false }]
+}
+
+function describeTransportType(unit: UnitDef): string {
+  if (!unit.transportation?.type) return '—'
+  const cost = unit.transportation.cost ?? 0
+  return `${unit.transportation.type} (${cost})`
+}
+
+function describeCapacity(unit: UnitDef): string {
+  if (!unit.transportation?.capacity || !unit.transportation.capabilities) return '—'
+  const capabilities = unit.transportation.capabilities.join(', ')
+  return `${unit.transportation.capacity} (${capabilities})`
+}
+</script>
+
 <template>
   <div class="units-table-wrapper">
     <table class="units-table">
@@ -53,49 +96,6 @@
     </table>
   </div>
 </template>
-
-<script setup lang="ts">
-import type { UnitDef } from '@/entities/army'
-
-defineProps<{
-  units: UnitDef[]
-}>()
-
-interface WeaponRow {
-  label: string
-  range: string
-  firepower: string
-  isAlternative: boolean
-}
-
-function weaponRows(unit: UnitDef): WeaponRow[] {
-  const rows: WeaponRow[] = []
-  for (const slot of unit.weaponSlots) {
-    if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
-      rows.push({ label, range: slot.range, firepower: slot.firepower, isAlternative: false })
-    } else {
-      slot.choices.forEach((c, i) => {
-        const costSuffix = c.additionalCost > 0 ? ` +${c.additionalCost}pts` : ''
-        rows.push({ label: `${c.weaponName}${costSuffix}`, range: c.range, firepower: c.firepower, isAlternative: i > 0 })
-      })
-    }
-  }
-  return rows.length > 0 ? rows : [{ label: '—', range: '—', firepower: '—', isAlternative: false }]
-}
-
-function describeTransportType(unit: UnitDef): string {
-  if (!unit.transportation?.type) return '—'
-  const cost = unit.transportation.cost ?? 0
-  return `${unit.transportation.type} (${cost})`
-}
-
-function describeCapacity(unit: UnitDef): string {
-  if (!unit.transportation?.capacity || !unit.transportation.capabilities) return '—'
-  const capabilities = unit.transportation.capabilities.join(', ')
-  return `${unit.transportation.capacity} (${capabilities})`
-}
-</script>
 
 <style scoped>
 .units-table-wrapper {

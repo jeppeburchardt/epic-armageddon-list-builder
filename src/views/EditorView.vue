@@ -1,3 +1,35 @@
+<script setup lang="ts">
+import { ref, inject } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
+import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
+import DetachmentCard from '@/components/editor/DetachmentCard.vue'
+import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
+import { listEditorKey } from '@/composables/useListEditor'
+
+defineProps<{ id: string }>()
+const router = useRouter()
+
+const injected = inject(listEditorKey)
+if (!injected) throw new Error('listEditorKey not provided')
+const {
+  list,
+  armyDef,
+  validationResults,
+  addEntry,
+  removeEntry,
+  updateBaseUnitCount,
+  applyUpgrade,
+  removeUpgrade,
+  updateReplaceUpgradeCount,
+  updateAddUpgradeUnitCount,
+  updateWeaponSelection,
+  updateCharacterUpgrade,
+} = injected
+
+const showAddDetachment = ref(false)
+</script>
+
 <template>
   <div v-if="!list || !armyDef" class="not-found">
     <p>List not found.</p>
@@ -52,38 +84,6 @@
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, inject } from 'vue'
-import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
-import DetachmentCard from '@/components/editor/DetachmentCard.vue'
-import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
-import { listEditorKey } from '@/composables/useListEditor'
-
-defineProps<{ id: string }>()
-const router = useRouter()
-
-const injected = inject(listEditorKey)
-if (!injected) throw new Error('listEditorKey not provided')
-const {
-  list,
-  armyDef,
-  validationResults,
-  addEntry,
-  removeEntry,
-  updateBaseUnitCount,
-  applyUpgrade,
-  removeUpgrade,
-  updateReplaceUpgradeCount,
-  updateAddUpgradeUnitCount,
-  updateWeaponSelection,
-  updateCharacterUpgrade,
-} = injected
-
-const showAddDetachment = ref(false)
-</script>
 
 <style scoped>
 .not-found {

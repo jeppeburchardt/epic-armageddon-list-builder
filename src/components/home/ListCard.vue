@@ -1,3 +1,29 @@
+<script setup lang="ts">
+import Card from 'primevue/card'
+import Button from 'primevue/button'
+import PointsBadge from '@/components/shared/PointsBadge.vue'
+import type { ArmyList } from '@/entities/list'
+import type { ArmyDef } from '@/entities/army'
+import { calculateListPoints } from '@/entities/points'
+import { computed } from 'vue'
+
+const props = defineProps<{
+  list: ArmyList
+  armyDef: ArmyDef | undefined
+}>()
+
+defineEmits<{
+  'edit': [id: string]
+  'view': [id: string]
+  'delete': [id: string]
+}>()
+
+const usedPoints = computed(() => {
+  if (!props.armyDef) return 0
+  return calculateListPoints(props.list, props.armyDef)
+})
+</script>
+
 <template>
   <Card class="list-card">
     <template #header>
@@ -37,32 +63,6 @@
     </template>
   </Card>
 </template>
-
-<script setup lang="ts">
-import Card from 'primevue/card'
-import Button from 'primevue/button'
-import PointsBadge from '@/components/shared/PointsBadge.vue'
-import type { ArmyList } from '@/entities/list'
-import type { ArmyDef } from '@/entities/army'
-import { calculateListPoints } from '@/entities/points'
-import { computed } from 'vue'
-
-const props = defineProps<{
-  list: ArmyList
-  armyDef: ArmyDef | undefined
-}>()
-
-defineEmits<{
-  'edit': [id: string]
-  'view': [id: string]
-  'delete': [id: string]
-}>()
-
-const usedPoints = computed(() => {
-  if (!props.armyDef) return 0
-  return calculateListPoints(props.list, props.armyDef)
-})
-</script>
 
 <style scoped>
 .card-header {

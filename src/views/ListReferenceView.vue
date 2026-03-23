@@ -1,3 +1,21 @@
+<script setup lang="ts">
+import { inject } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
+import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
+import UpgradesTable from '@/components/army/UpgradesTable.vue'
+import UnitsTable from '@/components/army/UnitsTable.vue'
+import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
+import { listEditorKey } from '@/composables/useListEditor'
+
+defineProps<{ id: string }>()
+const router = useRouter()
+
+const injected = inject(listEditorKey)
+if (!injected) throw new Error('listEditorKey not provided')
+const { armyDef } = injected
+</script>
+
 <template>
   <div v-if="!armyDef" class="not-found">
     <p>Army reference not found.</p>
@@ -56,24 +74,6 @@
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-import { inject } from 'vue'
-import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
-import UpgradesTable from '@/components/army/UpgradesTable.vue'
-import UnitsTable from '@/components/army/UnitsTable.vue'
-import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
-import { listEditorKey } from '@/composables/useListEditor'
-
-defineProps<{ id: string }>()
-const router = useRouter()
-
-const injected = inject(listEditorKey)
-if (!injected) throw new Error('listEditorKey not provided')
-const { armyDef } = injected
-</script>
 
 <style scoped>
 .reference-view {

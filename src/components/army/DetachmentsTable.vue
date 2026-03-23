@@ -1,27 +1,3 @@
-<template>
-  <div class="army-table-section">
-    <DataTable :value="detachments" striped-rows size="small">
-      <Column field="name" header="Name" />
-      <Column field="group" header="Group" />
-      <Column header="Units">
-        <template #body="{ data }">
-          {{ describeUnits(data) }}
-        </template>
-      </Column>
-      <Column header="Upgrades">
-        <template #body="{ data }">
-          {{ data.availableUpgrades.join(', ') }}
-        </template>
-      </Column>
-      <Column header="Restrictions">
-        <template #body="{ data }">
-          {{ describeRestrictions(data) }}
-        </template>
-      </Column>
-    </DataTable>
-  </div>
-</template>
-
 <script setup lang="ts">
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -46,3 +22,27 @@ function describeRestrictions(det: DetachmentDef): string {
     .join('; ')
 }
 </script>
+
+<template>
+  <div class="army-table-section">
+    <DataTable :value="detachments" striped-rows size="small">
+      <Column field="name" header="Name" />
+      <Column field="group" header="Group" />
+      <Column header="Units">
+        <template #body="{ data }">
+          {{ describeUnits(data) }}
+        </template>
+      </Column>
+      <Column header="Upgrades">
+        <template #body="{ data }">
+          {{ data.availableUpgrades.join(', ') }}
+        </template>
+      </Column>
+      <Column header="Restrictions">
+        <template #body="{ data }">
+          {{ describeRestrictions(data) }}
+        </template>
+      </Column>
+    </DataTable>
+  </div>
+</template>

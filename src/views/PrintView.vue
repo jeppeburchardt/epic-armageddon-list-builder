@@ -1,3 +1,20 @@
+<script setup lang="ts">
+import { inject } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
+import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
+import PrintDetachment from '@/components/print/PrintDetachment.vue'
+import { listEditorKey } from '@/composables/useListEditor'
+
+defineProps<{ id: string }>()
+const router = useRouter()
+const window = globalThis.window
+
+const injected = inject(listEditorKey)
+if (!injected) throw new Error('listEditorKey not provided')
+const { list, armyDef, totalPoints, validationResults } = injected
+</script>
+
 <template>
   <div v-if="!list || !armyDef" class="not-found">
     <p>List not found.</p>
@@ -47,23 +64,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { inject } from 'vue'
-import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
-import PrintDetachment from '@/components/print/PrintDetachment.vue'
-import { listEditorKey } from '@/composables/useListEditor'
-
-defineProps<{ id: string }>()
-const router = useRouter()
-const window = globalThis.window
-
-const injected = inject(listEditorKey)
-if (!injected) throw new Error('listEditorKey not provided')
-const { list, armyDef, totalPoints, validationResults } = injected
-</script>
 
 <style scoped>
 .print-view {

@@ -1,3 +1,39 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
+import ConfirmDialog from 'primevue/confirmdialog'
+import { useConfirm } from 'primevue/useconfirm'
+import { useLists } from '@/composables/useLists'
+import { useArmies } from '@/composables/useArmies'
+import ListCard from '@/components/home/ListCard.vue'
+import CreateListDialog from '@/components/home/CreateListDialog.vue'
+
+const router = useRouter()
+const { lists, createList, deleteList } = useLists()
+const { getArmy } = useArmies()
+const confirm = useConfirm()
+const showCreateDialog = ref(false)
+
+function getArmyDef(slug: string) {
+  return getArmy(slug)
+}
+
+function handleCreate(name: string, pointsLimit: number, armySlug: string): void {
+  const list = createList({ name, pointsLimit, armySlug })
+  void router.push({ name: 'list-edit', params: { id: list.id } })
+}
+
+function confirmDelete(id: string) {
+  confirm.require({
+    message: 'Delete this army list? This cannot be undone.',
+    header: 'Delete List',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => { deleteList(id) },
+  })
+}
+</script>
+
 <template>
   <div class="home-view">
     <div class="page-header">
@@ -38,42 +74,6 @@
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import ConfirmDialog from 'primevue/confirmdialog'
-import { useConfirm } from 'primevue/useconfirm'
-import { useLists } from '@/composables/useLists'
-import { useArmies } from '@/composables/useArmies'
-import ListCard from '@/components/home/ListCard.vue'
-import CreateListDialog from '@/components/home/CreateListDialog.vue'
-
-const router = useRouter()
-const { lists, createList, deleteList } = useLists()
-const { getArmy } = useArmies()
-const confirm = useConfirm()
-const showCreateDialog = ref(false)
-
-function getArmyDef(slug: string) {
-  return getArmy(slug)
-}
-
-function handleCreate(name: string, pointsLimit: number, armySlug: string): void {
-  const list = createList({ name, pointsLimit, armySlug })
-  void router.push({ name: 'list-edit', params: { id: list.id } })
-}
-
-function confirmDelete(id: string) {
-  confirm.require({
-    message: 'Delete this army list? This cannot be undone.',
-    header: 'Delete List',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => { deleteList(id) },
-  })
-}
-</script>
 
 <style scoped>
 .home-view {

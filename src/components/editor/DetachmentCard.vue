@@ -1,111 +1,12 @@
-<template>
-  <Card :class="{ warning: transportWarning  }">
-    <template #content>
-      <div class="entry">
-        <div class="info">
-          <h3 class="name">{{ entry.detachmentName }}</h3>
-          <PointsBadge :used="entryPoints" />
-          <Button
-            v-if="availableUpgradesCount > 0"
-            label="Add Upgrade"
-            icon="pi pi-plus"
-            severity="primary"
-            fluid
-            @click="showUpgradePicker = true"
-          />
-          <Button
-            icon="pi pi-trash"
-            severity="danger"
-            label="Remove"
-            variant="outlined"
-            fluid
-            @click="emit('remove')"
-          />
-          <div v-for="unit in deriveFormationUnits(entry, armyDef)" :key="unit.unitName" class="instance">
-            <span class="amount">
-              {{unit.instances.length}}
-            </span>
-            <span class="name">
-              {{ unit.unitName }}
-            </span>
-          </div>
-        </div>
-        <div class="upgrades">
-          <Accordion v-model:value="activePanel">
-            <AccordionPanel value="0">
-              <AccordionHeader>Base units 
-                <Tag v-for="unit in deriveBaseUnits(entry)" :key="unit.unitName" severity="secondary">
-                  {{unit.instances.length}}x{{ unit.unitName }}
-                </Tag>
-              </AccordionHeader>
-              <AccordionContent>
-                <BaseUnitsPanel
-                  :base-units="entry.baseUnits"
-                  :detachment-name="entry.detachmentName"
-                  :army-def="armyDef"
-                  @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
-                  @weapon-change="(unitName, instIdx, slotIdx, weapon) => emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)"
-                />
-              </AccordionContent>
-            </AccordionPanel>
-            <AccordionPanel v-for="upgrade in entry.appliedUpgrades"  :key="upgrade.upgradeName" :value="upgrade.upgradeName" :class="{warning:isTransportUpgrade(upgrade.upgradeName) && !!transportWarning}">
-              <AccordionHeader>
-                <span class="tag-list">
-                  {{ upgrade.upgradeName }}
-                  <Tag v-for="unit in deriveUpgradeUnits(upgrade)" :key="unit.unitName" severity="secondary">
-                    {{unit.instances.length}}x{{ unit.unitName }}
-                  </Tag>
-                </span>
-                <Button
-                    icon="pi pi-times"
-                    severity="danger"
-                    text
-                    size="small"
-                    rounded
-                    aria-label="Remove upgrade"
-                    @click="emit('remove-upgrade', upgrade.upgradeName)"
-                  />
-              </AccordionHeader>
-              <AccordionContent>
-                <AppliedUpgradePanel
-                  :upgrade="upgrade"
-                  :army-def="armyDef"
-                  @remove="emit('remove-upgrade', upgrade.upgradeName)"
-                  @replace-count-change="(count) => emit('replace-count-change', upgrade.upgradeName, count)"
-                  @add-count-change="(unitName, count) => emit('add-count-change', upgrade.upgradeName, unitName, count)"
-                  @weapon-change="(_upgName, unitName, instIdx, slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)"
-                  @update-character="(charName) => emit('update-character', upgrade.upgradeName, charName)"
-                />
-              </AccordionContent>
-            </AccordionPanel>
-          </Accordion>      
-        </div>
-      </div>
-
-    </template>
-    <template #footer>
-      
-    </template>
-  </Card>
-
-  <UpgradePickerDialog
-    v-model:visible="showUpgradePicker"
-    :detachment-name="entry.detachmentName"
-    :army-def="armyDef"
-    :applied-upgrade-names="entry.appliedUpgrades.map((u) => u.upgradeName)"
-    @add="handleAddUpgrade"
-  />
-</template>
-
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
-import Accordion from 'primevue/accordion';
-import AccordionPanel from 'primevue/accordionpanel';
-import AccordionHeader from 'primevue/accordionheader';
-import AccordionContent from 'primevue/accordioncontent';
+import Accordion from 'primevue/accordion'
+import AccordionPanel from 'primevue/accordionpanel'
+import AccordionHeader from 'primevue/accordionheader'
+import AccordionContent from 'primevue/accordioncontent'
 import PointsBadge from '@/components/shared/PointsBadge.vue'
 import BaseUnitsPanel from './BaseUnitsPanel.vue'
 import AppliedUpgradePanel from './AppliedUpgradePanel.vue'
@@ -122,9 +23,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'remove': []
+  remove: []
   'base-count-change': [unitName: string, count: number]
-  'weapon-change': [source: string, unitName: string, instanceIndex: number, slotIndex: number, weapon: string]
+  'weapon-change': [
+    source: string,
+    unitName: string,
+    instanceIndex: number,
+    slotIndex: number,
+    weapon: string,
+  ]
   'add-upgrade': [upgradeDef: UpgradeDef]
   'remove-upgrade': [upgradeName: string]
   'replace-count-change': [upgradeName: string, count: number]
@@ -161,11 +68,136 @@ function isTransportUpgrade(upgradeName: string): boolean {
   const def = props.armyDef.upgrades.find((u) => u.name === upgradeName)
   return def?.type === 'add' && (def.transportWarning ?? false)
 }
-
 </script>
 
-<style scoped>
+<template>
+  <Card :class="{ warning: transportWarning }">
+    <template #content>
+      <div class="entry">
+        <div class="info">
+          <h3 class="name">{{ entry.detachmentName }}</h3>
+          <PointsBadge :used="entryPoints" />
+          <Button
+            v-if="availableUpgradesCount > 0"
+            label="Add Upgrade"
+            icon="pi pi-plus"
+            severity="primary"
+            fluid
+            @click="showUpgradePicker = true"
+          />
+          <Button
+            icon="pi pi-trash"
+            severity="danger"
+            label="Remove"
+            variant="outlined"
+            fluid
+            @click="emit('remove')"
+          />
+          <div
+            v-for="unit in deriveFormationUnits(entry, armyDef)"
+            :key="unit.unitName"
+            class="instance"
+          >
+            <span class="amount">
+              {{ unit.instances.length }}
+            </span>
+            <span class="name">
+              {{ unit.unitName }}
+            </span>
+          </div>
+        </div>
+        <div class="upgrades">
+          <Accordion v-model:value="activePanel">
+            <AccordionPanel value="0">
+              <AccordionHeader
+                >Base units
+                <Tag
+                  v-for="unit in deriveBaseUnits(entry)"
+                  :key="unit.unitName"
+                  severity="secondary"
+                >
+                  {{ unit.instances.length }}x{{ unit.unitName }}
+                </Tag>
+              </AccordionHeader>
+              <AccordionContent>
+                <BaseUnitsPanel
+                  :base-units="entry.baseUnits"
+                  :detachment-name="entry.detachmentName"
+                  :army-def="armyDef"
+                  @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
+                  @weapon-change="
+                    (unitName, instIdx, slotIdx, weapon) =>
+                      emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)
+                  "
+                />
+              </AccordionContent>
+            </AccordionPanel>
+            <AccordionPanel
+              v-for="upgrade in entry.appliedUpgrades"
+              :key="upgrade.upgradeName"
+              :value="upgrade.upgradeName"
+              :class="{ warning: isTransportUpgrade(upgrade.upgradeName) && !!transportWarning }"
+            >
+              <AccordionHeader>
+                <span class="tag-list">
+                  {{ upgrade.upgradeName }}
+                  <Tag
+                    v-for="unit in deriveUpgradeUnits(upgrade)"
+                    :key="unit.unitName"
+                    severity="secondary"
+                  >
+                    {{ unit.instances.length }}x{{ unit.unitName }}
+                  </Tag>
+                </span>
+                <Button
+                  icon="pi pi-times"
+                  severity="danger"
+                  text
+                  size="small"
+                  rounded
+                  aria-label="Remove upgrade"
+                  @click="emit('remove-upgrade', upgrade.upgradeName)"
+                />
+              </AccordionHeader>
+              <AccordionContent>
+                <AppliedUpgradePanel
+                  :upgrade="upgrade"
+                  :army-def="armyDef"
+                  @remove="emit('remove-upgrade', upgrade.upgradeName)"
+                  @replace-count-change="
+                    (count) => emit('replace-count-change', upgrade.upgradeName, count)
+                  "
+                  @add-count-change="
+                    (unitName, count) =>
+                      emit('add-count-change', upgrade.upgradeName, unitName, count)
+                  "
+                  @weapon-change="
+                    (_upgName, unitName, instIdx, slotIdx, weapon) =>
+                      emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)
+                  "
+                  @update-character="
+                    (charName) => emit('update-character', upgrade.upgradeName, charName)
+                  "
+                />
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>
+        </div>
+      </div>
+    </template>
+    <template #footer> </template>
+  </Card>
 
+  <UpgradePickerDialog
+    v-model:visible="showUpgradePicker"
+    :detachment-name="entry.detachmentName"
+    :army-def="armyDef"
+    :applied-upgrade-names="entry.appliedUpgrades.map((u) => u.upgradeName)"
+    @add="handleAddUpgrade"
+  />
+</template>
+
+<style scoped>
 .entry {
   display: flex;
   flex-direction: row;
@@ -179,7 +211,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
   flex-shrink: 0;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .name {
@@ -210,7 +242,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
 .card-header-left {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: 0.5rem;
   flex: 1;
   min-width: 0;
 }
@@ -218,7 +250,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
 .card-header-right {
   display: flex;
   align-items: center;
-  gap: .25rem;
+  gap: 0.25rem;
 }
 
 .det-name {
@@ -229,9 +261,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .group-tag {
-  font-size: .7rem;
+  font-size: 0.7rem;
   flex-shrink: 0;
 }
-
-
 </style>
