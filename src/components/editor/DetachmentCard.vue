@@ -16,6 +16,7 @@ import type { Entry } from '@/entities/list'
 import { calculateEntryPoints } from '@/entities/points'
 import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
+import { useMediaQuery } from '@vueuse/core'
 
 const props = defineProps<{
   entry: Entry
@@ -38,6 +39,8 @@ const emit = defineEmits<{
   'add-count-change': [upgradeName: string, unitName: string, count: number]
   'update-character': [upgradeName: string, chosenCharacterName: string | null]
 }>()
+
+const isSmallScreen = useMediaQuery('(max-width: 600px)')
 
 const showUpgradePicker = ref(false)
 const activePanel = ref<string | undefined>(undefined)
@@ -75,35 +78,41 @@ function isTransportUpgrade(upgradeName: string): boolean {
     <template #content>
       <div class="entry">
         <div class="info">
-          <h3 class="name">{{ entry.detachmentName }}</h3>
-          <PointsBadge :used="entryPoints" />
-          <Button
-            v-if="availableUpgradesCount > 0"
-            label="Add Upgrade"
-            icon="pi pi-plus"
-            severity="primary"
-            fluid
-            @click="showUpgradePicker = true"
-          />
-          <Button
-            icon="pi pi-trash"
-            severity="danger"
-            label="Remove"
-            variant="outlined"
-            fluid
-            @click="emit('remove')"
-          />
-          <div
-            v-for="unit in deriveFormationUnits(entry, armyDef)"
-            :key="unit.unitName"
-            class="instance"
-          >
-            <span class="amount">
-              {{ unit.instances.length }}
-            </span>
-            <span class="name">
-              {{ unit.unitName }}
-            </span>
+          <div class="primary">
+            <h3 class="name">{{ entry.detachmentName }}</h3>
+            <PointsBadge :used="entryPoints" />
+          </div>
+          <div class="buttons">
+            <Button
+              v-if="availableUpgradesCount > 0"
+              :label="isSmallScreen ? undefined : 'Add Upgrade'"
+              icon="pi pi-plus"
+              severity="primary"
+              fluid
+              @click="showUpgradePicker = true"
+            />
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              :label="isSmallScreen ? undefined : 'Remove'"
+              variant="outlined"
+              fluid
+              @click="emit('remove')"
+            />
+          </div>
+          <div class="instances">
+            <div
+              v-for="unit in deriveFormationUnits(entry, armyDef)"
+              :key="unit.unitName"
+              class="instance"
+            >
+              <span class="amount">
+                {{ unit.instances.length }}
+              </span>
+              <span class="name">
+                {{ unit.unitName }}
+              </span>
+            </div>
           </div>
         </div>
         <div class="upgrades">
@@ -209,9 +218,49 @@ function isTransportUpgrade(upgradeName: string): boolean {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  align-items: flex-start;
-  justify-content: flex-start;
   gap: 0.5rem;
+}
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+.instances {
+  flex: 1 2 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.instance {
+  /* TODO */
+}
+.amount {
+  /* TODO */
+}
+.instance .name::before {
+  /* TODO */
+  content: 'x';
+}
+
+@media (max-width: 600px) {
+  .entry {
+    flex-direction: column;
+  }
+  .info {
+    width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .primary {
+    flex: 1 2 auto;
+  }
+  .buttons {
+    flex-direction: row;
+  }
+  .instances {
+    width: 100%;
+    flex-direction: row;
+  }
 }
 
 .name {
@@ -220,16 +269,6 @@ function isTransportUpgrade(upgradeName: string): boolean {
 
 .upgrades {
   flex: 1 2 auto;
-}
-
-.instance {
-  /* TODO */
-}
-.amount {
-  /* TODO */
-}
-.name {
-  /* TODO */
 }
 
 .tag-list {
