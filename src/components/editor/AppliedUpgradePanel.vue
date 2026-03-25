@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
+import ToggleSwitch from 'primevue/toggleswitch'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import type { ArmyDef } from '@/entities/army'
-import type { AppliedUpgrade } from '@/entities/list'
+import type { AppliedUpgrade, UnitInstance } from '@/entities/list'
 
 const props = defineProps<{
   upgrade: AppliedUpgrade
@@ -54,6 +55,7 @@ const replaceMax = computed(() => {
   return def.replaces.max
 })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getAddMin(_unitName: string): number {
   return 0
 }
@@ -75,6 +77,32 @@ function getWeaponSlots(unitName: string) {
 
 function hasChoices(unitName: string): boolean {
   return getWeaponSlots(unitName).some((s) => s.kind === 'choice')
+}
+
+// ─── Same-config toggle ───────────────────────────────────────────────────────
+
+const sameConfig = reactive<Record<string, boolean>>({})
+
+function getSameConfig(unitName: string): boolean {
+  if (!(unitName in sameConfig)) sameConfig[unitName] = true
+  return sameConfig[unitName]
+}
+
+function setSameConfig(
+  unitName: string,
+  value: boolean,
+  instances: UnitInstance[],
+  upgradeName: string,
+): void {
+  sameConfig[unitName] = value
+  if (value && instances.length > 1) {
+    const first = instances[0]
+    for (let i = 1; i < instances.length; i++) {
+      for (const sel of first.weaponSelections) {
+        emit('weapon-change', upgradeName, unitName, i, sel.slotIndex, sel.chosenWeaponName)
+      }
+    }
+  }
 }
 </script>
 
@@ -101,6 +129,29 @@ function hasChoices(unitName: string): boolean {
       </InputNumber>
       <span class="replace-label">{{ fromUnitName }}</span>
       <span class="replace-arrow">→ {{ replaceUpgrade.replacingUnits.unitName }}</span>
+      <div
+        v-if="
+          replaceUpgrade.replacingUnits.instances.length > 1 &&
+          hasChoices(replaceUpgrade.replacingUnits.unitName)
+        "
+        class="sync-toggle"
+      >
+        <ToggleSwitch
+          :model-value="getSameConfig(replaceUpgrade.replacingUnits.unitName)"
+          @update:model-value="
+            (val: boolean) =>
+              setSameConfig(
+                replaceUpgrade!.replacingUnits.unitName,
+                val,
+                replaceUpgrade!.replacingUnits.instances,
+                upgrade.upgradeName,
+              )
+          "
+        />
+        <label
+          >use same configuration for all {{ replaceUpgrade.replacingUnits.unitName }} units</label
+        >
+      </div>
     </div>
 
     <!-- Per-instance weapon editors for replacing units -->
@@ -108,30 +159,57 @@ function hasChoices(unitName: string): boolean {
       v-if="replaceUpgrade.replacedCount > 0 && hasChoices(replaceUpgrade.replacingUnits.unitName)"
       class="instances-list"
     >
-      <div
-        v-for="(inst, instIdx) in replaceUpgrade.replacingUnits.instances"
-        :key="instIdx"
-        class="instance-row"
+      <template
+        v-if="
+          getSameConfig(replaceUpgrade.replacingUnits.unitName) &&
+          replaceUpgrade.replacingUnits.instances.length > 0
+        "
       >
-        <span class="instance-label"
-          >{{ replaceUpgrade.replacingUnits.unitName }} {{ instIdx + 1 }}</span
-        >
         <UnitInstanceEditor
           :weapon-slots="getWeaponSlots(replaceUpgrade.replacingUnits.unitName)"
-          :instance="inst"
+          :instance="replaceUpgrade.replacingUnits.instances[0]"
           @weapon-change="
-            (slotIdx, weapon) =>
-              emit(
-                'weapon-change',
-                upgrade.upgradeName,
-                replaceUpgrade!.replacingUnits.unitName,
-                instIdx,
-                slotIdx,
-                weapon,
-              )
+            (slotIdx, weapon) => {
+              for (let i = 0; i < replaceUpgrade!.replacingUnits.instances.length; i++) {
+                emit(
+                  'weapon-change',
+                  upgrade.upgradeName,
+                  replaceUpgrade!.replacingUnits.unitName,
+                  i,
+                  slotIdx,
+                  weapon,
+                )
+              }
+            }
           "
         />
-      </div>
+      </template>
+      <template v-else>
+        <div
+          v-for="(inst, instIdx) in replaceUpgrade.replacingUnits.instances"
+          :key="instIdx"
+          class="instance-row"
+        >
+          <span class="instance-label"
+            >{{ replaceUpgrade.replacingUnits.unitName }} {{ instIdx + 1 }}</span
+          >
+          <UnitInstanceEditor
+            :weapon-slots="getWeaponSlots(replaceUpgrade.replacingUnits.unitName)"
+            :instance="inst"
+            @weapon-change="
+              (slotIdx, weapon) =>
+                emit(
+                  'weapon-change',
+                  upgrade.upgradeName,
+                  replaceUpgrade!.replacingUnits.unitName,
+                  instIdx,
+                  slotIdx,
+                  weapon,
+                )
+            "
+          />
+        </div>
+      </template>
     </div>
   </div>
 
@@ -166,21 +244,45 @@ function hasChoices(unitName: string): boolean {
           <template #incrementbuttonicon><span class="pi pi-plus" /></template>
         </InputNumber>
         <span class="unit-name">{{ ute.unitName }}</span>
+        <div v-if="ute.instances.length > 1 && hasChoices(ute.unitName)" class="sync-toggle">
+          <ToggleSwitch
+            :model-value="getSameConfig(ute.unitName)"
+            @update:model-value="
+              (val: boolean) => setSameConfig(ute.unitName, val, ute.instances, upgrade.upgradeName)
+            "
+          />
+          <label>use same configuration for all {{ ute.unitName }} units</label>
+        </div>
       </div>
 
       <!-- Per-instance weapon editors for added units -->
       <div v-if="hasChoices(ute.unitName) && ute.instances.length > 0" class="instances-list">
-        <div v-for="(inst, instIdx) in ute.instances" :key="instIdx" class="instance-row">
-          <span class="instance-label">{{ ute.unitName }} {{ instIdx + 1 }}</span>
+        <template v-if="getSameConfig(ute.unitName)">
           <UnitInstanceEditor
             :weapon-slots="getWeaponSlots(ute.unitName)"
-            :instance="inst"
+            :instance="ute.instances[0]"
             @weapon-change="
-              (slotIdx, weapon) =>
-                emit('weapon-change', upgrade.upgradeName, ute.unitName, instIdx, slotIdx, weapon)
+              (slotIdx, weapon) => {
+                for (let i = 0; i < ute.instances.length; i++) {
+                  emit('weapon-change', upgrade.upgradeName, ute.unitName, i, slotIdx, weapon)
+                }
+              }
             "
           />
-        </div>
+        </template>
+        <template v-else>
+          <div v-for="(inst, instIdx) in ute.instances" :key="instIdx" class="instance-row">
+            <span class="instance-label">{{ ute.unitName }} {{ instIdx + 1 }}</span>
+            <UnitInstanceEditor
+              :weapon-slots="getWeaponSlots(ute.unitName)"
+              :instance="inst"
+              @weapon-change="
+                (slotIdx, weapon) =>
+                  emit('weapon-change', upgrade.upgradeName, ute.unitName, instIdx, slotIdx, weapon)
+              "
+            />
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -253,6 +355,15 @@ function hasChoices(unitName: string): boolean {
   padding-left: 0.75rem;
   border-left: 2px solid var(--p-surface-border);
   margin-top: 0.3rem;
+}
+
+.sync-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--p-text-muted-color);
+  margin-bottom: 0.4rem;
 }
 
 .instance-row {
