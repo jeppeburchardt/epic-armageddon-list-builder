@@ -25,6 +25,9 @@ jobs:
       - name: Linting code
         run: npm run lint
 
+      - name: Validate lists
+        run: npm run validate
+
       - name: Build
         run: npm run build
 
