@@ -41,9 +41,11 @@ function describeUpgrade(upgDef: UpgradeDef): string {
   if (upgDef.type === 'character') {
     return `Choose one of: ${upgDef.characterNames.join(', ')}`
   }
-  return upgDef.adds
-    .map((a) => `Add ${a.min}–${a.max} ${a.unitName}`)
-    .join(', ')
+  const names = upgDef.adds.map((a) => a.unitName).join(', ')
+  if (upgDef.maxTotal !== undefined) {
+    return `Add up to ${upgDef.maxTotal} from: ${names}`
+  }
+  return `Add any of: ${names}`
 }
 
 function close() {
@@ -88,11 +90,7 @@ function confirm() {
 
     <template #footer>
       <Button label="Cancel" severity="secondary" @click="close" />
-      <Button
-        label="Add"
-        :disabled="!selectedUpgrade"
-        @click="confirm"
-      />
+      <Button label="Add" :disabled="!selectedUpgrade" @click="confirm" />
     </template>
   </Dialog>
 </template>
@@ -101,15 +99,17 @@ function confirm() {
 .upgrade-list {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .upgrade-option {
   border: 1px solid var(--p-surface-border);
-  border-radius: .5rem;
-  padding: .75rem;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
   cursor: pointer;
-  transition: border-color .15s, background .15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .upgrade-option:hover {
@@ -125,7 +125,7 @@ function confirm() {
 .option-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: .25rem;
+  margin-bottom: 0.25rem;
 }
 
 .option-name {
@@ -133,13 +133,13 @@ function confirm() {
 }
 
 .option-type {
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: var(--p-text-muted-color);
   text-transform: uppercase;
 }
 
 .option-description {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--p-text-muted-color);
   margin: 0;
 }

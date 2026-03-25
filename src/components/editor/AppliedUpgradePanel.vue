@@ -54,23 +54,19 @@ const replaceMax = computed(() => {
   return def.replaces.max
 })
 
-function getAddMin(unitName: string): number {
-  const def = upgradeDef.value
-  if (!def || def.type !== 'add') return 0
-  return def.adds.find((a) => a.unitName === unitName)?.min ?? 0
+function getAddMin(_unitName: string): number {
+  return 0
 }
 
-function getAddMax(unitName: string): number {
+function getAddMax(unitName: string): number | undefined {
   const def = upgradeDef.value
-  if (!def || def.type !== 'add') return 10
-  const specMax = def.adds.find((a) => a.unitName === unitName)?.max ?? 10
-  if (def.maxTotal === undefined) return specMax
+  if (!def || def.type !== 'add' || def.maxTotal === undefined) return undefined
   const upgrade = props.upgrade
-  if (upgrade.type !== 'add') return specMax
+  if (upgrade.type !== 'add') return undefined
   const otherUnitsTotal = upgrade.addedUnits
     .filter((u) => u.unitName !== unitName)
     .reduce((sum, u) => sum + u.instances.length, 0)
-  return Math.min(specMax, Math.max(0, def.maxTotal - otherUnitsTotal))
+  return Math.max(0, def.maxTotal - otherUnitsTotal)
 }
 
 function getWeaponSlots(unitName: string) {
