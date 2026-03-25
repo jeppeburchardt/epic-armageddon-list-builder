@@ -49,16 +49,7 @@ export function validateTransportCapacity(
     entry: Entry,
     armyDef: ArmyDef,
 ): ValidationResult | null {
-    // Find transport upgrades in the entry (add-type upgrades with transportWarning)
-    const transportUpgrades = entry.appliedUpgrades.filter((upgrade) => {
-        if (upgrade.type !== 'add') return false
-        const def = armyDef.upgrades.find((u) => u.name === upgrade.upgradeName)
-        return def && def.type === 'add' && def.transportWarning
-    })
-
-    if (transportUpgrades.length === 0) return null
-
-    // Effective formation composition
+    // Effective formation composition (base units + all applied upgrades)
     const formation = deriveFormationUnits(entry, armyDef)
 
     // Calculate total cost by transport type for units needing transportation
@@ -81,24 +72,21 @@ export function validateTransportCapacity(
     const capacityByType = new Map<string, number>()
     const minCapacityByType = new Map<string, number>()
 
-    for (const upgrade of transportUpgrades) {
-        if (upgrade.type !== 'add') continue
-        for (const ute of upgrade.addedUnits) {
-            const transportDef = armyDef.units.find((u) => u.name === ute.unitName)
-            if (!transportDef?.transportation?.capacity || !transportDef.transportation.capabilities) continue
+    for (const ute of formation) {
+        const transportDef = armyDef.units.find((u) => u.name === ute.unitName)
+        if (!transportDef?.transportation?.capacity || !transportDef.transportation.capabilities) continue
 
-            const capacity = transportDef.transportation.capacity
-            const capabilities = transportDef.transportation.capabilities
+        const capacity = transportDef.transportation.capacity
+        const capabilities = transportDef.transportation.capabilities
 
-            // Add capacity for each type this transport can carry
-            for (const type of capabilities) {
-                const existing = capacityByType.get(type) ?? 0
-                capacityByType.set(type, existing + capacity * ute.instances.length)
+        // Add capacity for each type this transport can carry
+        for (const type of capabilities) {
+            const existing = capacityByType.get(type) ?? 0
+            capacityByType.set(type, existing + capacity * ute.instances.length)
 
-                // Track minimum capacity for this type
-                const currentMin = minCapacityByType.get(type) ?? Infinity
-                minCapacityByType.set(type, Math.min(currentMin, capacity))
-            }
+            // Track minimum capacity for this type
+            const currentMin = minCapacityByType.get(type) ?? Infinity
+            minCapacityByType.set(type, Math.min(currentMin, capacity))
         }
     }
 

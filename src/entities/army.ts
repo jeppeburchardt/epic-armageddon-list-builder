@@ -1,6 +1,6 @@
 // ─── Unit types ──────────────────────────────────────────────────────────────
 
-export type UnitType = 'CH' | 'INF' | 'LV' | 'AV' | 'AC' | 'WE' | 'SC' | 'Special'
+export type UnitType = 'CH' | 'INF' | 'LV' | 'AV' | 'AC' | 'WE' | 'AC/WE' | 'SC' | 'Special'
 
 // ─── Weapons ─────────────────────────────────────────────────────────────────
 

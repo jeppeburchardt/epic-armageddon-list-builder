@@ -35,7 +35,7 @@ export const TransportationSchema = z.object({
 
 // ─── Unit definition ─────────────────────────────────────────────────────────
 
-export const UnitTypeSchema = z.enum(['CH', 'INF', 'LV', 'AV', 'AC', 'WE', 'SC', 'Special'])
+export const UnitTypeSchema = z.enum(['CH', 'INF', 'LV', 'AV', 'AC', 'WE', 'AC/WE', 'SC', 'Special'])
 
 export const UnitDefSchema = z.object({
   name: z.string(),
