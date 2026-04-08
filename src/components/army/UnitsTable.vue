@@ -16,12 +16,18 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
   const rows: WeaponRow[] = []
   for (const slot of unit.weaponSlots) {
     if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      const label =
+        slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
       rows.push({ label, range: slot.range, firepower: slot.firepower, isAlternative: false })
     } else {
       slot.choices.forEach((c, i) => {
         const costSuffix = c.additionalCost > 0 ? ` +${c.additionalCost}pts` : ''
-        rows.push({ label: `${c.weaponName}${costSuffix}`, range: c.range, firepower: c.firepower, isAlternative: i > 0 })
+        rows.push({
+          label: `${c.weaponName}${costSuffix}`,
+          range: c.range,
+          firepower: c.firepower,
+          isAlternative: i > 0,
+        })
       })
     }
   }
@@ -56,8 +62,6 @@ function describeCapacity(unit: UnitDef): string {
           <th>Weapon</th>
           <th>Range</th>
           <th>Firepower</th>
-          <th>Transport</th>
-          <th>Capacity</th>
           <th>Special Rules</th>
         </tr>
       </thead>
@@ -82,9 +86,9 @@ function describeCapacity(unit: UnitDef): string {
             <td>{{ wrow.firepower }}</td>
             <!-- Transport/capacity/special rules only on first weapon row -->
             <template v-if="wi === 0">
-              <td :rowspan="weaponRows(unit).length">{{ describeTransportType(unit) }}</td>
-              <td :rowspan="weaponRows(unit).length">{{ describeCapacity(unit) }}</td>
-              <td :rowspan="weaponRows(unit).length">{{ unit.specialRuleNames?.join(', ') ?? '—' }}</td>
+              <td :rowspan="weaponRows(unit).length">
+                {{ unit.specialRuleNames?.join(', ') ?? '—' }}
+              </td>
             </template>
           </tr>
           <!-- Spacer row between units -->
@@ -142,4 +146,3 @@ function describeCapacity(unit: UnitDef): string {
   background: transparent;
 }
 </style>
-
