@@ -4,7 +4,7 @@ import Panel from 'primevue/panel'
 import Tag from 'primevue/tag'
 import Tooltip from 'primevue/tooltip'
 import type { ArmyDef, SpecialRuleDef, UnitDef } from '@/entities/army'
-import type { Entry, UnitInstance } from '@/entities/list'
+import type { Entry, UnitInstance, UnitTypeEntry } from '@/entities/list'
 
 const vTooltip = Tooltip
 import { calculateEntryPoints } from '@/entities/points'
@@ -17,6 +17,9 @@ const props = defineProps<{
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
 const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
+const filteredDerivedUnits = computed(() =>
+  derivedUnits.value.filter((ute) => ute.instances.length > 0),
+)
 
 function getUnitDef(unitName: string): UnitDef | undefined {
   return props.armyDef.units.find((u) => u.name === unitName)
@@ -78,6 +81,20 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
     return { label: chosen.weaponName, range: chosen.range, firepower: chosen.firepower }
   })
 }
+
+function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitInstance }[] {
+  const map = new Map<string, UnitInstance[]>()
+  for (const inst of ute.instances) {
+    const key = JSON.stringify(inst.weaponSelections.sort((a, b) => a.slotIndex - b.slotIndex))
+    let arr = map.get(key)
+    if (!arr) {
+      arr = []
+      map.set(key, arr)
+    }
+    arr.push(inst)
+  }
+  return Array.from(map.values()).map((insts) => ({ qty: insts.length, instance: insts[0] }))
+}
 </script>
 
 <template>
@@ -92,8 +109,8 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
       <table class="units-table">
         <thead>
           <tr>
-            <th>Unit</th>
             <th>Qty</th>
+            <th>Unit</th>
             <th>Type</th>
             <th>Speed</th>
             <th>Armour</th>
@@ -105,11 +122,14 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
           </tr>
         </thead>
         <tbody>
-          <template v-for="ute in derivedUnits" :key="ute.unitName">
+          <template v-for="ute in filteredDerivedUnits" :key="ute.unitName">
             <!-- Units with no choice slots: group by quantity, rowspan over weapon rows -->
             <template v-if="!hasChoices(ute.unitName)">
               <tr v-for="(wrow, wi) in fixedWeaponRows(ute.unitName)" :key="wi">
                 <template v-if="wi === 0">
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ ute.instances.length }}
+                  </td>
                   <td :rowspan="fixedWeaponRows(ute.unitName).length" class="unit-name-cell">
                     <div class="unit-name-content">
                       {{ ute.unitName }}
@@ -122,9 +142,6 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
                         class="unit-rule-tag"
                       />
                     </div>
-                  </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                    {{ ute.instances.length }}
                   </td>
                   <td :rowspan="fixedWeaponRows(ute.unitName).length">
                     {{ displayUnitDef(ute.unitName)?.type ?? '' }}
@@ -149,15 +166,21 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
             </template>
             <!-- Units with choice slots: list individually, each instance spans its weapon rows -->
             <template v-else>
-              <template v-for="(inst, idx) in ute.instances" :key="idx">
-                <tr v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, inst)" :key="wi">
+              <template v-for="(group, gidx) in groupedChoiceUnits(ute)" :key="gidx">
+                <tr
+                  v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, group.instance)"
+                  :key="wi"
+                >
                   <template v-if="wi === 0">
+                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
+                      {{ group.qty }}
+                    </td>
                     <td
-                      :rowspan="instanceWeaponRows(ute.unitName, inst).length"
+                      :rowspan="instanceWeaponRows(ute.unitName, group.instance).length"
                       class="unit-name-cell"
                     >
                       <div class="unit-name-content">
-                        {{ ute.unitName }} {{ idx + 1 }}
+                        {{ ute.unitName }}
                         <Tag
                           v-for="rule in unitSpecialRules(ute.unitName)"
                           :key="rule.title"
@@ -168,20 +191,19 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
                         />
                       </div>
                     </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">1</td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                       {{ displayUnitDef(ute.unitName)?.type ?? '' }}
                     </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                       {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
                     </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                       {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
                     </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                       {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
                     </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                       {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
                     </td>
                   </template>
