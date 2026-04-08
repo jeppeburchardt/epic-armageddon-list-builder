@@ -3,6 +3,7 @@ import { reactive } from 'vue'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { UnitTypeEntry, UnitInstance } from '@/entities/list'
+import { hasSameWeaponConfiguration } from '@/entities/composition'
 import UnitPanel from './UnitPanel.vue'
 
 const props = defineProps<{
@@ -55,7 +56,10 @@ function hasChoices(unitName: string): boolean {
 const sameConfig = reactive<Record<string, boolean>>({})
 
 function getSameConfig(unitName: string): boolean {
-  if (!(unitName in sameConfig)) sameConfig[unitName] = true
+  if (!(unitName in sameConfig)) {
+    const unit = props.baseUnits.find((entry) => entry.unitName === unitName)
+    sameConfig[unitName] = hasSameWeaponConfiguration(unit?.instances ?? [])
+  }
   return sameConfig[unitName]
 }
 

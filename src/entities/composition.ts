@@ -1,5 +1,26 @@
 import type { ArmyDef } from './army'
-import type { AppliedUpgrade, Entry, UnitTypeEntry } from './list'
+import type { AppliedUpgrade, Entry, UnitInstance, UnitTypeEntry } from './list'
+
+export function hasSameWeaponConfiguration(instances: UnitInstance[]): boolean {
+  if (instances.length <= 1) return true
+
+  const [firstInstance, ...otherInstances] = instances
+
+  return otherInstances.every((instance) => {
+    if (instance.weaponSelections.length !== firstInstance.weaponSelections.length) {
+      return false
+    }
+
+    return instance.weaponSelections.every((selection, index) => {
+      const firstSelection = firstInstance.weaponSelections[index]
+
+      return (
+        selection.slotIndex === firstSelection.slotIndex &&
+        selection.chosenWeaponName === firstSelection.chosenWeaponName
+      )
+    })
+  })
+}
 
 /**
  * Derives the effective unit composition of a detachment entry by

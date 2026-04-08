@@ -5,6 +5,7 @@ import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import UnitPanel from './UnitPanel.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { AppliedUpgrade, UnitInstance } from '@/entities/list'
+import { hasSameWeaponConfiguration } from '@/entities/composition'
 
 const props = defineProps<{
   upgrade: AppliedUpgrade
@@ -82,8 +83,22 @@ function hasChoices(unitName: string): boolean {
 
 const sameConfig = reactive<Record<string, boolean>>({})
 
+function getInstances(unitName: string): UnitInstance[] {
+  if (props.upgrade.type === 'replace' && props.upgrade.replacingUnits.unitName === unitName) {
+    return props.upgrade.replacingUnits.instances
+  }
+
+  if (props.upgrade.type === 'add') {
+    return props.upgrade.addedUnits.find((unit) => unit.unitName === unitName)?.instances ?? []
+  }
+
+  return []
+}
+
 function getSameConfig(unitName: string): boolean {
-  if (!(unitName in sameConfig)) sameConfig[unitName] = true
+  if (!(unitName in sameConfig)) {
+    sameConfig[unitName] = hasSameWeaponConfiguration(getInstances(unitName))
+  }
   return sameConfig[unitName]
 }
 
