@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import Panel from 'primevue/panel'
 import Tag from 'primevue/tag'
 import Tooltip from 'primevue/tooltip'
 import type { ArmyDef, SpecialRuleDef, UnitDef } from '@/entities/army'
@@ -16,10 +17,6 @@ const props = defineProps<{
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
 const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
-
-const detGroup = computed(
-  () => props.armyDef.detachments.find((d) => d.name === props.entry.detachmentName)?.group ?? '',
-)
 
 function getUnitDef(unitName: string): UnitDef | undefined {
   return props.armyDef.units.find((u) => u.name === unitName)
@@ -42,18 +39,27 @@ function hasChoices(unitName: string): boolean {
   return displayUnitDef(unitName)?.weaponSlots.some((s) => s.kind === 'choice') ?? false
 }
 
-interface WeaponRow { label: string; range: string; firepower: string }
+interface WeaponRow {
+  label: string
+  range: string
+  firepower: string
+}
 
 function fixedWeaponRows(unitName: string): WeaponRow[] {
   const def = displayUnitDef(unitName)
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
   return def.weaponSlots.map((slot) => {
     if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      const label =
+        slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
       return { label, range: slot.range, firepower: slot.firepower }
     }
     // Should not be reached for non-choice units, but handle gracefully
-    return { label: slot.choices[0]?.weaponName ?? '—', range: slot.choices[0]?.range ?? '—', firepower: slot.choices[0]?.firepower ?? '—' }
+    return {
+      label: slot.choices[0]?.weaponName ?? '—',
+      range: slot.choices[0]?.range ?? '—',
+      firepower: slot.choices[0]?.firepower ?? '—',
+    }
   })
 }
 
@@ -62,78 +68,51 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
   return def.weaponSlots.map((slot, idx) => {
     if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      const label =
+        slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
       return { label, range: slot.range, firepower: slot.firepower }
     }
     const sel = instance.weaponSelections.find((s) => s.slotIndex === idx)
-    const chosen = slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
+    const chosen =
+      slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
     return { label: chosen.weaponName, range: chosen.range, firepower: chosen.firepower }
   })
 }
 </script>
 
 <template>
-  <div class="print-detachment">
-    <h3 class="det-title">
-      {{ entry.detachmentName }}
-      <span class="det-group">({{ detGroup }})</span>
+  <Panel>
+    <template #header>
+      <span>
+        {{ entry.detachmentName }}
+      </span>
       <span class="det-points">{{ entryPoints }}pts</span>
-    </h3>
-
-    <table class="units-table">
-      <thead>
-        <tr>
-          <th>Unit</th>
-          <th>Qty</th>
-          <th>Type</th>
-          <th>Speed</th>
-          <th>Armour</th>
-          <th>CC</th>
-          <th>FF</th>
-          <th>Weapon</th>
-          <th>Range</th>
-          <th>Firepower</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-for="ute in derivedUnits" :key="ute.unitName">
-          <!-- Units with no choice slots: group by quantity, rowspan over weapon rows -->
-          <template v-if="!hasChoices(ute.unitName)">
-            <tr v-for="(wrow, wi) in fixedWeaponRows(ute.unitName)" :key="wi">
-              <template v-if="wi === 0">
-                <td :rowspan="fixedWeaponRows(ute.unitName).length" class="unit-name-cell">
-                  <div class="unit-name-content">
-                    {{ ute.unitName }}
-                    <Tag
-                      v-for="rule in unitSpecialRules(ute.unitName)"
-                      :key="rule.title"
-                      v-tooltip="rule.paragraphs.join(' ') || undefined"
-                      :value="rule.title"
-                      severity="secondary"
-                      class="unit-rule-tag"
-                    />
-                  </div>
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">{{ ute.instances.length }}</td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">{{ displayUnitDef(ute.unitName)?.type ?? '' }}</td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">{{ displayUnitDef(ute.unitName)?.speed ?? '—' }}</td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">{{ displayUnitDef(ute.unitName)?.armour ?? '—' }}</td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">{{ displayUnitDef(ute.unitName)?.cc ?? '—' }}</td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">{{ displayUnitDef(ute.unitName)?.ff ?? '—' }}</td>
-              </template>
-              <td>{{ wrow.label }}</td>
-              <td>{{ wrow.range }}</td>
-              <td>{{ wrow.firepower }}</td>
-            </tr>
-          </template>
-          <!-- Units with choice slots: list individually, each instance spans its weapon rows -->
-          <template v-else>
-            <template v-for="(inst, idx) in ute.instances" :key="idx">
-              <tr v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, inst)" :key="wi">
+    </template>
+    <div class="print-detachment">
+      <table class="units-table">
+        <thead>
+          <tr>
+            <th>Unit</th>
+            <th>Qty</th>
+            <th>Type</th>
+            <th>Speed</th>
+            <th>Armour</th>
+            <th>CC</th>
+            <th>FF</th>
+            <th>Weapon</th>
+            <th>Range</th>
+            <th>Firepower</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="ute in derivedUnits" :key="ute.unitName">
+            <!-- Units with no choice slots: group by quantity, rowspan over weapon rows -->
+            <template v-if="!hasChoices(ute.unitName)">
+              <tr v-for="(wrow, wi) in fixedWeaponRows(ute.unitName)" :key="wi">
                 <template v-if="wi === 0">
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length" class="unit-name-cell">
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length" class="unit-name-cell">
                     <div class="unit-name-content">
-                      {{ ute.unitName }} {{ idx + 1 }}
+                      {{ ute.unitName }}
                       <Tag
                         v-for="rule in unitSpecialRules(ute.unitName)"
                         :key="rule.title"
@@ -144,23 +123,79 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
                       />
                     </div>
                   </td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">1</td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">{{ displayUnitDef(ute.unitName)?.type ?? '' }}</td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">{{ displayUnitDef(ute.unitName)?.speed ?? '—' }}</td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">{{ displayUnitDef(ute.unitName)?.armour ?? '—' }}</td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">{{ displayUnitDef(ute.unitName)?.cc ?? '—' }}</td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">{{ displayUnitDef(ute.unitName)?.ff ?? '—' }}</td>
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ ute.instances.length }}
+                  </td>
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ displayUnitDef(ute.unitName)?.type ?? '' }}
+                  </td>
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
+                  </td>
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
+                  </td>
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
+                  </td>
+                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                    {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
+                  </td>
                 </template>
                 <td>{{ wrow.label }}</td>
                 <td>{{ wrow.range }}</td>
                 <td>{{ wrow.firepower }}</td>
               </tr>
             </template>
+            <!-- Units with choice slots: list individually, each instance spans its weapon rows -->
+            <template v-else>
+              <template v-for="(inst, idx) in ute.instances" :key="idx">
+                <tr v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, inst)" :key="wi">
+                  <template v-if="wi === 0">
+                    <td
+                      :rowspan="instanceWeaponRows(ute.unitName, inst).length"
+                      class="unit-name-cell"
+                    >
+                      <div class="unit-name-content">
+                        {{ ute.unitName }} {{ idx + 1 }}
+                        <Tag
+                          v-for="rule in unitSpecialRules(ute.unitName)"
+                          :key="rule.title"
+                          v-tooltip="rule.paragraphs.join(' ') || undefined"
+                          :value="rule.title"
+                          severity="secondary"
+                          class="unit-rule-tag"
+                        />
+                      </div>
+                    </td>
+                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">1</td>
+                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                      {{ displayUnitDef(ute.unitName)?.type ?? '' }}
+                    </td>
+                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                      {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
+                    </td>
+                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                      {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
+                    </td>
+                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                      {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
+                    </td>
+                    <td :rowspan="instanceWeaponRows(ute.unitName, inst).length">
+                      {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
+                    </td>
+                  </template>
+                  <td>{{ wrow.label }}</td>
+                  <td>{{ wrow.range }}</td>
+                  <td>{{ wrow.firepower }}</td>
+                </tr>
+              </template>
+            </template>
           </template>
-        </template>
-      </tbody>
-    </table>
-  </div>
+        </tbody>
+      </table>
+    </div>
+  </Panel>
 </template>
 
 <style scoped>
@@ -170,36 +205,36 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
 }
 
 .det-title {
-  margin: 0 0 .5rem;
+  margin: 0 0 0.5rem;
   font-size: 1rem;
   display: flex;
-  gap: .75rem;
+  gap: 0.75rem;
   align-items: baseline;
 }
 
 .det-group {
-  font-size: .8rem;
+  font-size: 0.8rem;
   color: var(--p-text-muted-color);
   font-weight: 400;
 }
 
 .det-points {
   margin-left: auto;
-  font-size: .875rem;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
 .units-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: .8rem;
-  margin-bottom: .5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .units-table th,
 .units-table td {
   border: 1px solid var(--p-surface-border);
-  padding: .25rem .5rem;
+  padding: 0.25rem 0.5rem;
   text-align: left;
   white-space: nowrap;
   vertical-align: middle;
@@ -214,12 +249,12 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: .25rem;
+  gap: 0.25rem;
 }
 
 .unit-rule-tag {
-  font-size: .65rem;
-  padding: 0 .3rem;
+  font-size: 0.65rem;
+  padding: 0 0.3rem;
   line-height: 1.4;
 }
 </style>

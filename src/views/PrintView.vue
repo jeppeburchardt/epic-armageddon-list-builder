@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
 import { listEditorKey } from '@/composables/useListEditor'
+import type { Entry } from '@/entities/list'
 
 defineProps<{ id: string }>()
 const router = useRouter()
@@ -13,6 +14,45 @@ const window = globalThis.window
 const injected = inject(listEditorKey)
 if (!injected) throw new Error('listEditorKey not provided')
 const { list, armyDef, totalPoints, validationResults } = injected
+
+const detachmentGroups = computed<string[]>(() => {
+  const seen = new Set<string>()
+  const groups: string[] = []
+
+  armyDef.value?.detachments.forEach((detachment) => {
+    if (!seen.has(detachment.group)) {
+      seen.add(detachment.group)
+      groups.push(detachment.group)
+    }
+  })
+
+  return groups
+})
+
+const groupedEntries = computed(() => {
+  const groups: Partial<Record<string, Entry[]>> = {}
+  const extraGroupOrder: string[] = []
+
+  ;(list.value?.entries ?? []).forEach((entry) => {
+    const detachment = armyDef.value?.detachments.find((d) => d.name === entry.detachmentName)
+    const group = detachment?.group ?? 'Other'
+
+    if (!groups[group]) {
+      groups[group] = []
+      if (!detachmentGroups.value.includes(group)) {
+        extraGroupOrder.push(group)
+      }
+    }
+
+    const groupEntries = groups[group] ?? []
+    groupEntries.push(entry)
+    groups[group] = groupEntries
+  })
+
+  return [...detachmentGroups.value, ...extraGroupOrder]
+    .map((group) => ({ group, entries: groups[group] ?? [] }))
+    .filter((section) => section.entries.length > 0)
+})
 </script>
 
 <template>
@@ -50,12 +90,15 @@ const { list, armyDef, totalPoints, validationResults } = injected
 
     <!-- Detachments -->
     <div class="detachments-list">
-      <PrintDetachment
-        v-for="entry in list.entries"
-        :key="entry.id"
-        :entry="entry"
-        :army-def="armyDef"
-      />
+      <template v-for="section in groupedEntries" :key="section.group">
+        <h4>{{ section.group }} detachments</h4>
+        <PrintDetachment
+          v-for="entry in section.entries"
+          :key="entry.id"
+          :entry="entry"
+          :army-def="armyDef"
+        />
+      </template>
     </div>
 
     <!-- Totals -->
@@ -106,12 +149,12 @@ const { list, armyDef, totalPoints, validationResults } = injected
   }
 
   .print-only-header h1 {
-    margin: 0 0 .25rem;
+    margin: 0 0 0.25rem;
     font-size: 1.2rem;
   }
 
   .print-meta {
-    font-size: .85rem;
+    font-size: 0.85rem;
     color: #555;
     display: flex;
     gap: 1.5rem;
@@ -119,20 +162,31 @@ const { list, armyDef, totalPoints, validationResults } = injected
 }
 
 .restrictions-summary {
-  margin-bottom: .75rem;
-  font-size: .85rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
   color: var(--p-text-muted-color);
 }
 
 .restriction-line {
-  margin: .1rem 0;
+  margin: 0.1rem 0;
+}
+
+.detachment-group-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.detachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .totals-row {
   border-top: 2px solid var(--p-surface-border);
-  padding-top: .5rem;
-  margin-top: .5rem;
-  font-size: .95rem;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
   text-align: right;
 }
 </style>
