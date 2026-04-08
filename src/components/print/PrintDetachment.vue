@@ -17,9 +17,6 @@ const props = defineProps<{
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
 const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
-const filteredDerivedUnits = computed(() =>
-  derivedUnits.value.filter((ute) => ute.instances.length > 0),
-)
 
 function getUnitDef(unitName: string): UnitDef | undefined {
   return props.armyDef.units.find((u) => u.name === unitName)
@@ -98,39 +95,83 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
 </script>
 
 <template>
-  <Panel>
+  <Panel class="print-detachment">
     <template #header>
       <span>
         {{ entry.detachmentName }}
       </span>
       <span class="det-points">{{ entryPoints }}pts</span>
     </template>
-    <div class="print-detachment">
-      <table class="units-table">
-        <thead>
-          <tr>
-            <th>Qty</th>
-            <th>Unit</th>
-            <th>Type</th>
-            <th>Speed</th>
-            <th>Armour</th>
-            <th>CC</th>
-            <th>FF</th>
-            <th>Weapon</th>
-            <th>Range</th>
-            <th>Firepower</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="ute in filteredDerivedUnits" :key="ute.unitName">
-            <!-- Units with no choice slots: group by quantity, rowspan over weapon rows -->
-            <template v-if="!hasChoices(ute.unitName)">
-              <tr v-for="(wrow, wi) in fixedWeaponRows(ute.unitName)" :key="wi">
+    <table class="units-table">
+      <thead>
+        <tr>
+          <th>Qty</th>
+          <th>Unit</th>
+          <th>Type</th>
+          <th>Speed</th>
+          <th>Armour</th>
+          <th>CC</th>
+          <th>FF</th>
+          <th>Weapon</th>
+          <th>Range</th>
+          <th>Firepower</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-for="ute in derivedUnits" :key="ute.unitName">
+          <!-- Units with no choice slots: group by quantity, rowspan over weapon rows -->
+          <template v-if="!hasChoices(ute.unitName)">
+            <tr v-for="(wrow, wi) in fixedWeaponRows(ute.unitName)" :key="wi">
+              <template v-if="wi === 0">
+                <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  {{ ute.instances.length }}
+                </td>
+                <td :rowspan="fixedWeaponRows(ute.unitName).length" class="unit-name-cell">
+                  <div class="unit-name-content">
+                    {{ ute.unitName }}
+                    <Tag
+                      v-for="rule in unitSpecialRules(ute.unitName)"
+                      :key="rule.title"
+                      v-tooltip="rule.paragraphs.join(' ') || undefined"
+                      :value="rule.title"
+                      severity="secondary"
+                      class="unit-rule-tag"
+                    />
+                  </div>
+                </td>
+                <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  {{ displayUnitDef(ute.unitName)?.type ?? '' }}
+                </td>
+                <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
+                </td>
+                <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
+                </td>
+                <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
+                </td>
+                <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
+                </td>
+              </template>
+              <td>{{ wrow.label }}</td>
+              <td>{{ wrow.range }}</td>
+              <td>{{ wrow.firepower }}</td>
+            </tr>
+          </template>
+          <!-- Units with choice slots: list individually, each instance spans its weapon rows -->
+          <template v-else>
+            <template v-for="(group, gidx) in groupedChoiceUnits(ute)" :key="gidx">
+              <tr v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, group.instance)" :key="wi">
                 <template v-if="wi === 0">
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                    {{ ute.instances.length }}
+                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
+                    {{ group.qty }}
                   </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length" class="unit-name-cell">
+                  <td
+                    :rowspan="instanceWeaponRows(ute.unitName, group.instance).length"
+                    class="unit-name-cell"
+                  >
                     <div class="unit-name-content">
                       {{ ute.unitName }}
                       <Tag
@@ -143,19 +184,19 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
                       />
                     </div>
                   </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                     {{ displayUnitDef(ute.unitName)?.type ?? '' }}
                   </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                     {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
                   </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                     {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
                   </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                     {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
                   </td>
-                  <td :rowspan="fixedWeaponRows(ute.unitName).length">
+                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
                     {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
                   </td>
                 </template>
@@ -164,65 +205,15 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
                 <td>{{ wrow.firepower }}</td>
               </tr>
             </template>
-            <!-- Units with choice slots: list individually, each instance spans its weapon rows -->
-            <template v-else>
-              <template v-for="(group, gidx) in groupedChoiceUnits(ute)" :key="gidx">
-                <tr
-                  v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, group.instance)"
-                  :key="wi"
-                >
-                  <template v-if="wi === 0">
-                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                      {{ group.qty }}
-                    </td>
-                    <td
-                      :rowspan="instanceWeaponRows(ute.unitName, group.instance).length"
-                      class="unit-name-cell"
-                    >
-                      <div class="unit-name-content">
-                        {{ ute.unitName }}
-                        <Tag
-                          v-for="rule in unitSpecialRules(ute.unitName)"
-                          :key="rule.title"
-                          v-tooltip="rule.paragraphs.join(' ') || undefined"
-                          :value="rule.title"
-                          severity="secondary"
-                          class="unit-rule-tag"
-                        />
-                      </div>
-                    </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                      {{ displayUnitDef(ute.unitName)?.type ?? '' }}
-                    </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                      {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
-                    </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                      {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
-                    </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                      {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
-                    </td>
-                    <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                      {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
-                    </td>
-                  </template>
-                  <td>{{ wrow.label }}</td>
-                  <td>{{ wrow.range }}</td>
-                  <td>{{ wrow.firepower }}</td>
-                </tr>
-              </template>
-            </template>
           </template>
-        </tbody>
-      </table>
-    </div>
+        </template>
+      </tbody>
+    </table>
   </Panel>
 </template>
 
 <style scoped>
 .print-detachment {
-  margin-bottom: 1.5rem;
   page-break-inside: avoid;
 }
 
@@ -255,7 +246,7 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
 
 .units-table th,
 .units-table td {
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--p-surface-200);
   padding: 0.25rem 0.5rem;
   text-align: left;
   white-space: nowrap;
