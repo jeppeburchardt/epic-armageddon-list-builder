@@ -3,8 +3,10 @@ import { computed } from 'vue'
 import Select from 'primevue/select'
 import type { WeaponSlot } from '@/entities/army'
 import type { UnitInstance } from '@/entities/list'
+import { FloatLabel, Panel } from 'primevue'
 
 const props = defineProps<{
+  name?: string
   weaponSlots: WeaponSlot[]
   instance: UnitInstance
 }>()
@@ -30,7 +32,8 @@ const choiceSlots = computed<ChoiceSlotEntry[]>(() =>
         slot.kind === 'choice'
           ? slot.choices.map((c) => ({
               weaponName: c.weaponName,
-              label: c.additionalCost > 0 ? `${c.weaponName} (+${c.additionalCost}pts)` : c.weaponName,
+              label:
+                c.additionalCost > 0 ? `${c.weaponName} (+${c.additionalCost}pts)` : c.weaponName,
               additionalCost: c.additionalCost,
             }))
           : [],
@@ -55,45 +58,34 @@ function currentChoice(choiceSlotIdx: number): string {
 </script>
 
 <template>
-  <div class="unit-instance-editor">
-    <div
-      v-for="(slot, slotIdx) in choiceSlots"
-      :key="slotIdx"
-      class="weapon-slot"
-    >
-      <Select
-        :placeholder="slotLabel(slot, slotIdx)"
-        :model-value="currentChoice(slotIdx)"
-        :options="slot.choices"
-        option-label="label"
-        option-value="weaponName"
-        class="weapon-select"
-        @update:model-value="(val: string) => emit('weapon-change', realSlotIndex(slotIdx), val)"
-      />
+  <Panel>
+    <template #header>
+      <div><span class="pi pi-wrench"></span> {{ name }}</div>
+    </template>
+    <div class="unit-instance-editor">
+      <FloatLabel v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" variant="on">
+        <Select
+          :placeholder="slotLabel(slot, slotIdx)"
+          :model-value="currentChoice(slotIdx)"
+          :options="slot.choices"
+          :input-id="`${slot.realIndex}-${slotIdx}`"
+          option-label="label"
+          option-value="weaponName"
+          size="small"
+          fluid
+          @update:model-value="(val: string) => emit('weapon-change', realSlotIndex(slotIdx), val)"
+        />
+        <label :for="`${slot.realIndex}-${slotIdx}`">{{ slot.name ?? '' }}</label>
+      </FloatLabel>
     </div>
-  </div>
+  </Panel>
 </template>
 
 <style scoped>
 .unit-instance-editor {
   display: flex;
   flex-direction: column;
-  gap: .4rem;
-}
-
-.weapon-slot {
-  display: flex;
-  flex-direction: column;
-  gap: .2rem;
-}
-
-.slot-label {
-  font-size: .75rem;
-  color: var(--p-text-muted-color);
-}
-
-.weapon-select {
-  width: 100%;
-  font-size: .85rem;
+  gap: 1rem;
+  background-color: var(--);
 }
 </style>

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
-import ToggleSwitch from 'primevue/toggleswitch'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
+import UnitPanel from './UnitPanel.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { AppliedUpgrade, UnitInstance } from '@/entities/list'
 
@@ -108,56 +107,31 @@ function setSameConfig(
 
 <template>
   <!-- Replace upgrade -->
-  <div v-if="upgrade.type === 'replace' && replaceUpgrade" class="replace-section">
-    <div class="replace-control">
-      <InputNumber
-        size="small"
-        :model-value="replaceUpgrade.replacedCount"
-        :min="0"
-        :max="replaceMax"
-        show-buttons
-        button-layout="horizontal"
-        :step="1"
-        class="count-input"
-        fluid
-        @update:model-value="
-          (val: number | null) => val !== null && emit('replace-count-change', val)
-        "
-      >
-        <template #decrementbuttonicon><span class="pi pi-minus" /></template>
-        <template #incrementbuttonicon><span class="pi pi-plus" /></template>
-      </InputNumber>
-      <span class="replace-label">{{ fromUnitName }}</span>
-      <span class="replace-arrow">→ {{ replaceUpgrade.replacingUnits.unitName }}</span>
-      <div
-        v-if="
-          replaceUpgrade.replacingUnits.instances.length > 1 &&
-          hasChoices(replaceUpgrade.replacingUnits.unitName)
-        "
-        class="sync-toggle"
-      >
-        <ToggleSwitch
-          :model-value="getSameConfig(replaceUpgrade.replacingUnits.unitName)"
-          @update:model-value="
-            (val: boolean) =>
-              setSameConfig(
-                replaceUpgrade!.replacingUnits.unitName,
-                val,
-                replaceUpgrade!.replacingUnits.instances,
-                upgrade.upgradeName,
-              )
-          "
-        />
-        <label
-          >use same configuration for all {{ replaceUpgrade.replacingUnits.unitName }} units</label
-        >
-      </div>
-    </div>
-
+  <UnitPanel
+    v-if="upgrade.type === 'replace' && replaceUpgrade"
+    :name="`${fromUnitName} → ${replaceUpgrade.replacingUnits.unitName}`"
+    :min="0"
+    :max="replaceMax"
+    :has-same-config-option="
+      replaceUpgrade.replacingUnits.instances.length > 1 &&
+      hasChoices(replaceUpgrade.replacingUnits.unitName)
+    "
+    :unit-amount="replaceUpgrade.replacedCount"
+    :same-config="getSameConfig(replaceUpgrade.replacingUnits.unitName)"
+    @update:unit-amount="(val: number | null) => val !== null && emit('replace-count-change', val)"
+    @update:same-config="
+      (val: boolean) =>
+        setSameConfig(
+          replaceUpgrade!.replacingUnits.unitName,
+          val,
+          replaceUpgrade!.replacingUnits.instances,
+          upgrade.upgradeName,
+        )
+    "
+  >
     <!-- Per-instance weapon editors for replacing units -->
-    <div
+    <template
       v-if="replaceUpgrade.replacedCount > 0 && hasChoices(replaceUpgrade.replacingUnits.unitName)"
-      class="instances-list"
     >
       <template
         v-if="
@@ -166,6 +140,7 @@ function setSameConfig(
         "
       >
         <UnitInstanceEditor
+          :name="replaceUpgrade.replacingUnits.unitName"
           :weapon-slots="getWeaponSlots(replaceUpgrade.replacingUnits.unitName)"
           :instance="replaceUpgrade.replacingUnits.instances[0]"
           @weapon-change="
@@ -185,15 +160,9 @@ function setSameConfig(
         />
       </template>
       <template v-else>
-        <div
-          v-for="(inst, instIdx) in replaceUpgrade.replacingUnits.instances"
-          :key="instIdx"
-          class="instance-row"
-        >
-          <span class="instance-label"
-            >{{ replaceUpgrade.replacingUnits.unitName }} {{ instIdx + 1 }}</span
-          >
+        <template v-for="(inst, instIdx) in replaceUpgrade.replacingUnits.instances" :key="instIdx">
           <UnitInstanceEditor
+            :name="`${replaceUpgrade.replacingUnits.unitName} ${instIdx + 1}`"
             :weapon-slots="getWeaponSlots(replaceUpgrade.replacingUnits.unitName)"
             :instance="inst"
             @weapon-change="
@@ -208,10 +177,10 @@ function setSameConfig(
                 )
             "
           />
-        </div>
+        </template>
       </template>
-    </div>
-  </div>
+    </template>
+  </UnitPanel>
 
   <!-- Character upgrade -->
   <div v-else-if="upgrade.type === 'character' && characterUpgrade">
@@ -224,41 +193,30 @@ function setSameConfig(
 
   <!-- Add upgrade -->
   <div v-else-if="upgrade.type === 'add'" class="add-section">
-    <div v-for="ute in upgrade.addedUnits" :key="ute.unitName" class="add-unit-row">
-      <div class="add-unit-header">
-        <InputNumber
-          size="small"
-          :model-value="ute.instances.length"
-          :min="getAddMin(ute.unitName)"
-          :max="getAddMax(ute.unitName)"
-          show-buttons
-          button-layout="horizontal"
-          :step="1"
-          class="count-input"
-          fluid
-          @update:model-value="
-            (val: number | null) => val !== null && emit('add-count-change', ute.unitName, val)
-          "
-        >
-          <template #decrementbuttonicon><span class="pi pi-minus" /></template>
-          <template #incrementbuttonicon><span class="pi pi-plus" /></template>
-        </InputNumber>
-        <span class="unit-name">{{ ute.unitName }}</span>
-        <div v-if="ute.instances.length > 1 && hasChoices(ute.unitName)" class="sync-toggle">
-          <ToggleSwitch
-            :model-value="getSameConfig(ute.unitName)"
-            @update:model-value="
-              (val: boolean) => setSameConfig(ute.unitName, val, ute.instances, upgrade.upgradeName)
-            "
-          />
-          <label>use same configuration for all {{ ute.unitName }} units</label>
-        </div>
-      </div>
-
+    <UnitPanel
+      v-for="ute in upgrade.addedUnits"
+      :key="ute.unitName"
+      :name="ute.unitName"
+      :min="getAddMin(ute.unitName)"
+      :max="getAddMax(ute.unitName)"
+      :has-same-config-option="ute.instances.length > 1 && hasChoices(ute.unitName)"
+      :unit-amount="ute.instances.length"
+      :same-config="getSameConfig(ute.unitName)"
+      @update:unit-amount="
+        (val: number | null) => {
+          console.log('update', val)
+          val !== null && emit('add-count-change', ute.unitName, val)
+        }
+      "
+      @update:same-config="
+        (val: boolean) => setSameConfig(ute.unitName, val, ute.instances, upgrade.upgradeName)
+      "
+    >
       <!-- Per-instance weapon editors for added units -->
-      <div v-if="hasChoices(ute.unitName) && ute.instances.length > 0" class="instances-list">
+      <template v-if="hasChoices(ute.unitName) && ute.instances.length > 0">
         <template v-if="getSameConfig(ute.unitName)">
           <UnitInstanceEditor
+            :name="ute.unitName"
             :weapon-slots="getWeaponSlots(ute.unitName)"
             :instance="ute.instances[0]"
             @weapon-change="
@@ -271,9 +229,9 @@ function setSameConfig(
           />
         </template>
         <template v-else>
-          <div v-for="(inst, instIdx) in ute.instances" :key="instIdx" class="instance-row">
-            <span class="instance-label">{{ ute.unitName }} {{ instIdx + 1 }}</span>
+          <template v-for="(inst, instIdx) in ute.instances" :key="instIdx">
             <UnitInstanceEditor
+              :name="`${ute.unitName} ${instIdx + 1}`"
               :weapon-slots="getWeaponSlots(ute.unitName)"
               :instance="inst"
               @weapon-change="
@@ -281,14 +239,20 @@ function setSameConfig(
                   emit('weapon-change', upgrade.upgradeName, ute.unitName, instIdx, slotIdx, weapon)
               "
             />
-          </div>
+          </template>
         </template>
-      </div>
-    </div>
+      </template>
+    </UnitPanel>
   </div>
 </template>
 
 <style scoped>
+.add-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .applied-upgrade-panel {
   background: var(--p-surface-50);
   border: 1px solid var(--p-surface-border);
@@ -332,7 +296,7 @@ function setSameConfig(
 }
 
 .count-input {
-  flex-basis: 30%;
+  flex-basis: 140px;
 }
 
 .add-unit-header {
