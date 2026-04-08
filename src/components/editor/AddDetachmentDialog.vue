@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
 import type { ArmyDef, DetachmentDef, UnitCount } from '@/entities/army'
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -17,6 +22,31 @@ const emit = defineEmits<{
 
 const selectedDetachment = ref<string | null>(null)
 const detachmentOptions = props.armyDef.detachments
+
+// Helper to extract unique groups in order of first appearance
+function getUniqueGroups(detachments: DetachmentDef[]): string[] {
+  const seen = new Set<string>()
+  const groups: string[] = []
+  for (const det of detachments) {
+    if (!seen.has(det.group)) {
+      seen.add(det.group)
+      groups.push(det.group)
+    }
+  }
+  return groups
+}
+
+// Extract unique groups in order of first appearance
+const uniqueGroups = computed(() => getUniqueGroups(props.armyDef.detachments))
+
+// Initialize activeGroup to the first group
+const activeGroup = ref(getUniqueGroups(props.armyDef.detachments)[0] ?? '')
+
+// Filter detachments by active group
+const filteredDetachments = computed(() => {
+  if (!activeGroup.value) return detachmentOptions
+  return detachmentOptions.filter((det) => det.group === activeGroup.value)
+})
 
 function describeUnits(det: DetachmentDef): string {
   return det.units
@@ -51,29 +81,40 @@ function confirm() {
       No detachments defined for this army.
     </div>
 
-    <div v-else class="det-list">
-      <div
-        v-for="det in detachmentOptions"
-        :key="det.name"
-        class="det-option"
-        :class="{ selected: selectedDetachment === det.name }"
-        @click="selectedDetachment = det.name"
-      >
-        <div class="det-header">
-          <span class="det-name">{{ det.name }}</span>
-          <Tag :value="det.group" severity="secondary" class="group-tag" />
-        </div>
-        <p class="det-units">{{ describeUnits(det) }}</p>
-      </div>
+    <div v-else>
+      <!-- Group tabs -->
+      <Tabs v-model:value="activeGroup">
+        <TabList>
+          <Tab v-for="group in uniqueGroups" :key="group" :value="group">
+            {{ group }}
+          </Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel v-for="group in uniqueGroups" :key="group" :value="group">
+            <div class="det-list">
+              <div
+                v-for="det in filteredDetachments"
+                :key="det.name"
+                class="det-option"
+                :class="{ selected: selectedDetachment === det.name }"
+                @click="selectedDetachment = det.name"
+              >
+                <div class="det-header">
+                  <span class="det-name">{{ det.name }}</span>
+                  <Tag :value="det.group" severity="secondary" class="group-tag" />
+                </div>
+                <p class="det-units">{{ describeUnits(det) }}</p>
+              </div>
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </div>
 
     <template #footer>
       <Button label="Cancel" severity="secondary" @click="close" />
-      <Button
-        label="Add"
-        :disabled="!selectedDetachment"
-        @click="confirm"
-      />
+      <Button label="Add" :disabled="!selectedDetachment" @click="confirm" />
     </template>
   </Dialog>
 </template>
@@ -82,15 +123,17 @@ function confirm() {
 .det-list {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .det-option {
   border: 1px solid var(--p-surface-border);
-  border-radius: .5rem;
-  padding: .75rem;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
   cursor: pointer;
-  transition: border-color .15s, background .15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .det-option:hover {
@@ -106,8 +149,8 @@ function confirm() {
 .det-header {
   display: flex;
   align-items: center;
-  gap: .5rem;
-  margin-bottom: .25rem;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .det-name {
@@ -116,11 +159,11 @@ function confirm() {
 }
 
 .group-tag {
-  font-size: .7rem;
+  font-size: 0.7rem;
 }
 
 .det-units {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--p-text-muted-color);
   margin: 0;
 }
