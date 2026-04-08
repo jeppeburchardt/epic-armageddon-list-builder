@@ -9,12 +9,14 @@ defineProps<{
 </script>
 
 <template>
-  <DataTable :value="rules" striped-rows size="small">
-    <Column field="title" header="Rule" style="min-width: 160px" />
-    <Column header="Description">
-      <template #body="{ data }">
-        {{ data.paragraphs.length > 0 ? data.paragraphs.join(' ') : '—' }}
-      </template>
-    </Column>
-  </DataTable>
+  <div class="army-reference-table">
+    <DataTable :value="rules" striped-rows size="small">
+      <Column field="title" header="Rule" style="min-width: 160px" />
+      <Column header="Description">
+        <template #body="{ data }">
+          {{ data.paragraphs.length > 0 ? data.paragraphs.join(' ') : '—' }}
+        </template>
+      </Column>
+    </DataTable>
+  </div>
 </template>

@@ -17,14 +17,12 @@ function describeUnits(det: DetachmentDef): string {
 }
 
 function describeRestrictions(det: DetachmentDef): string {
-  return det.restrictions
-    .map((r) => `Max ${r.value} per list`)
-    .join('; ')
+  return det.restrictions.map((r) => `Max ${r.value} per list`).join('; ')
 }
 </script>
 
 <template>
-  <div class="army-table-section">
+  <div class="army-reference-table">
     <DataTable :value="detachments" striped-rows size="small">
       <Column field="name" header="Name" />
       <Column field="group" header="Group" />

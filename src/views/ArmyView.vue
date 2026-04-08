@@ -7,12 +7,14 @@ import UpgradesTable from '@/components/army/UpgradesTable.vue'
 import UnitsTable from '@/components/army/UnitsTable.vue'
 import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
 import { useArmies } from '@/composables/useArmies'
+import { groupUnitsForReference } from '@/entities/army'
 
 const props = defineProps<{ slug: string }>()
 const router = useRouter()
 const { getArmy } = useArmies()
 
 const army = computed(() => getArmy(props.slug))
+const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.value.units) : []))
 </script>
 
 <template>
@@ -74,7 +76,10 @@ const army = computed(() => getArmy(props.slug))
     <!-- Units -->
     <section class="army-section">
       <h2 class="section-heading">Units</h2>
-      <UnitsTable :units="army.units" />
+      <div v-for="group in unitGroups" :key="group.key" class="unit-group">
+        <h3 class="unit-group-heading">{{ group.title }}</h3>
+        <UnitsTable :units="group.units" />
+      </div>
     </section>
 
     <!-- Unit Special Rules -->
@@ -104,7 +109,7 @@ const army = computed(() => getArmy(props.slug))
 .army-header {
   display: flex;
   align-items: flex-start;
-  gap: .75rem;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
@@ -113,12 +118,12 @@ const army = computed(() => getArmy(props.slug))
 }
 
 .army-name {
-  margin: 0 0 .2rem;
+  margin: 0 0 0.2rem;
   font-size: 1.5rem;
 }
 
 .army-meta {
-  font-size: .875rem;
+  font-size: 0.875rem;
   color: var(--p-text-muted-color);
 }
 
@@ -128,8 +133,8 @@ const army = computed(() => getArmy(props.slug))
 
 .section-heading {
   font-size: 1.1rem;
-  margin: 0 0 .75rem;
-  padding-bottom: .3rem;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.3rem;
   border-bottom: 1px solid var(--p-surface-border);
 }
 
@@ -144,13 +149,23 @@ const army = computed(() => getArmy(props.slug))
 }
 
 .rule-title {
-  margin: 0 0 .3rem;
-  font-size: .95rem;
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
 }
 
 .rule-text {
   margin: 0;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: var(--p-text-muted-color);
+}
+
+.unit-group + .unit-group {
+  margin-top: 1.25rem;
+}
+
+.unit-group-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 </style>

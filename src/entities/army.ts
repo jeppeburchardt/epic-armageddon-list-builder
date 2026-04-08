@@ -58,6 +58,49 @@ export interface UnitDef {
   specialRuleNames?: string[]
 }
 
+export interface UnitReferenceGroup {
+  key: string
+  title: string
+  units: UnitDef[]
+}
+
+interface UnitReferenceGroupDefinition {
+  key: string
+  title: string
+  types: UnitType[]
+}
+
+const unitReferenceGroupDefinitions: UnitReferenceGroupDefinition[] = [
+  { key: 'characters', title: 'Characters', types: ['CH'] },
+  { key: 'infantry', title: 'Infantry', types: ['INF'] },
+  { key: 'vehicles', title: 'Vehicles', types: ['LV', 'AV'] },
+  { key: 'war-engines', title: 'War Engines', types: ['WE'] },
+  { key: 'aircrafts', title: 'Aircrafts', types: ['AC', 'AC/WE'] },
+]
+
+export function groupUnitsForReference(units: UnitDef[]): UnitReferenceGroup[] {
+  const grouped = unitReferenceGroupDefinitions
+    .map((group) => ({
+      key: group.key,
+      title: group.title,
+      units: units.filter((unit) => group.types.includes(unit.type)),
+    }))
+    .filter((group) => group.units.length > 0)
+
+  const mappedTypes = new Set(unitReferenceGroupDefinitions.flatMap((group) => group.types))
+  const otherUnits = units.filter((unit) => !mappedTypes.has(unit.type))
+
+  if (otherUnits.length > 0) {
+    grouped.push({
+      key: 'other',
+      title: 'Other',
+      units: otherUnits,
+    })
+  }
+
+  return grouped
+}
+
 // ─── Detachment / upgrade definitions ────────────────────────────────────────
 
 /** Represents a unit count that may be fixed or a variable range */

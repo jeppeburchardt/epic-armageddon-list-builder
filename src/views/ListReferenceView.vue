@@ -7,6 +7,7 @@ import UpgradesTable from '@/components/army/UpgradesTable.vue'
 import UnitsTable from '@/components/army/UnitsTable.vue'
 import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
 import { listEditorKey } from '@/composables/useListEditor'
+import { groupUnitsForReference } from '@/entities/army'
 
 defineProps<{ id: string }>()
 const router = useRouter()
@@ -64,7 +65,14 @@ const { armyDef } = injected
     <!-- Units -->
     <section class="army-section">
       <h2 class="section-heading">Units</h2>
-      <UnitsTable :units="armyDef.units" />
+      <div
+        v-for="group in groupUnitsForReference(armyDef.units)"
+        :key="group.key"
+        class="unit-group"
+      >
+        <h3 class="unit-group-heading">{{ group.title }}</h3>
+        <UnitsTable :units="group.units" />
+      </div>
     </section>
 
     <!-- Unit Special Rules -->
@@ -106,7 +114,7 @@ const { armyDef } = injected
 
 .army-meta {
   color: var(--p-text-muted-color);
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 .army-section {
@@ -116,8 +124,8 @@ const { armyDef } = injected
 .section-heading {
   font-size: 1.1rem;
   font-weight: 600;
-  margin: 0 0 .75rem;
-  padding-bottom: .4rem;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--p-surface-border);
 }
 
@@ -132,7 +140,7 @@ const { armyDef } = injected
 }
 
 .rule-title {
-  margin: 0 0 .25rem;
+  margin: 0 0 0.25rem;
   font-size: 1rem;
 }
 
@@ -140,5 +148,15 @@ const { armyDef } = injected
   margin: 0;
   color: var(--p-text-muted-color);
   line-height: 1.5;
+}
+
+.unit-group + .unit-group {
+  margin-top: 1.25rem;
+}
+
+.unit-group-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 </style>

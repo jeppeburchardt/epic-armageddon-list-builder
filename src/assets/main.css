@@ -1,28 +1,110 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    font-family: var(--p-font-family, system-ui, sans-serif);
-    font-weight: 400;
-    background-color: var(--p-surface-100);
-    color: var(--p-text-color);
-    min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--p-font-family, system-ui, sans-serif);
+  font-weight: 400;
+  background-color: var(--p-surface-100);
+  color: var(--p-text-color);
+  min-height: 100dvh;
 }
 
 @media (prefers-color-scheme: dark) {
-    body {
-        background-color: var(--p-surface-800);
-    }
+  body {
+    background-color: var(--p-surface-800);
+  }
 }
 
 #app {
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.army-reference-table {
+  overflow-x: auto;
+  border: 1px solid var(--p-surface-border);
+  border-radius: var(--p-border-radius);
+  background: var(--p-surface-0);
+}
+
+.army-reference-table :where(.p-datatable, .p-datatable-table-container) {
+  border-radius: inherit;
+}
+
+.army-reference-table :where(.p-datatable-table, .army-reference-table__native-table) {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.army-reference-table :where(.p-datatable-thead > tr > th, .army-reference-table__native-table th) {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--p-surface-border);
+  border-right: 1px solid var(--p-surface-border);
+  background: var(--p-surface-100);
+  color: var(--p-text-color);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.army-reference-table :where(.p-datatable-tbody > tr > td, .army-reference-table__native-table td) {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--p-surface-border);
+  border-right: 1px solid var(--p-surface-border);
+  vertical-align: top;
+}
+
+.army-reference-table
+  :where(
+    .p-datatable-thead > tr > th:last-child,
+    .p-datatable-tbody > tr > td:last-child,
+    .army-reference-table__native-table th:last-child,
+    .army-reference-table__native-table td:last-child
+  ) {
+  border-right: none;
+}
+
+.army-reference-table
+  :where(
+    .p-datatable-tbody > tr:last-child > td,
+    .army-reference-table__native-table tbody tr:last-child > td
+  ) {
+  border-bottom: none;
+}
+
+.army-reference-table .p-datatable-tbody > tr:nth-child(even) > td {
+  background: var(--p-surface-50);
+}
+
+.army-reference-table .army-reference-table__native-table td {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .army-reference-table :where(.p-datatable-table, .army-reference-table__native-table) {
+    min-width: 40rem;
+    font-size: 0.8125rem;
+  }
+
+  .army-reference-table
+    :where(
+      .p-datatable-thead > tr > th,
+      .p-datatable-tbody > tr > td,
+      .army-reference-table__native-table th,
+      .army-reference-table__native-table td
+    ) {
+    padding: 0.45rem 0.625rem;
+  }
 }

@@ -33,23 +33,11 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
   }
   return rows.length > 0 ? rows : [{ label: '—', range: '—', firepower: '—', isAlternative: false }]
 }
-
-function describeTransportType(unit: UnitDef): string {
-  if (!unit.transportation?.type) return '—'
-  const cost = unit.transportation.cost ?? 0
-  return `${unit.transportation.type} (${cost})`
-}
-
-function describeCapacity(unit: UnitDef): string {
-  if (!unit.transportation?.capacity || !unit.transportation.capabilities) return '—'
-  const capabilities = unit.transportation.capabilities.join(', ')
-  return `${unit.transportation.capacity} (${capabilities})`
-}
 </script>
 
 <template>
-  <div class="units-table-wrapper">
-    <table class="units-table">
+  <div class="army-reference-table units-table-wrapper">
+    <table class="army-reference-table__native-table units-table">
       <thead>
         <tr>
           <th>Name</th>
@@ -67,7 +55,11 @@ function describeCapacity(unit: UnitDef): string {
       </thead>
       <tbody>
         <template v-for="(unit, ui) in units" :key="ui">
-          <tr v-for="(wrow, wi) in weaponRows(unit)" :key="wi">
+          <tr
+            v-for="(wrow, wi) in weaponRows(unit)"
+            :key="wi"
+            :class="['unit-row', { 'unit-row--striped': ui % 2 === 1 }]"
+          >
             <!-- Unit stat cells only on the first weapon row -->
             <template v-if="wi === 0">
               <td :rowspan="weaponRows(unit).length" class="unit-name-cell">{{ unit.name }}</td>
@@ -108,22 +100,14 @@ function describeCapacity(unit: UnitDef): string {
 
 .units-table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
 }
 
-.units-table th,
 .units-table td {
-  border: 1px solid var(--p-surface-border);
-  padding: 0.3rem 0.5rem;
-  white-space: nowrap;
   vertical-align: middle;
 }
 
-.units-table th {
-  background: var(--p-surface-100);
-  font-weight: 600;
-  text-align: left;
+.unit-row--striped td {
+  background: var(--p-surface-50);
 }
 
 .unit-name-cell {
@@ -142,7 +126,7 @@ function describeCapacity(unit: UnitDef): string {
 
 .unit-spacer td {
   border: none;
-  padding: 0.15rem 0;
+  padding: 0.2rem 0;
   background: transparent;
 }
 </style>
