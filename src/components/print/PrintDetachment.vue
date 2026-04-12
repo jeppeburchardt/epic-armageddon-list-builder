@@ -45,6 +45,16 @@ interface WeaponRow {
   firepower: string
 }
 
+interface DisplayUnitGroup {
+  key: string
+  unitName: string
+  qty: number
+  rows: WeaponRow[]
+  unitDef?: UnitDef
+  specialRules: SpecialRuleDef[]
+  shaded: boolean
+}
+
 function fixedWeaponRows(unitName: string): WeaponRow[] {
   const def = displayUnitDef(unitName)
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
@@ -92,6 +102,47 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
   }
   return Array.from(map.values()).map((insts) => ({ qty: insts.length, instance: insts[0] }))
 }
+
+const displayGroups = computed<DisplayUnitGroup[]>(() => {
+  let displayIndex = 0
+
+  return derivedUnits.value.flatMap((ute, uteIndex) => {
+    const unitDef = displayUnitDef(ute.unitName)
+    const specialRules = unitSpecialRules(ute.unitName)
+
+    if (!hasChoices(ute.unitName)) {
+      const shaded = (displayIndex + 1) % 2 === 0
+      displayIndex += 1
+
+      return [
+        {
+          key: `${ute.unitName}-${uteIndex}`,
+          unitName: ute.unitName,
+          qty: ute.instances.length,
+          rows: fixedWeaponRows(ute.unitName),
+          unitDef,
+          specialRules,
+          shaded,
+        },
+      ]
+    }
+
+    return groupedChoiceUnits(ute).map((group, groupIndex) => {
+      const shaded = (displayIndex + 1) % 2 === 0
+      displayIndex += 1
+
+      return {
+        key: `${ute.unitName}-${uteIndex}-${groupIndex}`,
+        unitName: ute.unitName,
+        qty: group.qty,
+        rows: instanceWeaponRows(ute.unitName, group.instance),
+        unitDef,
+        specialRules,
+        shaded,
+      }
+    })
+  })
+})
 </script>
 
 <template>
@@ -118,94 +169,45 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
         </tr>
       </thead>
       <tbody>
-        <template v-for="ute in derivedUnits" :key="ute.unitName">
-          <!-- Units with no choice slots: group by quantity, rowspan over weapon rows -->
-          <template v-if="!hasChoices(ute.unitName)">
-            <tr v-for="(wrow, wi) in fixedWeaponRows(ute.unitName)" :key="wi">
-              <template v-if="wi === 0">
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                  {{ ute.instances.length }}
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length" class="unit-name-cell">
-                  <div class="unit-name-content">
-                    {{ ute.unitName }}
-                    <Tag
-                      v-for="rule in unitSpecialRules(ute.unitName)"
-                      :key="rule.title"
-                      v-tooltip="rule.paragraphs.join(' ') || undefined"
-                      :value="rule.title"
-                      severity="secondary"
-                      class="unit-rule-tag"
-                    />
-                  </div>
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                  {{ displayUnitDef(ute.unitName)?.type ?? '' }}
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                  {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                  {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                  {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
-                </td>
-                <td :rowspan="fixedWeaponRows(ute.unitName).length">
-                  {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
-                </td>
-              </template>
-              <td>{{ wrow.label }}</td>
-              <td>{{ wrow.range }}</td>
-              <td>{{ wrow.firepower }}</td>
-            </tr>
-          </template>
-          <!-- Units with choice slots: list individually, each instance spans its weapon rows -->
-          <template v-else>
-            <template v-for="(group, gidx) in groupedChoiceUnits(ute)" :key="gidx">
-              <tr v-for="(wrow, wi) in instanceWeaponRows(ute.unitName, group.instance)" :key="wi">
-                <template v-if="wi === 0">
-                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                    {{ group.qty }}
-                  </td>
-                  <td
-                    :rowspan="instanceWeaponRows(ute.unitName, group.instance).length"
-                    class="unit-name-cell"
-                  >
-                    <div class="unit-name-content">
-                      {{ ute.unitName }}
-                      <Tag
-                        v-for="rule in unitSpecialRules(ute.unitName)"
-                        :key="rule.title"
-                        v-tooltip="rule.paragraphs.join(' ') || undefined"
-                        :value="rule.title"
-                        severity="secondary"
-                        class="unit-rule-tag"
-                      />
-                    </div>
-                  </td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                    {{ displayUnitDef(ute.unitName)?.type ?? '' }}
-                  </td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                    {{ displayUnitDef(ute.unitName)?.speed ?? '—' }}
-                  </td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                    {{ displayUnitDef(ute.unitName)?.armour ?? '—' }}
-                  </td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                    {{ displayUnitDef(ute.unitName)?.cc ?? '—' }}
-                  </td>
-                  <td :rowspan="instanceWeaponRows(ute.unitName, group.instance).length">
-                    {{ displayUnitDef(ute.unitName)?.ff ?? '—' }}
-                  </td>
-                </template>
-                <td>{{ wrow.label }}</td>
-                <td>{{ wrow.range }}</td>
-                <td>{{ wrow.firepower }}</td>
-              </tr>
+        <template v-for="group in displayGroups" :key="group.key">
+          <tr v-for="(wrow, wi) in group.rows" :key="wi" :class="{ 'unit-row-even': group.shaded }">
+            <template v-if="wi === 0">
+              <td :rowspan="group.rows.length">
+                {{ group.qty }}
+              </td>
+              <td :rowspan="group.rows.length" class="unit-name-cell">
+                <div class="unit-name-content">
+                  {{ group.unitName }}
+                  <Tag
+                    v-for="rule in group.specialRules"
+                    :key="rule.title"
+                    v-tooltip="rule.paragraphs.join(' ') || undefined"
+                    :value="rule.title"
+                    severity="secondary"
+                    class="unit-rule-tag"
+                  />
+                </div>
+              </td>
+              <td :rowspan="group.rows.length">
+                {{ group.unitDef?.type ?? '' }}
+              </td>
+              <td :rowspan="group.rows.length">
+                {{ group.unitDef?.speed ?? '—' }}
+              </td>
+              <td :rowspan="group.rows.length">
+                {{ group.unitDef?.armour ?? '—' }}
+              </td>
+              <td :rowspan="group.rows.length">
+                {{ group.unitDef?.cc ?? '—' }}
+              </td>
+              <td :rowspan="group.rows.length">
+                {{ group.unitDef?.ff ?? '—' }}
+              </td>
             </template>
-          </template>
+            <td>{{ wrow.label }}</td>
+            <td>{{ wrow.range }}</td>
+            <td>{{ wrow.firepower }}</td>
+          </tr>
         </template>
       </tbody>
     </table>
@@ -253,8 +255,12 @@ function groupedChoiceUnits(ute: UnitTypeEntry): { qty: number; instance: UnitIn
   vertical-align: middle;
 }
 
-.units-table th {
+.unit-row-even td {
   background: var(--p-surface-100);
+}
+
+.units-table th {
+  background: var(--p-surface-200);
   font-weight: 600;
 }
 
