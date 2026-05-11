@@ -55,6 +55,8 @@ export interface UnitDef {
   weaponSlots: WeaponSlot[]
   /** Transportation properties (cost/type for transportable units, capacity/capabilities for transports) */
   transportation?: Transportation
+  /** Legacy/alternate field used by some army JSON files for unit special rules */
+  traits?: string[]
   specialRuleNames?: string[]
 }
 

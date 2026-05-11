@@ -4,16 +4,26 @@ import legionesAstartes from '@/data/armies/legiones-astartes.json'
 import spaceMarines from '@/data/armies/space-marine.json'
 import allSpecialRules from '@/data/special-rules.json'
 
+function normalizedRuleNames(unit: ArmyDef['units'][number]): string[] {
+  const names = unit.specialRuleNames ?? unit.traits ?? []
+  return Array.from(new Set(names))
+}
+
 function enrichArmy(raw: unknown, globalRules: SpecialRuleDef[]): ArmyDef {
   const army = raw as ArmyDef
+  const normalizedUnits = army.units.map((unit) => ({
+    ...unit,
+    specialRuleNames: normalizedRuleNames(unit),
+  }))
+
   const usedNames = new Set<string>()
-  for (const unit of army.units) {
-    for (const name of unit.specialRuleNames ?? []) {
+  for (const unit of normalizedUnits) {
+    for (const name of unit.specialRuleNames) {
       usedNames.add(name)
     }
   }
   const unitSpecialRules = globalRules.filter((r) => usedNames.has(r.title))
-  return { ...army, unitSpecialRules }
+  return { ...army, units: normalizedUnits, unitSpecialRules }
 }
 
 const armies: ArmyDef[] = [

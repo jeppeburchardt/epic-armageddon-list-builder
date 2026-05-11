@@ -62,7 +62,9 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
           >
             <!-- Unit stat cells only on the first weapon row -->
             <template v-if="wi === 0">
-              <td :rowspan="weaponRows(unit).length" class="unit-name-cell">{{ unit.name }}</td>
+              <td :rowspan="weaponRows(unit).length" class="unit-name-cell">
+                {{ unit.name }}
+              </td>
               <td :rowspan="weaponRows(unit).length">{{ unit.cost }}</td>
               <td :rowspan="weaponRows(unit).length">{{ unit.type }}</td>
               <td :rowspan="weaponRows(unit).length">{{ unit.speed }}</td>
@@ -79,7 +81,7 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
             <!-- Transport/capacity/special rules only on first weapon row -->
             <template v-if="wi === 0">
               <td :rowspan="weaponRows(unit).length">
-                {{ unit.specialRuleNames?.join(', ') ?? '—' }}
+                {{ unit.specialRuleNames?.join(', ') ?? unit.traits?.join(', ') ?? '—' }}
               </td>
             </template>
           </tr>

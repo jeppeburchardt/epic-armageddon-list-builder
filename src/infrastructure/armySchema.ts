@@ -35,7 +35,17 @@ export const TransportationSchema = z.object({
 
 // ─── Unit definition ─────────────────────────────────────────────────────────
 
-export const UnitTypeSchema = z.enum(['CH', 'INF', 'LV', 'AV', 'AC', 'WE', 'AC/WE', 'SC', 'Special'])
+export const UnitTypeSchema = z.enum([
+  'CH',
+  'INF',
+  'LV',
+  'AV',
+  'AC',
+  'WE',
+  'AC/WE',
+  'SC',
+  'Special',
+])
 
 export const UnitDefSchema = z.object({
   name: z.string(),
@@ -47,6 +57,7 @@ export const UnitDefSchema = z.object({
   ff: z.string().nullable(),
   weaponSlots: z.array(WeaponSlotSchema),
   transportation: TransportationSchema.optional(),
+  traits: z.array(z.string()).optional(),
   specialRuleNames: z.array(z.string()).optional(),
 })
 

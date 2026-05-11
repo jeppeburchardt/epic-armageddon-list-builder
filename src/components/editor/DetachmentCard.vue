@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
+import Message from 'primevue/message'
 import Tag from 'primevue/tag'
 import Accordion from 'primevue/accordion'
 import AccordionPanel from 'primevue/accordionpanel'
@@ -56,10 +57,9 @@ const detachmentDef = computed(() =>
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
 
-const transportWarning = computed(() => {
-  const result = validateTransportCapacity(props.entry, props.armyDef)
-  return result?.message ?? null
-})
+const transportResult = computed(() => validateTransportCapacity(props.entry, props.armyDef))
+
+const transportWarning = computed(() => transportResult.value?.message ?? null)
 
 const availableUpgradesCount = computed(() => {
   if (!detachmentDef.value) return 0
@@ -74,7 +74,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
 </script>
 
 <template>
-  <Card :class="{ warning: transportWarning }">
+  <Card :class="{ 'warning-card': transportWarning }">
     <template #content>
       <div class="entry">
         <div class="info">
@@ -106,10 +106,8 @@ function isTransportUpgrade(upgradeName: string): boolean {
               :key="unit.unitName"
               class="instance"
             >
-              <span class="amount">
+              <span>
                 {{ unit.instances.length }}
-              </span>
-              <span class="name">
                 {{ unit.unitName }}
               </span>
             </div>
@@ -118,15 +116,17 @@ function isTransportUpgrade(upgradeName: string): boolean {
         <div class="upgrades">
           <Accordion v-model:value="activePanel">
             <AccordionPanel value="0">
-              <AccordionHeader
-                >Base units
-                <Tag
-                  v-for="unit in deriveBaseUnits(entry)"
-                  :key="unit.unitName"
-                  severity="secondary"
-                >
-                  {{ unit.instances.length }}x{{ unit.unitName }}
-                </Tag>
+              <AccordionHeader>
+                <span>
+                  Base units
+                  <Tag
+                    v-for="unit in deriveBaseUnits(entry)"
+                    :key="unit.unitName"
+                    severity="secondary"
+                  >
+                    {{ unit.instances.length }}x{{ unit.unitName }}
+                  </Tag>
+                </span>
               </AccordionHeader>
               <AccordionContent>
                 <BaseUnitsPanel
@@ -145,11 +145,16 @@ function isTransportUpgrade(upgradeName: string): boolean {
               v-for="upgrade in entry.appliedUpgrades"
               :key="upgrade.upgradeName"
               :value="upgrade.upgradeName"
-              :class="{ warning: isTransportUpgrade(upgrade.upgradeName) && !!transportWarning }"
             >
               <AccordionHeader>
                 <span class="tag-list">
-                  {{ upgrade.upgradeName }}
+                  <span
+                    :class="{
+                      warning: isTransportUpgrade(upgrade.upgradeName) && !!transportWarning,
+                    }"
+                  >
+                    {{ upgrade.upgradeName }}
+                  </span>
                   <Tag
                     v-for="unit in deriveUpgradeUnits(upgrade)"
                     :key="unit.unitName"
@@ -191,6 +196,13 @@ function isTransportUpgrade(upgradeName: string): boolean {
               </AccordionContent>
             </AccordionPanel>
           </Accordion>
+          <Message
+            v-if="transportResult"
+            :severity="transportResult.type === 'error' ? 'error' : 'warn'"
+            class="transport-warning"
+          >
+            {{ transportResult.message }}
+          </Message>
         </div>
       </div>
     </template>
@@ -212,7 +224,12 @@ function isTransportUpgrade(upgradeName: string): boolean {
   flex-direction: row;
   gap: 1.5rem;
 }
-
+.warning {
+  color: var(--p-message-warn-color);
+}
+.warning-card {
+  outline: 1px solid var(--p-message-warn-outlined-color);
+}
 .info {
   width: 220px;
   display: flex;
@@ -230,16 +247,6 @@ function isTransportUpgrade(upgradeName: string): boolean {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-}
-.instance {
-  /* TODO */
-}
-.amount {
-  /* TODO */
-}
-.instance .name::before {
-  /* TODO */
-  content: 'x';
 }
 
 @media (max-width: 600px) {
@@ -269,6 +276,10 @@ function isTransportUpgrade(upgradeName: string): boolean {
 
 .upgrades {
   flex: 1 2 auto;
+}
+
+.transport-warning {
+  margin-top: 0.75rem;
 }
 
 .tag-list {

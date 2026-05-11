@@ -30,8 +30,13 @@ function displayUnitDef(unitName: string): UnitDef | undefined {
   return def
 }
 
+function ruleNames(unitName: string): string[] {
+  const def = displayUnitDef(unitName)
+  return def?.specialRuleNames ?? def?.traits ?? []
+}
+
 function unitSpecialRules(unitName: string): SpecialRuleDef[] {
-  const names = displayUnitDef(unitName)?.specialRuleNames ?? []
+  const names = ruleNames(unitName)
   return props.armyDef.unitSpecialRules.filter((r) => names.includes(r.title))
 }
 
@@ -51,6 +56,7 @@ interface DisplayUnitGroup {
   qty: number
   rows: WeaponRow[]
   unitDef?: UnitDef
+  traits: string[]
   specialRules: SpecialRuleDef[]
   shaded: boolean
 }
@@ -108,6 +114,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
 
   return derivedUnits.value.flatMap((ute, uteIndex) => {
     const unitDef = displayUnitDef(ute.unitName)
+    const traits = ruleNames(ute.unitName)
     const specialRules = unitSpecialRules(ute.unitName)
 
     if (!hasChoices(ute.unitName)) {
@@ -121,6 +128,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
           qty: ute.instances.length,
           rows: fixedWeaponRows(ute.unitName),
           unitDef,
+          traits,
           specialRules,
           shaded,
         },
@@ -137,6 +145,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
         qty: group.qty,
         rows: instanceWeaponRows(ute.unitName, group.instance),
         unitDef,
+        traits,
         specialRules,
         shaded,
       }
