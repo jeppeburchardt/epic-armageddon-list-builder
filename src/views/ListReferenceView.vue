@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
@@ -15,6 +15,7 @@ const router = useRouter()
 const injected = inject(listEditorKey)
 if (!injected) throw new Error('listEditorKey not provided')
 const { armyDef } = injected
+const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDef.value.units) : []))
 </script>
 
 <template>
@@ -65,11 +66,7 @@ const { armyDef } = injected
     <!-- Units -->
     <section class="army-section">
       <h2 class="section-heading">Units</h2>
-      <div
-        v-for="group in groupUnitsForReference(armyDef.units)"
-        :key="group.key"
-        class="unit-group"
-      >
+      <div v-for="group in unitGroups" :key="group.key" class="unit-group">
         <h3 class="unit-group-heading">{{ group.title }}</h3>
         <UnitsTable :units="group.units" />
       </div>

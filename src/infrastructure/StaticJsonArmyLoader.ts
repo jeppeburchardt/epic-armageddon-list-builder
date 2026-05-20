@@ -3,6 +3,7 @@ import type { ArmyLoader } from '@/ports/ArmyLoader'
 import legionesAstartes from '@/data/armies/legiones-astartes.json'
 import spaceMarines from '@/data/armies/space-marine.json'
 import allSpecialRules from '@/data/special-rules.json'
+import { RawArmyDefSchema, SpecialRulesFileSchema } from '@/infrastructure/armySchema'
 
 function normalizedRuleNames(unit: ArmyDef['units'][number]): string[] {
   const names = unit.specialRuleNames ?? unit.traits ?? []
@@ -10,7 +11,7 @@ function normalizedRuleNames(unit: ArmyDef['units'][number]): string[] {
 }
 
 function enrichArmy(raw: unknown, globalRules: SpecialRuleDef[]): ArmyDef {
-  const army = raw as ArmyDef
+  const army = RawArmyDefSchema.parse(raw)
   const normalizedUnits = army.units.map((unit) => ({
     ...unit,
     specialRuleNames: normalizedRuleNames(unit),
@@ -26,9 +27,11 @@ function enrichArmy(raw: unknown, globalRules: SpecialRuleDef[]): ArmyDef {
   return { ...army, units: normalizedUnits, unitSpecialRules }
 }
 
+const parsedRules = SpecialRulesFileSchema.parse(allSpecialRules)
+
 const armies: ArmyDef[] = [
-  enrichArmy(legionesAstartes, allSpecialRules as SpecialRuleDef[]),
-  enrichArmy(spaceMarines, allSpecialRules as SpecialRuleDef[]),
+  enrichArmy(legionesAstartes, parsedRules),
+  enrichArmy(spaceMarines, parsedRules),
 ]
 
 export class StaticJsonArmyLoader implements ArmyLoader {
