@@ -122,7 +122,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
               severity="secondary"
               variant="outlined"
               aria-label="More options"
-              @click="orderMenu.toggle"
+              @click="(e) => orderMenu.toggle(e)"
             />
             <Menu ref="orderMenu" :model="orderMenuItems" popup />
             <Button
