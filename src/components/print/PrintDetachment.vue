@@ -258,7 +258,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   height: 1.4rem;
   margin-right: 0.35rem;
   border-radius: 999px;
-  background: #1f2937;
+  background: #000;
   color: #fff;
   font-size: 0.75rem;
   font-weight: 700;
