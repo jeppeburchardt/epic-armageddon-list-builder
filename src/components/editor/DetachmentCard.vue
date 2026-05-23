@@ -17,6 +17,7 @@ import type { Entry } from '@/entities/list'
 import { calculateEntryPoints } from '@/entities/points'
 import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
+import { toRomanNumeral } from '@/entities/romanNumerals'
 import { useMediaQuery } from '@vueuse/core'
 
 const props = defineProps<{
@@ -73,35 +74,6 @@ function isTransportUpgrade(upgradeName: string): boolean {
   return def?.type === 'add' && (def.transportWarning ?? false)
 }
 
-function toRomanNumeral(value: number): string {
-  const numerals: Array<[number, string]> = [
-    [1000, 'M'],
-    [900, 'CM'],
-    [500, 'D'],
-    [400, 'CD'],
-    [100, 'C'],
-    [90, 'XC'],
-    [50, 'L'],
-    [40, 'XL'],
-    [10, 'X'],
-    [9, 'IX'],
-    [5, 'V'],
-    [4, 'IV'],
-    [1, 'I'],
-  ]
-
-  let remaining = Math.max(1, Math.floor(value))
-  let roman = ''
-
-  for (const [num, symbol] of numerals) {
-    while (remaining >= num) {
-      roman += symbol
-      remaining -= num
-    }
-  }
-
-  return roman
-}
 </script>
 
 <template>
