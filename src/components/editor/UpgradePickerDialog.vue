@@ -49,6 +49,16 @@ function describeUpgrade(upgDef: UpgradeDef): string {
   return `Add any of: ${names}`
 }
 
+function minCostLabel(upgDef: UpgradeDef): string {
+  const cost = upgradeMinCost(upgDef, props.armyDef)
+  if (upgDef.type === 'replace') {
+    if (cost > 0) return `+${cost}pts`
+    if (cost < 0) return `${cost}pts`
+    return '0pts'
+  }
+  return `from ${cost}pts`
+}
+
 function close() {
   visible.value = false
   selectedUpgrade.value = null
@@ -83,7 +93,7 @@ function confirm() {
       >
         <div class="option-header">
           <span class="option-name">{{ upgDef.name }}</span>
-          <span class="option-price">{{ upgradeMinCost(upgDef, armyDef) }}pts</span>
+          <span class="option-price">{{ minCostLabel(upgDef) }}</span>
           <span class="option-type">{{ upgDef.type }}</span>
         </div>
         <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
