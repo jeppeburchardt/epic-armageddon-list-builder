@@ -53,6 +53,16 @@ const groupedEntries = computed(() => {
     .map((group) => ({ group, entries: groups[group] ?? [] }))
     .filter((section) => section.entries.length > 0)
 })
+
+const detachmentNumbers = computed(() => {
+  const numbers = new Map<string, number>()
+
+  ;(list.value?.entries ?? []).forEach((entry, index) => {
+    numbers.set(entry.id, index + 1)
+  })
+
+  return numbers
+})
 </script>
 
 <template>
@@ -97,6 +107,7 @@ const groupedEntries = computed(() => {
           :key="entry.id"
           :entry="entry"
           :army-def="armyDef"
+          :detachment-number="detachmentNumbers.get(entry.id) ?? 0"
         />
       </template>
     </div>

@@ -5,6 +5,7 @@ import Tag from 'primevue/tag'
 import Tooltip from 'primevue/tooltip'
 import type { ArmyDef, SpecialRuleDef, UnitDef } from '@/entities/army'
 import type { Entry, UnitInstance, UnitTypeEntry } from '@/entities/list'
+import { toRomanNumeral } from '@/entities/romanNumerals'
 
 const vTooltip = Tooltip
 import { calculateEntryPoints } from '@/entities/points'
@@ -13,10 +14,14 @@ import { deriveFormationUnits } from '@/entities/composition'
 const props = defineProps<{
   entry: Entry
   armyDef: ArmyDef
+  detachmentNumber: number
 }>()
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
 const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
+const detachmentNumberLabel = computed(() =>
+  props.detachmentNumber > 0 ? toRomanNumeral(props.detachmentNumber) : '',
+)
 
 function getUnitDef(unitName: string): UnitDef | undefined {
   return props.armyDef.units.find((u) => u.name === unitName)
@@ -158,6 +163,9 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   <Panel class="print-detachment">
     <template #header>
       <span>
+        <span v-if="detachmentNumberLabel" class="detachment-number-badge">{{
+          detachmentNumberLabel
+        }}</span>
         {{ entry.detachmentName }}
       </span>
       <span class="det-points">{{ entryPoints }}pts</span>
@@ -240,6 +248,21 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   font-size: 0.8rem;
   color: var(--p-text-muted-color);
   font-weight: 400;
+}
+
+.detachment-number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-right: 0.35rem;
+  border-radius: 999px;
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .det-points {
