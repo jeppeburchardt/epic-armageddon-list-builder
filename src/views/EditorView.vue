@@ -18,6 +18,7 @@ const {
   validationResults,
   addEntry,
   removeEntry,
+  moveEntry,
   updateBaseUnitCount,
   applyUpgrade,
   removeUpgrade,
@@ -61,8 +62,12 @@ const showAddDetachment = ref(false)
         :key="entry.id"
         :entry="entry"
         :army-def="armyDef"
+        :is-first="index === 0"
+        :is-last="index === list.entries.length - 1"
         :detachment-number="index + 1"
         @remove="removeEntry(entry.id)"
+        @move-up="moveEntry(entry.id, 'up')"
+        @move-down="moveEntry(entry.id, 'down')"
         @base-count-change="(unitName, count) => updateBaseUnitCount(entry.id, unitName, count)"
         @weapon-change="(source, unitName, instIdx, slotIdx, weapon) => updateWeaponSelection(entry.id, source, unitName, instIdx, slotIdx, weapon)"
         @add-upgrade="(upgDef) => applyUpgrade(entry.id, upgDef)"

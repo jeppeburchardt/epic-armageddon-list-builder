@@ -88,6 +88,23 @@ export function removeEntry(repo: ListRepository, listId: string, entryId: strin
   }))
 }
 
+export function moveEntry(
+  repo: ListRepository,
+  listId: string,
+  entryId: string,
+  direction: 'up' | 'down',
+): ArmyList {
+  return mutateList(repo, listId, (list) => {
+    const entries = [...list.entries]
+    const index = entries.findIndex((e) => e.id === entryId)
+    if (index === -1) return list
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= entries.length) return list
+    ;[entries[index], entries[targetIndex]] = [entries[targetIndex], entries[index]]
+    return { ...list, entries }
+  })
+}
+
 // ─── Base unit count (for variable-count detachments) ────────────────────────
 
 export function updateBaseUnitCount(
