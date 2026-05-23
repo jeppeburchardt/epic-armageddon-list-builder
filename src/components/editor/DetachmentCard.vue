@@ -15,7 +15,7 @@ import AppliedUpgradePanel from './AppliedUpgradePanel.vue'
 import UpgradePickerDialog from './UpgradePickerDialog.vue'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 import type { Entry } from '@/entities/list'
-import { calculateEntryPoints, calculateAppliedUpgradePoints } from '@/entities/points'
+import { calculateEntryPoints, calculateAppliedUpgradePoints, upgradeMinCost } from '@/entities/points'
 import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
 import { toRomanNumeral } from '@/entities/romanNumerals'
@@ -90,9 +90,28 @@ const availableUpgradesCount = computed(() => {
   return detachmentDef.value.availableUpgrades.filter((n) => !applied.has(n)).length
 })
 
+const availableUpgradeDefs = computed(() => {
+  if (!detachmentDef.value) return []
+  const applied = new Set(props.entry.appliedUpgrades.map((u) => u.upgradeName))
+  return detachmentDef.value.availableUpgrades
+    .filter((n) => !applied.has(n))
+    .map((n) => props.armyDef.upgrades.find((u) => u.name === n))
+    .filter(Boolean) as UpgradeDef[]
+})
+
 function isTransportUpgrade(upgradeName: string): boolean {
   const def = props.armyDef.upgrades.find((u) => u.name === upgradeName)
   return def?.type === 'add' && (def.transportWarning ?? false)
+}
+
+function upgradeMinCostLabel(upgDef: UpgradeDef): string {
+  const cost = upgradeMinCost(upgDef, props.armyDef)
+  if (upgDef.type === 'replace') {
+    if (cost > 0) return `+${cost}pts`
+    if (cost < 0) return `${cost}pts`
+    return '0pts'
+  }
+  return `from ${cost}pts`
 }
 </script>
 
@@ -233,6 +252,16 @@ function isTransportUpgrade(upgradeName: string): boolean {
               </AccordionContent>
             </AccordionPanel>
           </Accordion>
+          <div v-if="availableUpgradeDefs.length > 0" class="available-upgrades">
+            <div
+              v-for="upgDef in availableUpgradeDefs"
+              :key="upgDef.name"
+              class="available-upgrade"
+            >
+              <span class="available-upgrade-name">{{ upgDef.name }}</span>
+              <span class="available-upgrade-price">{{ upgradeMinCostLabel(upgDef) }}</span>
+            </div>
+          </div>
           <Message
             v-if="transportResult"
             :severity="transportResult.type === 'error' ? 'error' : 'warn'"
@@ -351,6 +380,30 @@ function isTransportUpgrade(upgradeName: string): boolean {
   color: var(--p-text-color);
   white-space: nowrap;
   margin-right: 0.25rem;
+}
+
+.available-upgrades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.available-upgrade {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--p-text-muted-color);
+}
+
+.available-upgrade-name {
+  font-weight: 500;
+}
+
+.available-upgrade-price {
+  font-size: 0.8rem;
 }
 
 .card-header-left {
