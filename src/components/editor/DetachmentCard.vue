@@ -15,7 +15,7 @@ import AppliedUpgradePanel from './AppliedUpgradePanel.vue'
 import UpgradePickerDialog from './UpgradePickerDialog.vue'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 import type { Entry } from '@/entities/list'
-import { calculateEntryPoints } from '@/entities/points'
+import { calculateEntryPoints, calculateAppliedUpgradePoints } from '@/entities/points'
 import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
 import { toRomanNumeral } from '@/entities/romanNumerals'
@@ -197,6 +197,9 @@ function isTransportUpgrade(upgradeName: string): boolean {
                     {{ unit.instances.length }}x{{ unit.unitName }}
                   </Tag>
                 </span>
+                <span class="upgrade-points">
+                  {{ calculateAppliedUpgradePoints(upgrade, armyDef) }}pts
+                </span>
                 <Button
                   icon="pi pi-times"
                   severity="danger"
@@ -341,6 +344,13 @@ function isTransportUpgrade(upgradeName: string): boolean {
   display: flex;
   align-items: center;
   flex: 1 2 auto;
+}
+
+.upgrade-points {
+  font-size: 0.8rem;
+  color: var(--p-text-color);
+  white-space: nowrap;
+  margin-right: 0.25rem;
 }
 
 .card-header-left {

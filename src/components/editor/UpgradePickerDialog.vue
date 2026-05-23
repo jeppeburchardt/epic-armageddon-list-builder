@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
+import { upgradeMinCost } from '@/entities/points'
 
 const visible = defineModel<boolean>('visible', { default: false })
 
@@ -82,6 +83,7 @@ function confirm() {
       >
         <div class="option-header">
           <span class="option-name">{{ upgDef.name }}</span>
+          <span class="option-price">{{ upgradeMinCost(upgDef, armyDef) }}pts</span>
           <span class="option-type">{{ upgDef.type }}</span>
         </div>
         <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
@@ -130,6 +132,13 @@ function confirm() {
 
 .option-name {
   font-weight: 600;
+}
+
+.option-price {
+  font-size: 0.85rem;
+  color: var(--p-text-muted-color);
+  margin-left: auto;
+  margin-right: 0.5rem;
 }
 
 .option-type {
