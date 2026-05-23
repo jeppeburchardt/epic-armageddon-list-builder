@@ -22,6 +22,7 @@ import { useMediaQuery } from '@vueuse/core'
 const props = defineProps<{
   entry: Entry
   armyDef: ArmyDef
+  detachmentNumber: number
 }>()
 
 const emit = defineEmits<{
@@ -71,6 +72,36 @@ function isTransportUpgrade(upgradeName: string): boolean {
   const def = props.armyDef.upgrades.find((u) => u.name === upgradeName)
   return def?.type === 'add' && (def.transportWarning ?? false)
 }
+
+function toRomanNumeral(value: number): string {
+  const numerals: Array<[number, string]> = [
+    [1000, 'M'],
+    [900, 'CM'],
+    [500, 'D'],
+    [400, 'CD'],
+    [100, 'C'],
+    [90, 'XC'],
+    [50, 'L'],
+    [40, 'XL'],
+    [10, 'X'],
+    [9, 'IX'],
+    [5, 'V'],
+    [4, 'IV'],
+    [1, 'I'],
+  ]
+
+  let remaining = Math.max(1, Math.floor(value))
+  let roman = ''
+
+  for (const [num, symbol] of numerals) {
+    while (remaining >= num) {
+      roman += symbol
+      remaining -= num
+    }
+  }
+
+  return roman
+}
 </script>
 
 <template>
@@ -79,7 +110,10 @@ function isTransportUpgrade(upgradeName: string): boolean {
       <div class="entry">
         <div class="info">
           <div class="primary">
-            <h3 class="name">{{ entry.detachmentName }}</h3>
+            <h3 class="name">
+              <span class="detachment-number-badge">{{ toRomanNumeral(detachmentNumber) }}</span>
+              <span>{{ entry.detachmentName }}</span>
+            </h3>
             <PointsBadge :used="entryPoints" />
           </div>
           <div class="buttons">
@@ -272,6 +306,26 @@ function isTransportUpgrade(upgradeName: string): boolean {
 
 .name {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detachment-number-badge {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .upgrades {
