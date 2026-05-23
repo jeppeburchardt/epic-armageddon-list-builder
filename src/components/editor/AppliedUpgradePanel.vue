@@ -3,9 +3,11 @@ import { computed, reactive } from 'vue'
 import Select from 'primevue/select'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import UnitPanel from './UnitPanel.vue'
+import PointsBadge from '@/components/shared/PointsBadge.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { AppliedUpgrade, UnitInstance } from '@/entities/list'
 import { hasSameWeaponConfiguration } from '@/entities/composition'
+import { calculateAppliedUpgradePoints } from '@/entities/points'
 
 const props = defineProps<{
   upgrade: AppliedUpgrade
@@ -121,8 +123,13 @@ function setSameConfig(
 </script>
 
 <template>
-  <!-- Replace upgrade -->
-  <UnitPanel
+  <div class="applied-upgrade-content">
+    <div class="upgrade-price-row">
+      <PointsBadge :used="calculateAppliedUpgradePoints(upgrade, armyDef)" />
+    </div>
+
+    <!-- Replace upgrade -->
+    <UnitPanel
     v-if="upgrade.type === 'replace' && replaceUpgrade"
     :name="`${fromUnitName} → ${replaceUpgrade.replacingUnits.unitName}`"
     :min="0"
@@ -259,9 +266,21 @@ function setSameConfig(
       </template>
     </UnitPanel>
   </div>
+  </div>
 </template>
 
 <style scoped>
+.applied-upgrade-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upgrade-price-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .add-section {
   display: flex;
   flex-direction: column;
