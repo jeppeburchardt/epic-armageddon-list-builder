@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
+import Menu from 'primevue/menu'
 import Message from 'primevue/message'
 import Tag from 'primevue/tag'
 import Accordion from 'primevue/accordion'
@@ -22,10 +23,14 @@ import { useMediaQuery } from '@vueuse/core'
 const props = defineProps<{
   entry: Entry
   armyDef: ArmyDef
+  isFirst: boolean
+  isLast: boolean
 }>()
 
 const emit = defineEmits<{
   remove: []
+  'move-up': []
+  'move-down': []
   'base-count-change': [unitName: string, count: number]
   'weapon-change': [
     source: string,
@@ -45,6 +50,22 @@ const isSmallScreen = useMediaQuery('(max-width: 600px)')
 
 const showUpgradePicker = ref(false)
 const activePanel = ref<string | undefined>(undefined)
+const orderMenu = ref()
+
+const orderMenuItems = computed(() => [
+  {
+    label: 'Move up',
+    icon: 'pi pi-arrow-up',
+    disabled: props.isFirst,
+    command: () => emit('move-up'),
+  },
+  {
+    label: 'Move down',
+    icon: 'pi pi-arrow-down',
+    disabled: props.isLast,
+    command: () => emit('move-down'),
+  },
+])
 
 function handleAddUpgrade(upgDef: UpgradeDef) {
   activePanel.value = upgDef.name
@@ -91,6 +112,14 @@ function isTransportUpgrade(upgradeName: string): boolean {
               fluid
               @click="showUpgradePicker = true"
             />
+            <Button
+              icon="pi pi-ellipsis-h"
+              severity="secondary"
+              variant="outlined"
+              aria-label="More options"
+              @click="orderMenu.toggle"
+            />
+            <Menu ref="orderMenu" :model="orderMenuItems" popup />
             <Button
               icon="pi pi-trash"
               severity="danger"

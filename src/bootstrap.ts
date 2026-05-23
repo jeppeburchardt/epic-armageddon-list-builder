@@ -26,6 +26,8 @@ export const services = {
         EntryUseCases.addEntry(listRepo, listId, detachmentName, armyDef),
     removeEntry: (listId: string, entryId: string) =>
         EntryUseCases.removeEntry(listRepo, listId, entryId),
+    moveEntry: (listId: string, entryId: string, direction: 'up' | 'down') =>
+        EntryUseCases.moveEntry(listRepo, listId, entryId, direction),
     updateBaseUnitCount: (
         listId: string,
         entryId: string,

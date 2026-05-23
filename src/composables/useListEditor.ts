@@ -53,6 +53,11 @@ export function useListEditor(listId: string) {
         refresh()
     }
 
+    function moveEntry(entryId: string, direction: 'up' | 'down'): void {
+        services.moveEntry(listId, entryId, direction)
+        refresh()
+    }
+
     function updateBaseUnitCount(entryId: string, unitName: string, count: number): void {
         if (!armyDef.value) return
         services.updateBaseUnitCount(listId, entryId, unitName, count, armyDef.value)
@@ -139,6 +144,7 @@ export function useListEditor(listId: string) {
         updatePointsLimit,
         addEntry,
         removeEntry,
+        moveEntry,
         updateBaseUnitCount,
         applyUpgrade,
         removeUpgrade,
