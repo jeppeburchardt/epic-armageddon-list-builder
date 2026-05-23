@@ -1,4 +1,12 @@
+/**
+ * Converts a positive whole number to an uppercase Roman numeral.
+ * Throws when the input is not a positive integer.
+ */
 export function toRomanNumeral(value: number): string {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('toRomanNumeral expects a positive integer')
+  }
+
   const numerals: Array<[number, string]> = [
     [1000, 'M'],
     [900, 'CM'],
@@ -15,7 +23,7 @@ export function toRomanNumeral(value: number): string {
     [1, 'I'],
   ]
 
-  let remaining = Math.max(1, Math.floor(value))
+  let remaining = value
   let roman = ''
 
   for (const [num, symbol] of numerals) {

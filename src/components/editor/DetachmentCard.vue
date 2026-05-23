@@ -73,7 +73,6 @@ function isTransportUpgrade(upgradeName: string): boolean {
   const def = props.armyDef.upgrades.find((u) => u.name === upgradeName)
   return def?.type === 'add' && (def.transportWarning ?? false)
 }
-
 </script>
 
 <template>
