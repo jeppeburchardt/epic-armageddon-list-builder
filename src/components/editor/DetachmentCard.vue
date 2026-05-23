@@ -18,6 +18,7 @@ import type { Entry } from '@/entities/list'
 import { calculateEntryPoints } from '@/entities/points'
 import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
+import { toRomanNumeral } from '@/entities/romanNumerals'
 import { useMediaQuery } from '@vueuse/core'
 
 const props = defineProps<{
@@ -25,6 +26,7 @@ const props = defineProps<{
   armyDef: ArmyDef
   isFirst: boolean
   isLast: boolean
+  detachmentNumber: number
 }>()
 
 const emit = defineEmits<{
@@ -100,7 +102,10 @@ function isTransportUpgrade(upgradeName: string): boolean {
       <div class="entry">
         <div class="info">
           <div class="primary">
-            <h3 class="name">{{ entry.detachmentName }}</h3>
+            <h3 class="name">
+              <span class="detachment-number-badge">{{ toRomanNumeral(detachmentNumber) }}</span>
+              <span>{{ entry.detachmentName }}</span>
+            </h3>
             <PointsBadge :used="entryPoints" />
           </div>
           <div class="buttons">
@@ -301,6 +306,26 @@ function isTransportUpgrade(upgradeName: string): boolean {
 
 .name {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detachment-number-badge {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .upgrades {

@@ -64,6 +64,7 @@ const showAddDetachment = ref(false)
         :army-def="armyDef"
         :is-first="index === 0"
         :is-last="index === list.entries.length - 1"
+        :detachment-number="index + 1"
         @remove="removeEntry(entry.id)"
         @move-up="moveEntry(entry.id, 'up')"
         @move-down="moveEntry(entry.id, 'down')"
