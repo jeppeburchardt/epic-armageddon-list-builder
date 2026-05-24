@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+const MAX_DISPLAYED_NEIGHBOURS = 5
+
 test('opens a unit GPR page from list reference', async ({ page }) => {
   await page.goto('/')
   await page.evaluate(() => localStorage.clear())
@@ -17,7 +19,7 @@ test('opens a unit GPR page from list reference', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Tactical Squad' })).toBeVisible()
   await expect(page.getByText('Cost: 40 pts')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Nearest neighbours' })).toBeVisible()
-  await expect(page.locator('.neighbour-list li')).toHaveCount(5)
+  await expect(page.locator('.neighbour-list li')).toHaveCount(MAX_DISPLAYED_NEIGHBOURS)
   await expect(page.getByText('Mean:')).toBeVisible()
-  await expect(page.getByText('Average:')).toBeVisible()
+  await expect(page.getByText('Average (training):')).toBeVisible()
 })

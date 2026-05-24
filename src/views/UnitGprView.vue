@@ -10,9 +10,16 @@ const injected = inject(listEditorKey)
 if (!injected) throw new Error('listEditorKey not provided')
 const { armyDef } = injected
 
+const MAX_DISPLAYED_NEIGHBOURS = 5
+const POINT_STACK_SIZE = 5
+const POINT_BASE_Y = 84
+const POINT_VERTICAL_OFFSET = 6
+
 const unit = computed(() => armyDef.value?.units.find((u) => u.name === props.unitName))
 const gpr = computed(() => unit.value?.gprTrainingInfo)
-const nearestNeighbours = computed(() => (gpr.value ? gpr.value.topNearestNeighbours.slice(0, 5) : []))
+const nearestNeighbours = computed(() =>
+  gpr.value ? gpr.value.topNearestNeighbours.slice(0, MAX_DISPLAYED_NEIGHBOURS) : [],
+)
 
 const contributingAverage = computed(() => {
   if (!gpr.value || gpr.value.contributingPriceValues.length === 0) return null
@@ -39,7 +46,7 @@ function toChartX(value: number): number {
 }
 
 function formatNumber(value: number): string {
-  return Number(value.toFixed(2)).toString()
+  return value.toFixed(2)
 }
 </script>
 
@@ -87,7 +94,7 @@ function formatNumber(value: number): string {
           v-for="(value, index) in gpr.contributingPriceValues"
           :key="`${value}-${index}`"
           :cx="toChartX(value)"
-          :cy="84 - (index % 5) * 6"
+          :cy="POINT_BASE_Y - (index % POINT_STACK_SIZE) * POINT_VERTICAL_OFFSET"
           r="2.5"
           class="score-point"
         />
@@ -103,7 +110,9 @@ function formatNumber(value: number): string {
       </svg>
       <div class="chart-legend">
         <span>Mean: {{ formatNumber(gpr.predictedMean) }}</span>
-        <span v-if="contributingAverage !== null">Average: {{ formatNumber(contributingAverage) }}</span>
+        <span v-if="contributingAverage !== null">
+          Average (training): {{ formatNumber(contributingAverage) }}
+        </span>
       </div>
     </section>
 
