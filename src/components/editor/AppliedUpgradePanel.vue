@@ -3,11 +3,9 @@ import { computed, reactive } from 'vue'
 import Select from 'primevue/select'
 import UnitInstanceEditor from './UnitInstanceEditor.vue'
 import UnitPanel from './UnitPanel.vue'
-import PointsBadge from '@/components/shared/PointsBadge.vue'
 import type { ArmyDef } from '@/entities/army'
 import type { AppliedUpgrade, UnitInstance } from '@/entities/list'
 import { hasSameWeaponConfiguration } from '@/entities/composition'
-import { calculateAppliedUpgradePoints } from '@/entities/points'
 
 const props = defineProps<{
   upgrade: AppliedUpgrade
@@ -81,6 +79,32 @@ function hasChoices(unitName: string): boolean {
   return getWeaponSlots(unitName).some((s) => s.kind === 'choice')
 }
 
+/** Net cost delta per replaced unit (replacingUnit.cost − fromUnit.cost). */
+const replaceCostPerUnit = computed<number | undefined>(() => {
+  const def = upgradeDef.value
+  if (!def || def.type !== 'replace') return undefined
+  const fromDef = props.armyDef.units.find((u) => u.name === def.replaces.fromUnitName)
+  const toDef = props.armyDef.units.find((u) => u.name === def.replaces.toUnitName)
+  if (!fromDef || !toDef) return undefined
+  return toDef.cost - fromDef.cost
+})
+
+/** Cost per unit for a given add-unit name. */
+function addUnitCost(unitName: string): number | undefined {
+  return props.armyDef.units.find((u) => u.name === unitName)?.cost
+}
+
+/** Character options with cost label for use in the Select dropdown. */
+const characterOptions = computed(() =>
+  (characterUpgradeDef.value?.characterNames ?? []).map((name) => {
+    const cost = props.armyDef.units.find((u) => u.name === name)?.cost
+    return {
+      name,
+      label: cost !== undefined ? `${name} (${cost}pts)` : name,
+    }
+  }),
+)
+
 // ─── Same-config toggle ───────────────────────────────────────────────────────
 
 const sameConfig = reactive<Record<string, boolean>>({})
@@ -124,10 +148,6 @@ function setSameConfig(
 
 <template>
   <div class="applied-upgrade-content">
-    <div class="upgrade-price-row">
-      <PointsBadge :used="calculateAppliedUpgradePoints(upgrade, armyDef)" />
-    </div>
-
     <!-- Replace upgrade -->
     <UnitPanel
     v-if="upgrade.type === 'replace' && replaceUpgrade"
@@ -140,6 +160,8 @@ function setSameConfig(
     "
     :unit-amount="replaceUpgrade.replacedCount"
     :same-config="getSameConfig(replaceUpgrade.replacingUnits.unitName)"
+    :cost="replaceCostPerUnit"
+    :cost-sign="true"
     @update:unit-amount="(val: number | null) => val !== null && emit('replace-count-change', val)"
     @update:same-config="
       (val: boolean) =>
@@ -208,7 +230,9 @@ function setSameConfig(
   <div v-else-if="upgrade.type === 'character' && characterUpgrade">
     <Select
       :model-value="characterUpgrade.chosenCharacterName"
-      :options="characterUpgradeDef?.characterNames ?? []"
+      :options="characterOptions"
+      option-label="label"
+      option-value="name"
       @update:model-value="(val: string | null) => emit('update-character', val ?? null)"
     />
   </div>
@@ -224,6 +248,7 @@ function setSameConfig(
       :has-same-config-option="ute.instances.length > 1 && hasChoices(ute.unitName)"
       :unit-amount="ute.instances.length"
       :same-config="getSameConfig(ute.unitName)"
+      :cost="addUnitCost(ute.unitName)"
       @update:unit-amount="
         (val: number | null) => {
           console.log('update', val)
@@ -274,11 +299,6 @@ function setSameConfig(
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.upgrade-price-row {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .add-section {
