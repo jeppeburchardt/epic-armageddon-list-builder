@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     {
       name: 'copy-index-for-surge',
-      closeBundle() {
+      writeBundle() {
         const distDir = resolve(__dirname, 'dist')
         const indexPath = resolve(distDir, 'index.html')
         copyFileSync(indexPath, resolve(distDir, '200.html'))

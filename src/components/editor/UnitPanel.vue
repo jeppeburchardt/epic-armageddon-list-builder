@@ -74,7 +74,7 @@ const emit = defineEmits<{
   font-size: 0.75rem;
   flex-shrink: 0;
 }
-
+.config-toggle {
   display: flex;
   align-items: center;
   font-size: 0.8rem;
