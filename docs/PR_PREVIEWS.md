@@ -8,9 +8,10 @@ This repository is configured to automatically deploy preview environments for p
 
 When a pull request is opened, updated, or reopened, the workflow:
 
-1. **Builds the application** - Runs `npm ci` and `npm run build`
-2. **Deploys to Surge** - Creates a unique subdomain for the PR in the format `pr-{PR_NUMBER}-{BASE_DOMAIN}`
-3. **Comments on the PR** - Posts (or updates) a comment with the preview URL
+1. **Runs PR quality checks** - Runs `npm run lint`, `npm run validate`, and `npm run test:e2e`
+2. **Builds the application** - Runs `npm run build`
+3. **Deploys to Surge** - Creates a unique subdomain for the PR in the format `pr-{PR_NUMBER}-{BASE_DOMAIN}`
+4. **Comments on the PR** - Posts (or updates) a comment with the preview URL
 
 **Example:** For PR #42 with `SURGE_DOMAIN` set to `my-app.surge.sh`, the preview will be deployed to `pr-42-my-app.surge.sh`
 
