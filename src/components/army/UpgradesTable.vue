@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
 import type { UpgradeDef } from '@/entities/army'
 
 defineProps<{
@@ -24,20 +22,21 @@ function describeUpgrade(u: UpgradeDef): string {
 
 <template>
   <div class="army-reference-table">
-    <DataTable :value="upgrades" striped-rows size="small">
-      <Column field="name" header="Name" />
-      <Column header="Type">
-        <template #body="{ data }">
-          {{
-            data.type === 'replace' ? 'Replace' : data.type === 'character' ? 'Character' : 'Add'
-          }}
-        </template>
-      </Column>
-      <Column header="Details">
-        <template #body="{ data }">
-          {{ describeUpgrade(data) }}
-        </template>
-      </Column>
-    </DataTable>
+    <table class="army-reference-table__native-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="upgrade in upgrades" :key="upgrade.name">
+          <td>{{ upgrade.name }}</td>
+          <td>{{ upgrade.type === 'replace' ? 'Replace' : upgrade.type === 'character' ? 'Character' : 'Add' }}</td>
+          <td>{{ describeUpgrade(upgrade) }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>

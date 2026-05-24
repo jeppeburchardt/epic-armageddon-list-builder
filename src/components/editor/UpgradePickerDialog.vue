@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -61,41 +59,63 @@ function confirm() {
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="visible"
-    modal
-    header="Add Upgrade"
-    :style="{ width: '95vw', maxWidth: '480px' }"
-    :draggable="false"
-  >
-    <div v-if="availableUpgrades.length === 0" class="empty">
-      No upgrades available for this detachment.
-    </div>
+  <Teleport to="body">
+    <div v-if="visible" class="dialog-backdrop" @click.self="close">
+      <div class="dialog" role="dialog" aria-modal="true" aria-label="Add Upgrade">
+        <h2 class="dialog-title">Add Upgrade</h2>
 
-    <div v-else class="upgrade-list">
-      <div
-        v-for="upgDef in availableUpgrades"
-        :key="upgDef.name"
-        class="upgrade-option"
-        :class="{ selected: selectedUpgrade?.name === upgDef.name }"
-        @click="selectUpgrade(upgDef)"
-      >
-        <div class="option-header">
-          <span class="option-name">{{ upgDef.name }}</span>
-          <span class="option-type">{{ upgDef.type }}</span>
+        <div v-if="availableUpgrades.length === 0" class="empty">No upgrades available for this detachment.</div>
+
+        <div v-else class="upgrade-list">
+          <button
+            v-for="upgDef in availableUpgrades"
+            :key="upgDef.name"
+            type="button"
+            class="upgrade-option"
+            :class="{ selected: selectedUpgrade?.name === upgDef.name }"
+            @click="selectUpgrade(upgDef)"
+          >
+            <div class="option-header">
+              <span class="option-name">{{ upgDef.name }}</span>
+              <span class="option-type">{{ upgDef.type }}</span>
+            </div>
+            <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
+          </button>
         </div>
-        <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
+
+        <div class="actions">
+          <button type="button" class="secondary-button" @click="close">Cancel</button>
+          <button type="button" class="primary-button" :disabled="!selectedUpgrade" @click="confirm">Add</button>
+        </div>
       </div>
     </div>
-
-    <template #footer>
-      <Button label="Cancel" severity="secondary" @click="close" />
-      <Button label="Add" :disabled="!selectedUpgrade" @click="confirm" />
-    </template>
-  </Dialog>
+  </Teleport>
 </template>
 
 <style scoped>
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 45%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.dialog {
+  width: min(95vw, 480px);
+  background: var(--p-surface-0);
+  border-radius: 0.5rem;
+  border: 1px solid var(--p-surface-border);
+  padding: 1rem;
+}
+
+.dialog-title {
+  margin: 0 0 0.75rem;
+}
+
 .upgrade-list {
   display: flex;
   flex-direction: column;
@@ -103,20 +123,16 @@ function confirm() {
 }
 
 .upgrade-option {
+  width: 100%;
+  text-align: left;
   border: 1px solid var(--p-surface-border);
   border-radius: 0.5rem;
   padding: 0.75rem;
   cursor: pointer;
-  transition:
-    border-color 0.15s,
-    background 0.15s;
+  background: var(--p-surface-0);
 }
 
-.upgrade-option:hover {
-  border-color: var(--p-primary-color);
-  background: var(--p-primary-50);
-}
-
+.upgrade-option:hover,
 .upgrade-option.selected {
   border-color: var(--p-primary-color);
   background: var(--p-primary-50);
@@ -148,5 +164,37 @@ function confirm() {
   color: var(--p-text-muted-color);
   text-align: center;
   padding: 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+}
+
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  border: 1px solid var(--p-surface-border);
+  background: var(--p-surface-0);
+  color: inherit;
 }
 </style>

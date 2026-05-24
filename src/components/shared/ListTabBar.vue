@@ -13,7 +13,6 @@ const route = useRoute()
       class="tab-item"
       :class="{ active: route.name === 'list-view' }"
     >
-      <span class="pi pi-eye" />
       <span class="tab-label">View</span>
     </RouterLink>
     <RouterLink
@@ -21,7 +20,6 @@ const route = useRoute()
       class="tab-item"
       :class="{ active: route.name === 'list-edit' }"
     >
-      <span class="pi pi-pencil" />
       <span class="tab-label">Edit</span>
     </RouterLink>
     <RouterLink
@@ -29,7 +27,6 @@ const route = useRoute()
       class="tab-item"
       :class="{ active: route.name === 'list-reference' }"
     >
-      <span class="pi pi-book" />
       <span class="tab-label">Reference</span>
     </RouterLink>
   </nav>
@@ -66,9 +63,5 @@ const route = useRoute()
   color: var(--p-primary-color);
   border-bottom-color: var(--p-primary-color);
   font-weight: 500;
-}
-
-.tab-item .pi {
-  font-size: 0.9rem;
 }
 </style>

@@ -2,66 +2,36 @@
 import { computed, inject } from 'vue'
 import { listEditorKey } from '@/composables/useListEditor'
 
-import Inplace from 'primevue/inplace'
-import ProgressBar from 'primevue/progressbar'
-// import InputText from 'primevue/inputtext';
-import InputNumber from 'primevue/inputnumber'
-
 const injected = inject(listEditorKey)
 if (!injected) throw new Error('listEditorKey not provided')
-const {
-  list,
-  armyDef,
-  totalPoints,
-  //   updateName,
-  updatePointsLimit,
-} = injected
+const { list, armyDef, totalPoints, updatePointsLimit } = injected
 
-const value = computed(() => Math.ceil((totalPoints.value / (list.value?.pointsLimit ?? 0)) * 100))
+const value = computed(() => {
+  const limit = list.value?.pointsLimit ?? 0
+  return limit > 0 ? Math.ceil((totalPoints.value / limit) * 100) : 0
+})
 </script>
 
 <template>
   <div class="header">
-    <div class="title">
-      {{ list?.name }}
-      <!-- <inplace>
-                <template #display>
-                    <span class="name-display">{{ list?.name }}</span>
-                </template>
-                <template #content="{ closeCallback }">
-                    <input-text
-                    :model-value="list?.name"
-                    autofocus
-                    class="name-input"
-                    @blur="(e) => { updateName((e.target as HTMLInputElement).value); closeCallback() }"
-                    @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
-                    fluid
-                    />
-                </template>
-            </inplace> -->
-    </div>
+    <div class="title">{{ list?.name }}</div>
     <div class="meta">
-      <div>
-        <progress-bar :value="value"></progress-bar>
-      </div>
-      <div>
-        <Inplace>
-          <template #display>
-            <span class="limit-display">{{ totalPoints }} / {{ list?.pointsLimit }} pts</span>
-          </template>
-          <template #content="{ closeCallback }">
-            <input-number
-              :model-value="list?.pointsLimit"
-              :min="250"
-              :step="250"
-              autofocus
-              class="limit-input"
-              fluid
-              @update:model-value="(val: number | null) => val && updatePointsLimit(val)"
-              @blur="() => closeCallback()"
-            />
-          </template>
-        </Inplace>
+      <progress class="progress" :value="Math.min(100, value)" max="100" />
+      <div class="limit-row">
+        <span class="limit-display">{{ totalPoints }} / {{ list?.pointsLimit }} pts</span>
+        <input
+          class="limit-input"
+          type="number"
+          :value="list?.pointsLimit"
+          min="250"
+          step="250"
+          @change="(event) => {
+            const nextValue = Number((event.target as HTMLInputElement).value)
+            if (Number.isFinite(nextValue) && nextValue > 0) {
+              updatePointsLimit(nextValue)
+            }
+          }"
+        />
       </div>
     </div>
     <div class="sub-title">{{ armyDef?.name }}</div>
@@ -77,9 +47,32 @@ const value = computed(() => Math.ceil((totalPoints.value / (list.value?.pointsL
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
+
 .title {
   font-size: 1.5rem;
 }
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.progress {
+  width: 100%;
+}
+
+.limit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.limit-input {
+  width: 6rem;
+}
+
 .sub-title {
   text-transform: uppercase;
   font-size: 0.8rem;

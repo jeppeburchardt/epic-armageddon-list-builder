@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import DetachmentCard from '@/components/editor/DetachmentCard.vue'
 import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
@@ -34,18 +33,14 @@ const showAddDetachment = ref(false)
 <template>
   <div v-if="!list || !armyDef" class="not-found">
     <p>List not found.</p>
-    <Button label="Back to lists" @click="router.push('/')" />
+    <button type="button" class="text-button" @click="router.push('/')">Back to lists</button>
   </div>
 
   <div v-else>
     <Teleport to="#list-header-cta">
-      <Button
-          label="Add Detachment"
-          icon="pi pi-plus"
-          severity="primary"
-          fluid
-          @click="showAddDetachment = true"
-        />
+      <button type="button" class="primary-button" @click="showAddDetachment = true">
+        Add Detachment
+      </button>
     </Teleport>
 
     <!-- Validation warnings -->
@@ -187,6 +182,26 @@ const showAddDetachment = ref(false)
   bottom: calc(4rem + .75rem);
   right: 1rem;
   z-index: 50;
+}
+
+.primary-button,
+.text-button {
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+}
+
+.text-button {
+  border: 1px solid var(--p-surface-border);
+  background: var(--p-surface-0);
+  color: inherit;
 }
 
 @media (min-width: 768px) {

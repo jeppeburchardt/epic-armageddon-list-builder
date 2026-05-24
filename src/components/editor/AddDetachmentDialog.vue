@@ -1,13 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
-import Tag from 'primevue/tag'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
 import type { ArmyDef, DetachmentDef, UnitCount } from '@/entities/army'
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -23,7 +15,6 @@ const emit = defineEmits<{
 const selectedDetachment = ref<string | null>(null)
 const detachmentOptions = props.armyDef.detachments
 
-// Helper to extract unique groups in order of first appearance
 function getUniqueGroups(detachments: DetachmentDef[]): string[] {
   const seen = new Set<string>()
   const groups: string[] = []
@@ -36,13 +27,9 @@ function getUniqueGroups(detachments: DetachmentDef[]): string[] {
   return groups
 }
 
-// Extract unique groups in order of first appearance
 const uniqueGroups = computed(() => getUniqueGroups(props.armyDef.detachments))
-
-// Initialize activeGroup to the first group
 const activeGroup = ref(getUniqueGroups(props.armyDef.detachments)[0] ?? '')
 
-// Filter detachments by active group
 const filteredDetachments = computed(() => {
   if (!activeGroup.value) return detachmentOptions
   return detachmentOptions.filter((det) => det.group === activeGroup.value)
@@ -70,56 +57,98 @@ function confirm() {
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="visible"
-    modal
-    header="Add Detachment"
-    :style="{ width: '95vw', maxWidth: '520px' }"
-    :draggable="false"
-  >
-    <div v-if="detachmentOptions.length === 0" class="empty">
-      No detachments defined for this army.
-    </div>
+  <Teleport to="body">
+    <div v-if="visible" class="dialog-backdrop" @click.self="close">
+      <div class="dialog" role="dialog" aria-modal="true" aria-label="Add Detachment">
+        <h2 class="dialog-title">Add Detachment</h2>
 
-    <div v-else>
-      <!-- Group tabs -->
-      <Tabs v-model:value="activeGroup">
-        <TabList>
-          <Tab v-for="group in uniqueGroups" :key="group" :value="group">
-            {{ group }}
-          </Tab>
-        </TabList>
+        <div v-if="detachmentOptions.length === 0" class="empty">No detachments defined for this army.</div>
 
-        <TabPanels>
-          <TabPanel v-for="group in uniqueGroups" :key="group" :value="group">
-            <div class="det-list">
-              <div
-                v-for="det in filteredDetachments"
-                :key="det.name"
-                class="det-option"
-                :class="{ selected: selectedDetachment === det.name }"
-                @click="selectedDetachment = det.name"
-              >
-                <div class="det-header">
-                  <span class="det-name">{{ det.name }}</span>
-                  <Tag :value="det.group" severity="secondary" class="group-tag" />
-                </div>
-                <p class="det-units">{{ describeUnits(det) }}</p>
+        <div v-else>
+          <div class="group-tabs">
+            <button
+              v-for="group in uniqueGroups"
+              :key="group"
+              type="button"
+              class="group-tab"
+              :class="{ active: activeGroup === group }"
+              @click="activeGroup = group"
+            >
+              {{ group }}
+            </button>
+          </div>
+
+          <div class="det-list">
+            <button
+              v-for="det in filteredDetachments"
+              :key="det.name"
+              type="button"
+              class="det-option"
+              :class="{ selected: selectedDetachment === det.name }"
+              @click="selectedDetachment = det.name"
+            >
+              <div class="det-header">
+                <span class="det-name">{{ det.name }}</span>
+                <span class="group-tag">{{ det.group }}</span>
               </div>
-            </div>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </div>
+              <p class="det-units">{{ describeUnits(det) }}</p>
+            </button>
+          </div>
+        </div>
 
-    <template #footer>
-      <Button label="Cancel" severity="secondary" @click="close" />
-      <Button label="Add" :disabled="!selectedDetachment" @click="confirm" />
-    </template>
-  </Dialog>
+        <div class="actions">
+          <button type="button" class="secondary-button" @click="close">Cancel</button>
+          <button type="button" class="primary-button" :disabled="!selectedDetachment" @click="confirm">Add</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 45%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.dialog {
+  width: min(95vw, 520px);
+  background: var(--p-surface-0);
+  border-radius: 0.5rem;
+  border: 1px solid var(--p-surface-border);
+  padding: 1rem;
+}
+
+.dialog-title {
+  margin: 0 0 0.75rem;
+}
+
+.group-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.group-tab {
+  border: 1px solid var(--p-surface-border);
+  border-radius: 999px;
+  background: var(--p-surface-0);
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+
+.group-tab.active {
+  border-color: var(--p-primary-color);
+  color: var(--p-primary-color);
+}
+
 .det-list {
   display: flex;
   flex-direction: column;
@@ -127,20 +156,16 @@ function confirm() {
 }
 
 .det-option {
+  width: 100%;
+  text-align: left;
   border: 1px solid var(--p-surface-border);
   border-radius: 0.5rem;
   padding: 0.75rem;
   cursor: pointer;
-  transition:
-    border-color 0.15s,
-    background 0.15s;
+  background: var(--p-surface-0);
 }
 
-.det-option:hover {
-  border-color: var(--p-primary-color);
-  background: var(--p-primary-50);
-}
-
+.det-option:hover,
 .det-option.selected {
   border-color: var(--p-primary-color);
   background: var(--p-primary-50);
@@ -160,6 +185,9 @@ function confirm() {
 
 .group-tag {
   font-size: 0.7rem;
+  border: 1px solid var(--p-surface-border);
+  border-radius: 999px;
+  padding: 0.05rem 0.35rem;
 }
 
 .det-units {
@@ -172,5 +200,37 @@ function confirm() {
   color: var(--p-text-muted-color);
   text-align: center;
   padding: 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+}
+
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  border: 1px solid var(--p-surface-border);
+  background: var(--p-surface-0);
+  color: inherit;
 }
 </style>
