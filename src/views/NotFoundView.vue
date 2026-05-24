@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import Button from 'primevue/button'
 </script>
 
 <template>
   <div class="not-found-view">
     <div class="not-found-content">
       <h1 class="not-found-title">404 Not found</h1>
-      <RouterLink to="/" class="home-link">
-        <Button label="Go to Lists" icon="pi pi-home" />
-      </RouterLink>
+      <RouterLink to="/" class="home-link">Go to Lists</RouterLink>
     </div>
   </div>
 </template>
@@ -39,5 +36,10 @@ import Button from 'primevue/button'
 
 .home-link {
   text-decoration: none;
+  border: 1px solid var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
 }
 </style>

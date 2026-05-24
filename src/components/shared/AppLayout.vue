@@ -2,7 +2,6 @@
 
 <template>
   <div class="app-layout">
-    <!-- Top nav bar -->
     <header class="app-header no-print">
       <div class="header-inner">
         <RouterLink to="/" class="app-title">EA Army Builder</RouterLink>
@@ -12,15 +11,12 @@
       </div>
     </header>
 
-    <!-- Main content -->
     <main class="app-main">
       <slot />
     </main>
 
-    <!-- Bottom nav (mobile) -->
     <nav class="bottom-nav mobile-only no-print">
       <RouterLink to="/" class="bottom-nav-item">
-        <span class="pi pi-list" />
         <span>Lists</span>
       </RouterLink>
     </nav>
@@ -85,7 +81,6 @@
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  /* Room for bottom nav on mobile */
   padding-bottom: calc(1rem + 4rem);
 }
 
@@ -124,11 +119,6 @@
   color: var(--p-primary-color);
 }
 
-.bottom-nav-item .pi {
-  font-size: 1.2rem;
-}
-
-/* Responsive helpers */
 .desktop-only {
   display: none;
 }

@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import ConfirmDialog from 'primevue/confirmdialog'
-import { useConfirm } from 'primevue/useconfirm'
 import { useLists } from '@/composables/useLists'
 import { useArmies } from '@/composables/useArmies'
 import ListCard from '@/components/home/ListCard.vue'
@@ -12,7 +9,6 @@ import CreateListDialog from '@/components/home/CreateListDialog.vue'
 const router = useRouter()
 const { lists, createList, deleteList } = useLists()
 const { getArmy } = useArmies()
-const confirm = useConfirm()
 const showCreateDialog = ref(false)
 
 function getArmyDef(slug: string) {
@@ -25,12 +21,9 @@ function handleCreate(name: string, pointsLimit: number, armySlug: string): void
 }
 
 function confirmDelete(id: string) {
-  confirm.require({
-    message: 'Delete this army list? This cannot be undone.',
-    header: 'Delete List',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => { deleteList(id) },
-  })
+  if (globalThis.window.confirm('Delete this army list? This cannot be undone.')) {
+    deleteList(id)
+  }
 }
 </script>
 
@@ -38,20 +31,12 @@ function confirmDelete(id: string) {
   <div class="home-view">
     <div class="page-header">
       <h1 class="page-title">My Army Lists</h1>
-      <Button
-        label="New List"
-        icon="pi pi-plus"
-        @click="showCreateDialog = true"
-      />
+      <button type="button" class="action-button" @click="showCreateDialog = true">New List</button>
     </div>
 
     <div v-if="lists.length === 0" class="empty-state">
       <p>No army lists yet. Create your first list to get started!</p>
-      <Button
-        label="Create List"
-        icon="pi pi-plus"
-        @click="showCreateDialog = true"
-      />
+      <button type="button" class="action-button" @click="showCreateDialog = true">Create List</button>
     </div>
 
     <div v-else class="lists-grid">
@@ -65,8 +50,6 @@ function confirmDelete(id: string) {
         @delete="confirmDelete($event)"
       />
     </div>
-
-    <ConfirmDialog />
 
     <CreateListDialog
       v-model:visible="showCreateDialog"
@@ -108,5 +91,15 @@ function confirmDelete(id: string) {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+}
+
+.action-button {
+  border: 1px solid var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
 }
 </style>

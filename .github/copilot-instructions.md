@@ -14,13 +14,9 @@ A mobile-first web SPA for building army lists for the Epic Armageddon tabletop 
 | Framework | Vue 3 (`<script setup>` + Composition API) |
 | Language | TypeScript (strict mode) |
 | State management | Pinia (though reactive state lives mostly in composables) |
-| UI components | PrimeVue 4 (`primevue@4`, `@primeuix/themes`) |
+| UI components | Native Vue/HTML components |
 | Routing | Vue Router 4 |
 | ID generation | `uuid` (`v4`) |
-
-PrimeVue theme: **Aura** (configured in `src/main.ts`).
-
----
 
 ## Architecture: hexagonal (ports & adapters)
 
@@ -49,7 +45,7 @@ components → composables → use-cases → ports ← infrastructure
 
 ### Layer rules (enforce strictly)
 
-- **`entities/`** — no imports from Vue, Pinia, PrimeVue, or any infrastructure. Only plain TypeScript.
+- **`entities/`** — no imports from Vue, Pinia, or any infrastructure. Only plain TypeScript.
 - **`use-cases/`** — no Vue imports. Depend on entities and port interfaces only. Functions receive port instances as parameters (no singletons).
 - **`ports/`** — TypeScript interfaces only. No implementations.
 - **`composables/`** — import from `bootstrap.ts` (never from `infrastructure/` directly). Own `ref`/`computed` state. Call use-case functions via `services` from bootstrap.

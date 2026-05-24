@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
 import { listEditorKey } from '@/composables/useListEditor'
@@ -66,12 +65,12 @@ function getDetachmentNumber(entryId: string): number {
 <template>
   <div v-if="!list || !armyDef" class="not-found">
     <p>List not found.</p>
-    <Button label="Back" class="no-print" @click="router.push('/')" />
+    <button type="button" class="secondary-button no-print" @click="router.push('/')">Back</button>
   </div>
 
   <div v-else>
     <Teleport to="#list-header-cta">
-      <Button label="Print" icon="pi pi-print" fluid @click="window.print()" />
+      <button type="button" class="primary-button" @click="window.print()">Print</button>
     </Teleport>
 
     <!-- Print header (visible on print) -->
@@ -197,5 +196,25 @@ function getDetachmentNumber(entryId: string): number {
   margin-top: 0.5rem;
   font-size: 0.95rem;
   text-align: right;
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+}
+
+.secondary-button {
+  border: 1px solid var(--p-surface-border);
+  background: var(--p-surface-0);
+  color: inherit;
 }
 </style>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
 import DetachmentsTable from '@/components/army/DetachmentsTable.vue'
 import UpgradesTable from '@/components/army/UpgradesTable.vue'
 import UnitsTable from '@/components/army/UnitsTable.vue'
@@ -21,7 +20,7 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
 <template>
   <div v-if="!armyDef" class="not-found">
     <p>Army reference not found.</p>
-    <Button label="Back to lists" @click="router.push('/')" />
+    <button type="button" class="secondary-button" @click="router.push('/')">Back to lists</button>
   </div>
 
   <div v-else>
@@ -30,7 +29,6 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
       <span class="army-meta">Strategy Rating: {{ armyDef.strategyRating }}</span>
     </div>
 
-    <!-- Restrictions -->
     <section v-if="armyDef.restrictions.length > 0" class="army-section">
       <h2 class="section-heading">Restrictions</h2>
       <ul class="restrictions-list">
@@ -42,7 +40,6 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
       </ul>
     </section>
 
-    <!-- Special rules -->
     <section v-if="armyDef.specialRules.length > 0" class="army-section">
       <h2 class="section-heading">Special Rules</h2>
       <div v-for="rule in armyDef.specialRules" :key="rule.title" class="special-rule">
@@ -51,19 +48,16 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
       </div>
     </section>
 
-    <!-- Detachments -->
     <section class="army-section">
       <h2 class="section-heading">Detachments</h2>
       <DetachmentsTable :detachments="armyDef.detachments" />
     </section>
 
-    <!-- Upgrades -->
     <section class="army-section">
       <h2 class="section-heading">Upgrades</h2>
       <UpgradesTable :upgrades="armyDef.upgrades" />
     </section>
 
-    <!-- Units -->
     <section class="army-section">
       <h2 class="section-heading">Units</h2>
       <div v-for="group in unitGroups" :key="group.key" class="unit-group">
@@ -72,7 +66,6 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
       </div>
     </section>
 
-    <!-- Unit Special Rules -->
     <section v-if="armyDef.unitSpecialRules.length > 0" class="army-section">
       <h2 class="section-heading">Unit Special Rules</h2>
       <SpecialRulesTable :rules="armyDef.unitSpecialRules" />
@@ -155,5 +148,15 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
   margin: 0 0 0.5rem;
   font-size: 1rem;
   font-weight: 600;
+}
+
+.secondary-button {
+  border: 1px solid var(--p-surface-border);
+  background: var(--p-surface-0);
+  color: inherit;
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
 }
 </style>

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Select from 'primevue/select'
 import type { WeaponSlot } from '@/entities/army'
 import type { UnitInstance } from '@/entities/list'
-import { FloatLabel, Panel } from 'primevue'
 
 const props = defineProps<{
   name?: string
@@ -32,21 +30,12 @@ const choiceSlots = computed<ChoiceSlotEntry[]>(() =>
         slot.kind === 'choice'
           ? slot.choices.map((c) => ({
               weaponName: c.weaponName,
-              label:
-                c.additionalCost > 0 ? `${c.weaponName} (+${c.additionalCost}pts)` : c.weaponName,
+              label: c.additionalCost > 0 ? `${c.weaponName} (+${c.additionalCost}pts)` : c.weaponName,
               additionalCost: c.additionalCost,
             }))
           : [],
     })),
 )
-
-function realSlotIndex(choiceSlotIdx: number): number {
-  return choiceSlots.value[choiceSlotIdx].realIndex
-}
-
-function slotLabel(slot: ChoiceSlotEntry, slotIdx: number): string {
-  return slot.name ?? `Weapon ${slotIdx + 1}`
-}
 
 function currentChoice(choiceSlotIdx: number): string {
   const realIdx = choiceSlots.value[choiceSlotIdx].realIndex
@@ -58,34 +47,33 @@ function currentChoice(choiceSlotIdx: number): string {
 </script>
 
 <template>
-  <Panel>
-    <template #header>
-      <div><span class="pi pi-wrench"></span> {{ name }}</div>
-    </template>
-    <div class="unit-instance-editor">
-      <FloatLabel v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" variant="on">
-        <Select
-          :placeholder="slotLabel(slot, slotIdx)"
-          :model-value="currentChoice(slotIdx)"
-          :options="slot.choices"
-          :input-id="`${slot.realIndex}-${slotIdx}`"
-          option-label="label"
-          option-value="weaponName"
-          size="small"
-          fluid
-          @update:model-value="(val: string) => emit('weapon-change', realSlotIndex(slotIdx), val)"
-        />
-        <label :for="`${slot.realIndex}-${slotIdx}`">{{ slot.name ?? '' }}</label>
-      </FloatLabel>
-    </div>
-  </Panel>
+  <fieldset class="unit-instance-editor">
+    <legend>{{ name }}</legend>
+    <label v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" class="weapon-choice">
+      <span>{{ slot.name ?? `Weapon ${slotIdx + 1}` }}</span>
+      <select
+        :value="currentChoice(slotIdx)"
+        @change="(event) => emit('weapon-change', slot.realIndex, (event.target as HTMLSelectElement).value)"
+      >
+        <option v-for="choice in slot.choices" :key="choice.weaponName" :value="choice.weaponName">{{ choice.label }}</option>
+      </select>
+    </label>
+  </fieldset>
 </template>
 
 <style scoped>
 .unit-instance-editor {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background-color: var(--);
+  gap: 0.75rem;
+  border: 1px solid var(--p-surface-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.weapon-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 </style>

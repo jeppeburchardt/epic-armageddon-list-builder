@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
 import type { DetachmentDef, UnitCount } from '@/entities/army'
 
 defineProps<{
@@ -23,24 +21,25 @@ function describeRestrictions(det: DetachmentDef): string {
 
 <template>
   <div class="army-reference-table">
-    <DataTable :value="detachments" striped-rows size="small">
-      <Column field="name" header="Name" />
-      <Column field="group" header="Group" />
-      <Column header="Units">
-        <template #body="{ data }">
-          {{ describeUnits(data) }}
-        </template>
-      </Column>
-      <Column header="Upgrades">
-        <template #body="{ data }">
-          {{ data.availableUpgrades.join(', ') }}
-        </template>
-      </Column>
-      <Column header="Restrictions">
-        <template #body="{ data }">
-          {{ describeRestrictions(data) }}
-        </template>
-      </Column>
-    </DataTable>
+    <table class="army-reference-table__native-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Group</th>
+          <th>Units</th>
+          <th>Upgrades</th>
+          <th>Restrictions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="detachment in detachments" :key="detachment.name">
+          <td>{{ detachment.name }}</td>
+          <td>{{ detachment.group }}</td>
+          <td>{{ describeUnits(detachment) }}</td>
+          <td>{{ detachment.availableUpgrades.join(', ') }}</td>
+          <td>{{ describeRestrictions(detachment) }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
