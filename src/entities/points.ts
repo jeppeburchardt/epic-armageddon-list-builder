@@ -1,5 +1,5 @@
-import type { ArmyDef, UnitDef, WeaponSlot } from './army'
-import type { ArmyList, Entry, UnitInstance, UnitTypeEntry } from './list'
+import type { ArmyDef, UnitDef, UpgradeDef, WeaponSlot } from './army'
+import type { AppliedUpgrade, ArmyList, Entry, UnitInstance, UnitTypeEntry } from './list'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -76,6 +76,62 @@ export function calculateEntryPoints(entry: Entry, armyDef: ArmyDef): number {
     }
 
     return total
+}
+
+// ─── Upgrade-level cost ──────────────────────────────────────────────────────
+
+/**
+ * Returns the minimum points cost for an upgrade definition,
+ * representing the cheapest single-unit application of the upgrade:
+ * - 'add': cost of a single unit of the cheapest addable unit type
+ * - 'replace': net cost delta per single replacement (toUnitCost − fromUnitCost)
+ * - 'character': cost of the cheapest available character
+ * Returns 0 if the relevant unit definitions cannot be found.
+ */
+export function upgradeMinCost(upgradeDef: UpgradeDef, armyDef: ArmyDef): number {
+    if (upgradeDef.type === 'replace') {
+        const fromDef = findUnitDef(armyDef, upgradeDef.replaces.fromUnitName)
+        const toDef = findUnitDef(armyDef, upgradeDef.replaces.toUnitName)
+        if (!fromDef || !toDef) return 0
+        return toDef.cost - fromDef.cost
+    }
+    if (upgradeDef.type === 'character') {
+        const costs = upgradeDef.characterNames
+            .map((name) => findUnitDef(armyDef, name)?.cost)
+            .filter((c): c is number => c !== undefined)
+        return costs.length > 0 ? Math.min(...costs) : 0
+    }
+    // 'add' type: cheapest single unit across all add specs
+    const costs = upgradeDef.adds
+        .map((a) => findUnitDef(armyDef, a.unitName)?.cost)
+        .filter((c): c is number => c !== undefined)
+    return costs.length > 0 ? Math.min(...costs) : 0
+}
+
+/**
+ * Returns the actual points cost contributed by a single applied upgrade.
+ * - 'add': sum of costs for all added unit instances
+ * - 'replace': cost of replacing units minus the cost of the removed base units
+ * - 'character': cost of the chosen character (0 if no character selected yet)
+ */
+export function calculateAppliedUpgradePoints(upgrade: AppliedUpgrade, armyDef: ArmyDef): number {
+    if (upgrade.type === 'replace') {
+        const upgradeDef = armyDef.upgrades.find((u) => u.name === upgrade.upgradeName)
+        if (!upgradeDef || upgradeDef.type !== 'replace') return 0
+        const fromUnitDef = findUnitDef(armyDef, upgradeDef.replaces.fromUnitName)
+        if (!fromUnitDef) return 0
+        return (
+            unitTypeEntryCost(upgrade.replacingUnits, armyDef) -
+            fromUnitDef.cost * upgrade.replacedCount
+        )
+    }
+    if (upgrade.type === 'character') {
+        if (!upgrade.chosenCharacterName) return 0
+        const charDef = findUnitDef(armyDef, upgrade.chosenCharacterName)
+        return charDef?.cost ?? 0
+    }
+    // 'add' type
+    return upgrade.addedUnits.reduce((sum, ute) => sum + unitTypeEntryCost(ute, armyDef), 0)
 }
 
 // ─── List-level cost ─────────────────────────────────────────────────────────
