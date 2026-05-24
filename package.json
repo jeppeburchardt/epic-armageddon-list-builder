@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "validate": "tsx scripts/validate-armies.ts"
+    "validate": "tsx scripts/validate-armies.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^24.12.0",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue/tsconfig": "^0.9.0",
