@@ -42,6 +42,23 @@ export interface Transportation {
   capabilities?: string[]
 }
 
+export interface GprNearestNeighbour {
+  name: string
+  price: number
+  distance: number
+}
+
+export interface GprTrainingInfo {
+  predictedMean: number
+  uncertainty: number
+  score: number
+  quality: string
+  topNearestNeighbours: GprNearestNeighbour[]
+  contributingPriceValues: number[]
+  trainingSetSize: number
+  modelKernel: string
+}
+
 // ─── Unit definition ─────────────────────────────────────────────────────────
 
 export interface UnitDef {
@@ -55,6 +72,7 @@ export interface UnitDef {
   weaponSlots: WeaponSlot[]
   /** Transportation properties (cost/type for transportable units, capacity/capabilities for transports) */
   transportation?: Transportation
+  gprTrainingInfo?: GprTrainingInfo
   /** Legacy/alternate field used by some army JSON files for unit special rules */
   traits?: string[]
   specialRuleNames?: string[]

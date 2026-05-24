@@ -8,7 +8,7 @@ import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
 import { listEditorKey } from '@/composables/useListEditor'
 import { groupUnitsForReference } from '@/entities/army'
 
-defineProps<{ id: string }>()
+const props = defineProps<{ id: string }>()
 const router = useRouter()
 
 const injected = inject(listEditorKey)
@@ -62,7 +62,10 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
       <h2 class="section-heading">Units</h2>
       <div v-for="group in unitGroups" :key="group.key" class="unit-group">
         <h3 class="unit-group-heading">{{ group.title }}</h3>
-        <UnitsTable :units="group.units" />
+        <UnitsTable
+          :units="group.units"
+          :unit-gpr-route="(unit) => ({ name: 'list-unit-gpr', params: { id: props.id, unitName: unit.name } })"
+        />
       </div>
     </section>
 

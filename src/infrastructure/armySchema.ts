@@ -33,6 +33,23 @@ export const TransportationSchema = z.object({
   capabilities: z.array(z.string()).optional(),
 })
 
+export const GprNearestNeighbourSchema = z.object({
+  name: z.string(),
+  price: z.number(),
+  distance: z.number(),
+})
+
+export const GprTrainingInfoSchema = z.object({
+  predictedMean: z.number(),
+  uncertainty: z.number(),
+  score: z.number(),
+  quality: z.string(),
+  topNearestNeighbours: z.array(GprNearestNeighbourSchema),
+  contributingPriceValues: z.array(z.number()),
+  trainingSetSize: z.number(),
+  modelKernel: z.string(),
+})
+
 // ─── Unit definition ─────────────────────────────────────────────────────────
 
 export const UnitTypeSchema = z.enum([
@@ -57,6 +74,7 @@ export const UnitDefSchema = z.object({
   ff: z.string().nullable(),
   weaponSlots: z.array(WeaponSlotSchema),
   transportation: TransportationSchema.optional(),
+  gprTrainingInfo: GprTrainingInfoSchema.optional(),
   traits: z.array(z.string()).optional(),
   specialRuleNames: z.array(z.string()).optional(),
 })
