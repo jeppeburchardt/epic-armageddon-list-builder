@@ -22,12 +22,8 @@ function getUnitDef(unitName: string): UnitDef | undefined {
   return props.armyDef.units.find((u) => u.name === unitName)
 }
 
-function displayUnitDef(unitName: string): UnitDef | undefined {
-  return getUnitDef(unitName)
-}
-
 function ruleNames(unitName: string): string[] {
-  const def = displayUnitDef(unitName)
+  const def = getUnitDef(unitName)
   return def?.specialRuleNames ?? def?.traits ?? []
 }
 
@@ -37,7 +33,7 @@ function unitSpecialRules(unitName: string): SpecialRuleDef[] {
 }
 
 function hasChoices(unitName: string): boolean {
-  return displayUnitDef(unitName)?.weaponSlots.some((s) => s.kind === 'choice') ?? false
+  return getUnitDef(unitName)?.weaponSlots.some((s) => s.kind === 'choice') ?? false
 }
 
 interface WeaponRow {
@@ -57,7 +53,7 @@ interface DisplayUnitGroup {
 }
 
 function fixedWeaponRows(unitName: string): WeaponRow[] {
-  const def = displayUnitDef(unitName)
+  const def = getUnitDef(unitName)
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
   return def.weaponSlots.map((slot) => {
     if (slot.kind === 'fixed') {
@@ -73,7 +69,7 @@ function fixedWeaponRows(unitName: string): WeaponRow[] {
 }
 
 function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow[] {
-  const def = displayUnitDef(unitName)
+  const def = getUnitDef(unitName)
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
   return def.weaponSlots.map((slot, idx) => {
     if (slot.kind === 'fixed') {
@@ -104,7 +100,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   let displayIndex = 0
 
   return derivedUnits.value.flatMap((ute, uteIndex) => {
-    const unitDef = displayUnitDef(ute.unitName)
+    const unitDef = getUnitDef(ute.unitName)
     const specialRules = unitSpecialRules(ute.unitName)
 
     if (!hasChoices(ute.unitName)) {

@@ -12,23 +12,23 @@ const { armies } = useArmies()
 
 const name = ref('')
 const pointsLimit = ref(3000)
-const selectedArmySlug = ref<string | null>(null)
+const selectedArmySlug = ref('')
 
 const armyOptions = computed(() => armies.value.map((a) => ({ label: a.name, value: a.slug })))
 
 const canCreate = computed(
-  () => name.value.trim().length > 0 && pointsLimit.value > 0 && selectedArmySlug.value !== null,
+  () => name.value.trim().length > 0 && pointsLimit.value > 0 && selectedArmySlug.value.length > 0,
 )
 
 function close() {
   visible.value = false
   name.value = ''
   pointsLimit.value = 3000
-  selectedArmySlug.value = null
+  selectedArmySlug.value = ''
 }
 
 function confirm() {
-  if (!canCreate.value || !selectedArmySlug.value) return
+  if (!canCreate.value) return
   emit('submit', name.value.trim(), pointsLimit.value, selectedArmySlug.value)
   close()
 }
@@ -54,7 +54,7 @@ function confirm() {
           <div class="field">
             <label for="list-army">Army</label>
             <select id="list-army" v-model="selectedArmySlug" class="w-full">
-              <option :value="null">Select army</option>
+              <option value="">Select army</option>
               <option v-for="army in armyOptions" :key="army.value" :value="army.value">{{ army.label }}</option>
             </select>
           </div>

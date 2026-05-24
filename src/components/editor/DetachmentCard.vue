@@ -201,6 +201,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .instances {
+  flex: 1 2 auto;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -314,6 +315,11 @@ function isTransportUpgrade(upgradeName: string): boolean {
   border: 1px solid #dc2626;
   background: #fff;
   color: #dc2626;
+}
+
+.secondary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .transport-warning {

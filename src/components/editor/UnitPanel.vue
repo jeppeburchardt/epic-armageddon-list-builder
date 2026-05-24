@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   hasSameConfigOption: boolean
   name: string
   min?: number
@@ -15,11 +15,15 @@ const emit = defineEmits<{
   (e: 'update:unit-amount', val: number): void
 }>()
 
-function parseAndEmitAmount(value: string) {
-  const parsed = Number(value)
+function parseAndEmitAmount(event: Event) {
+  const input = event.target as HTMLInputElement
+  const parsed = input.valueAsNumber
   if (Number.isFinite(parsed)) {
-    emit('update:unit-amount', parsed)
+    const clamped = Math.max(props.min ?? -Infinity, Math.min(props.max ?? Infinity, parsed))
+    emit('update:unit-amount', clamped)
+    return
   }
+  input.value = String(props.unitAmount)
 }
 </script>
 
@@ -33,7 +37,7 @@ function parseAndEmitAmount(value: string) {
         :min="min"
         :max="max"
         step="1"
-        @input="parseAndEmitAmount(($event.target as HTMLInputElement).value)"
+        @input="parseAndEmitAmount"
       />
       <div class="name">{{ name }}</div>
       <span v-if="cost !== undefined" class="cost-tag">

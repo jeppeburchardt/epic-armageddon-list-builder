@@ -48,10 +48,6 @@ const replaceMax = computed(() => {
   return def.replaces.max
 })
 
-function getAddMin(): number {
-  return 0
-}
-
 function getAddMax(unitName: string): number | undefined {
   const def = upgradeDef.value
   if (!def || def.type !== 'add' || def.maxTotal === undefined) return undefined
@@ -115,13 +111,13 @@ function getSameConfig(unitName: string): boolean {
   return sameConfig[unitName]
 }
 
-function setSameConfig(unitName: string, value: boolean, instances: UnitInstance[], upgradeName: string): void {
+function setSameConfig(unitName: string, value: boolean, instances: UnitInstance[]): void {
   sameConfig[unitName] = value
   if (value && instances.length > 1) {
     const first = instances[0]
     for (let i = 1; i < instances.length; i++) {
       for (const sel of first.weaponSelections) {
-        emit('weapon-change', upgradeName, unitName, i, sel.slotIndex, sel.chosenWeaponName)
+        emit('weapon-change', props.upgrade.upgradeName, unitName, i, sel.slotIndex, sel.chosenWeaponName)
       }
     }
   }
@@ -141,7 +137,7 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
       :cost="replaceCostPerUnit"
       :cost-sign="true"
       @update:unit-amount="(val) => emit('replace-count-change', val)"
-      @update:same-config="(val) => setSameConfig(replaceUpgrade!.replacingUnits.unitName, val, replaceUpgrade!.replacingUnits.instances, upgrade.upgradeName)"
+      @update:same-config="(val) => setSameConfig(replaceUpgrade!.replacingUnits.unitName, val, replaceUpgrade!.replacingUnits.instances)"
     >
       <template v-if="replaceUpgrade.replacedCount > 0 && hasChoices(replaceUpgrade.replacingUnits.unitName)">
         <template v-if="getSameConfig(replaceUpgrade.replacingUnits.unitName) && replaceUpgrade.replacingUnits.instances.length > 0">
@@ -174,7 +170,7 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
         :value="characterUpgrade.chosenCharacterName ?? ''"
         @change="(event) => {
           const value = (event.target as HTMLSelectElement).value
-          emit('update-character', value.length > 0 ? value : null)
+          emit('update-character', value || null)
         }"
       >
         <option value="">Select character</option>
@@ -187,14 +183,14 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
         v-for="ute in upgrade.addedUnits"
         :key="ute.unitName"
         :name="ute.unitName"
-        :min="getAddMin()"
+        :min="0"
         :max="getAddMax(ute.unitName)"
         :has-same-config-option="ute.instances.length > 1 && hasChoices(ute.unitName)"
         :unit-amount="ute.instances.length"
         :same-config="getSameConfig(ute.unitName)"
         :cost="addUnitCost(ute.unitName)"
         @update:unit-amount="(val) => emit('add-count-change', ute.unitName, val)"
-        @update:same-config="(val) => setSameConfig(ute.unitName, val, ute.instances, upgrade.upgradeName)"
+        @update:same-config="(val) => setSameConfig(ute.unitName, val, ute.instances)"
       >
         <template v-if="hasChoices(ute.unitName) && ute.instances.length > 0">
           <template v-if="getSameConfig(ute.unitName)">

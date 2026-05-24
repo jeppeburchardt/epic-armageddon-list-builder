@@ -8,8 +8,7 @@ const { list, armyDef, totalPoints, updatePointsLimit } = injected
 
 const value = computed(() => {
   const limit = list.value?.pointsLimit ?? 0
-  if (limit <= 0) return 0
-  return Math.ceil((totalPoints.value / limit) * 100)
+  return limit > 0 ? Math.ceil((totalPoints.value / limit) * 100) : 0
 })
 </script>
 

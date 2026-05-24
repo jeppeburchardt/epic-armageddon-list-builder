@@ -21,7 +21,7 @@ function handleCreate(name: string, pointsLimit: number, armySlug: string): void
 }
 
 function confirmDelete(id: string) {
-  if (globalThis.window.confirm('Delete this army list? This cannot be undone.')) {
+  if (window.confirm('Delete this army list? This cannot be undone.')) {
     deleteList(id)
   }
 }
