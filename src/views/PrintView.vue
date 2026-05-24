@@ -53,6 +53,14 @@ const groupedEntries = computed(() => {
     .map((group) => ({ group, entries: groups[group] ?? [] }))
     .filter((section) => section.entries.length > 0)
 })
+
+function getDetachmentNumber(entryId: string): number {
+  const detachmentIndex = (list.value?.entries ?? []).findIndex((entry) => entry.id === entryId)
+  if (detachmentIndex >= 0) return detachmentIndex + 1
+
+  console.warn(`Missing detachment number for entry ${entryId} in print view`)
+  return 0
+}
 </script>
 
 <template>
@@ -97,6 +105,7 @@ const groupedEntries = computed(() => {
           :key="entry.id"
           :entry="entry"
           :army-def="armyDef"
+          :detachment-number="getDetachmentNumber(entry.id)"
         />
       </template>
     </div>
