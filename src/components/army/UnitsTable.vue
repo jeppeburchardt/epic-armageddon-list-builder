@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
 import type { UnitDef } from '@/entities/army'
 
-defineProps<{
+const props = defineProps<{
   units: UnitDef[]
+  unitGprRoute?: (unit: UnitDef) => RouteLocationRaw
 }>()
 
 interface WeaponRow {
@@ -63,7 +65,10 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
             <!-- Unit stat cells only on the first weapon row -->
             <template v-if="wi === 0">
               <td :rowspan="weaponRows(unit).length" class="unit-name-cell">
-                {{ unit.name }}
+                <RouterLink v-if="props.unitGprRoute" :to="props.unitGprRoute(unit)" class="unit-link">
+                  {{ unit.name }}
+                </RouterLink>
+                <template v-else>{{ unit.name }}</template>
               </td>
               <td :rowspan="weaponRows(unit).length">{{ unit.cost }}</td>
               <td :rowspan="weaponRows(unit).length">{{ unit.type }}</td>
@@ -114,6 +119,15 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
 
 .unit-name-cell {
   font-weight: 500;
+}
+
+.unit-link {
+  color: var(--p-primary-color);
+  text-decoration: none;
+}
+
+.unit-link:hover {
+  text-decoration: underline;
 }
 
 .weapon-alt {

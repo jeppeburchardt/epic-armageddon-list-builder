@@ -25,7 +25,7 @@ const route = useRoute()
     <RouterLink
       :to="{ name: 'list-reference', params: { id: listId } }"
       class="tab-item"
-      :class="{ active: route.name === 'list-reference' }"
+      :class="{ active: route.name === 'list-reference' || route.name === 'list-unit-gpr' }"
     >
       <span class="tab-label">Reference</span>
     </RouterLink>

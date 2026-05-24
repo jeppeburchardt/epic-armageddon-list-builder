@@ -5,6 +5,7 @@ import PrintView from '@/views/PrintView.vue'
 import ArmyView from '@/views/ArmyView.vue'
 import ListLayout from '@/views/ListLayout.vue'
 import ListReferenceView from '@/views/ListReferenceView.vue'
+import UnitGprView from '@/views/UnitGprView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
@@ -21,6 +22,12 @@ const router = createRouter({
                 { path: 'view', name: 'list-view', component: PrintView, props: true },
                 { path: 'edit', name: 'list-edit', component: EditorView, props: true },
                 { path: 'reference', name: 'list-reference', component: ListReferenceView, props: true },
+                {
+                    path: 'reference/unit/:unitName/gpr',
+                    name: 'list-unit-gpr',
+                    component: UnitGprView,
+                    props: true,
+                },
             ],
         },
         { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
