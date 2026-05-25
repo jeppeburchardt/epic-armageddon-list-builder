@@ -1,0 +1,220 @@
+{
+  "name": "Playwright Test Army",
+  "slug": "playwright-test-army",
+  "strategyRating": 3,
+  "specialRules": [],
+  "restrictions": [],
+  "detachments": [
+    {
+      "name": "Mutable Detachment",
+      "group": "Core",
+      "units": [
+        {
+          "unitName": "Test Tank",
+          "min": 1,
+          "max": 3
+        }
+      ],
+      "availableUpgrades": ["Test Support Upgrade", "Test Retrofit", "Test Commander"],
+      "restrictions": []
+    },
+    {
+      "name": "Support Detachment",
+      "group": "Support",
+      "units": [
+        {
+          "unitName": "Support Platform",
+          "count": 1
+        }
+      ],
+      "availableUpgrades": [],
+      "restrictions": []
+    }
+  ],
+  "upgrades": [
+    {
+      "name": "Test Support Upgrade",
+      "type": "add",
+      "maxTotal": 2,
+      "adds": [
+        {
+          "unitName": "Support Drone"
+        },
+        {
+          "unitName": "Missile Drone"
+        }
+      ]
+    },
+    {
+      "name": "Test Retrofit",
+      "type": "replace",
+      "replaces": {
+        "fromUnitName": "Test Tank",
+        "toUnitName": "Elite Test Tank",
+        "max": 2
+      }
+    },
+    {
+      "name": "Test Commander",
+      "type": "character",
+      "characterNames": ["Test Captain", "Test Supreme Commander"]
+    }
+  ],
+  "units": [
+    {
+      "name": "Test Tank",
+      "cost": 100,
+      "type": "AV",
+      "speed": "25cm",
+      "armour": "4+",
+      "cc": "6+",
+      "ff": "4+",
+      "weaponSlots": [
+        {
+          "kind": "choice",
+          "name": "Turret",
+          "choices": [
+            {
+              "weaponName": "Battle Cannon",
+              "range": "45cm",
+              "firepower": "AT5+ AP5+",
+              "additionalCost": 0
+            },
+            {
+              "weaponName": "Plasma Cannon",
+              "range": "30cm",
+              "firepower": "AT4+ AP4+",
+              "additionalCost": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Elite Test Tank",
+      "cost": 120,
+      "type": "AV",
+      "speed": "25cm",
+      "armour": "4+",
+      "cc": "6+",
+      "ff": "3+",
+      "weaponSlots": [
+        {
+          "kind": "choice",
+          "name": "Turret",
+          "choices": [
+            {
+              "weaponName": "Twin Lascannon",
+              "range": "45cm",
+              "firepower": "AT4+",
+              "additionalCost": 0
+            },
+            {
+              "weaponName": "Heavy Plasma",
+              "range": "30cm",
+              "firepower": "AT4+ AP4+",
+              "additionalCost": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Support Drone",
+      "cost": 25,
+      "type": "LV",
+      "speed": "20cm",
+      "armour": "5+",
+      "cc": "6+",
+      "ff": "5+",
+      "weaponSlots": [
+        {
+          "kind": "choice",
+          "name": "Payload",
+          "choices": [
+            {
+              "weaponName": "Bolter Pod",
+              "range": "15cm",
+              "firepower": "AP6+",
+              "additionalCost": 0
+            },
+            {
+              "weaponName": "Melta Pod",
+              "range": "15cm",
+              "firepower": "AT5+",
+              "additionalCost": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Missile Drone",
+      "cost": 30,
+      "type": "LV",
+      "speed": "20cm",
+      "armour": "5+",
+      "cc": "6+",
+      "ff": "5+",
+      "weaponSlots": [
+        {
+          "kind": "fixed",
+          "weaponName": "Missile Rack",
+          "range": "30cm",
+          "firepower": "AT6+ AP6+"
+        }
+      ]
+    },
+    {
+      "name": "Support Platform",
+      "cost": 50,
+      "type": "LV",
+      "speed": "15cm",
+      "armour": "5+",
+      "cc": "6+",
+      "ff": "5+",
+      "weaponSlots": [
+        {
+          "kind": "fixed",
+          "weaponName": "Support Cannon",
+          "range": "30cm",
+          "firepower": "AP5+"
+        }
+      ]
+    },
+    {
+      "name": "Test Captain",
+      "cost": 25,
+      "type": "CH",
+      "speed": "15cm",
+      "armour": "5+",
+      "cc": "5+",
+      "ff": "5+",
+      "weaponSlots": [
+        {
+          "kind": "fixed",
+          "weaponName": "Command Blade",
+          "range": "Base",
+          "firepower": "Assault"
+        }
+      ]
+    },
+    {
+      "name": "Test Supreme Commander",
+      "cost": 50,
+      "type": "CH",
+      "speed": "15cm",
+      "armour": "4+",
+      "cc": "4+",
+      "ff": "4+",
+      "weaponSlots": [
+        {
+          "kind": "fixed",
+          "weaponName": "Supreme Command Blade",
+          "range": "Base",
+          "firepower": "Assault"
+        }
+      ]
+    }
+  ]
+}

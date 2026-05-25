@@ -1,6 +1,7 @@
 import type { ArmyDef, SpecialRuleDef } from '@/entities/army'
 import type { ArmyLoader } from '@/ports/ArmyLoader'
 import legionesAstartes from '@/data/armies/legiones-astartes.json'
+import playwrightTestArmy from '@/data/armies/playwright-test-army.json'
 import spaceMarines from '@/data/armies/space-marine.json'
 import allSpecialRules from '@/data/special-rules.json'
 import { RawArmyDefSchema, SpecialRulesFileSchema } from '@/infrastructure/armySchema'
@@ -31,6 +32,7 @@ const parsedRules = SpecialRulesFileSchema.parse(allSpecialRules)
 
 const armies: ArmyDef[] = [
   enrichArmy(legionesAstartes, parsedRules),
+  enrichArmy(playwrightTestArmy, parsedRules),
   enrichArmy(spaceMarines, parsedRules),
 ]
 

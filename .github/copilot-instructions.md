@@ -129,3 +129,12 @@ Weapon selections are **per individual unit instance** — each model in a forma
 - Keep components under `components/` free of business logic; all logic goes in composables or use-cases
 - `bootstrap.ts` is the only composition root; never instantiate infrastructure classes anywhere else
 - Path alias `@/` resolves to `src/`
+
+---
+
+## Playwright expectations
+
+- End-to-end coverage lives in `tests/playwright/` and runs with `npm run test:e2e`
+- Prefer the dedicated `Playwright Test Army` (`/tmp/workspace/jeppeburchardt/epic-armageddon-list-builder/src/data/armies/playwright-test-army.json`) for mutation-oriented tests so assertions do not depend on live army definitions that may change over time
+- When adding or updating Playwright tests, cover every user-visible mutation the feature introduces (for example list creation/deletion, detachment changes, upgrades, counts, and weapon selections)
+- All future user-facing features must ship with Playwright coverage for their new behavior
