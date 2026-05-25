@@ -64,24 +64,37 @@ const showAddDetachment = ref(false)
         @move-up="moveEntry(entry.id, 'up')"
         @move-down="moveEntry(entry.id, 'down')"
         @base-count-change="(unitName, count) => updateBaseUnitCount(entry.id, unitName, count)"
-        @weapon-change="(source, unitName, instIdx, slotIdx, weapon) => updateWeaponSelection(entry.id, source, unitName, instIdx, slotIdx, weapon)"
+        @weapon-change="
+          (source, unitName, instIdx, slotIdx, weapon) =>
+            updateWeaponSelection(entry.id, source, unitName, instIdx, slotIdx, weapon)
+        "
         @add-upgrade="(upgDef) => applyUpgrade(entry.id, upgDef)"
         @remove-upgrade="(upgName) => removeUpgrade(entry.id, upgName)"
-        @replace-count-change="(upgName, count) => updateReplaceUpgradeCount(entry.id, upgName, count)"
-        @add-count-change="(upgName, unitName, count) => updateAddUpgradeUnitCount(entry.id, upgName, unitName, count)"
-        @update-character="(upgName, charName) => updateCharacterUpgrade(entry.id, upgName, charName)"
+        @replace-count-change="
+          (upgName, count) => updateReplaceUpgradeCount(entry.id, upgName, count)
+        "
+        @add-count-change="
+          (upgName, unitName, count) =>
+            updateAddUpgradeUnitCount(entry.id, upgName, unitName, count)
+        "
+        @update-character="
+          (upgName, charName) => updateCharacterUpgrade(entry.id, upgName, charName)
+        "
       />
     </div>
 
     <!-- FAB: add detachment -->
-    <div class="fab-area no-print">
-      
-    </div>
+    <div class="fab-area no-print"></div>
 
     <AddDetachmentDialog
       v-model:visible="showAddDetachment"
       :army-def="armyDef"
-      @add="(name) => { addEntry(name); showAddDetachment = false }"
+      @add="
+        (name) => {
+          addEntry(name)
+          showAddDetachment = false
+        }
+      "
     />
   </div>
 </template>
@@ -94,13 +107,13 @@ const showAddDetachment = ref(false)
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .editor-header {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: 0.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
 }
@@ -122,43 +135,43 @@ const showAddDetachment = ref(false)
 }
 
 .limit-display {
-  font-size: .85rem;
+  font-size: 0.85rem;
 }
 
 .header-meta {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: .25rem;
+  gap: 0.25rem;
 }
 
 .limit-row {
   display: flex;
   align-items: center;
-  gap: .4rem;
+  gap: 0.4rem;
 }
 
 .limit-label {
-  font-size: .8rem;
-  color: var(--p-text-muted-color);
+  font-size: 0.8rem;
+  color: var(--ea-text-muted-color);
 }
 
 .limit-input {
   width: 6.5rem;
-  font-size: .85rem;
+  font-size: 0.85rem;
 }
 
 .army-ref {
-  margin-bottom: .75rem;
+  margin-bottom: 0.75rem;
 }
 
 .army-ref-link {
-  font-size: .85rem;
-  color: var(--p-primary-color);
+  font-size: 0.85rem;
+  color: var(--ea-primary-color);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
+  gap: 0.3rem;
 }
 
 .army-ref-link:hover {
@@ -168,7 +181,7 @@ const showAddDetachment = ref(false)
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .entries-list {
@@ -179,7 +192,7 @@ const showAddDetachment = ref(false)
 
 .fab-area {
   position: fixed;
-  bottom: calc(4rem + .75rem);
+  bottom: calc(4rem + 0.75rem);
   right: 1rem;
   z-index: 50;
 }
@@ -193,14 +206,14 @@ const showAddDetachment = ref(false)
 }
 
 .primary-button {
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
 }
 
 .text-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
 }
 

@@ -48,21 +48,32 @@ function confirm() {
 
           <div class="field">
             <label for="list-points">Points Limit</label>
-            <input id="list-points" v-model.number="pointsLimit" type="number" min="250" step="250" class="w-full" />
+            <input
+              id="list-points"
+              v-model.number="pointsLimit"
+              type="number"
+              min="250"
+              step="250"
+              class="w-full"
+            />
           </div>
 
           <div class="field">
             <label for="list-army">Army</label>
             <select id="list-army" v-model="selectedArmySlug" class="w-full">
               <option value="">Select army</option>
-              <option v-for="army in armyOptions" :key="army.value" :value="army.value">{{ army.label }}</option>
+              <option v-for="army in armyOptions" :key="army.value" :value="army.value">
+                {{ army.label }}
+              </option>
             </select>
           </div>
         </div>
 
         <div class="actions">
           <button type="button" class="secondary-button" @click="close">Cancel</button>
-          <button type="button" class="primary-button" :disabled="!canCreate" @click="confirm">Create</button>
+          <button type="button" class="primary-button" :disabled="!canCreate" @click="confirm">
+            Create
+          </button>
         </div>
       </div>
     </div>
@@ -83,9 +94,9 @@ function confirm() {
 
 .dialog {
   width: min(95vw, 480px);
-  background: var(--p-surface-0);
+  background: var(--ea-surface-0);
   border-radius: 0.5rem;
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   padding: 1rem;
 }
 
@@ -130,9 +141,9 @@ function confirm() {
 }
 
 .primary-button {
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
 }
 
 .primary-button:disabled {
@@ -141,8 +152,8 @@ function confirm() {
 }
 
 .secondary-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
 }
 </style>

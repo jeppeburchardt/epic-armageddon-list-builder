@@ -1,55 +1,40 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { inject } from 'vue'
 import { listEditorKey } from '@/composables/useListEditor'
 
 const injected = inject(listEditorKey)
 if (!injected) throw new Error('listEditorKey not provided')
-const { list, armyDef, totalPoints, updatePointsLimit } = injected
-
-const value = computed(() => {
-  const limit = list.value?.pointsLimit ?? 0
-  return limit > 0 ? Math.ceil((totalPoints.value / limit) * 100) : 0
-})
+const { list, armyDef, totalPoints } = injected
 </script>
 
 <template>
-  <div class="header">
+  <div class="list-header header surface">
+    <div class="sub-title-points">{{ totalPoints }}</div>
     <div class="title">{{ list?.name }}</div>
-    <div class="meta">
-      <progress class="progress" :value="Math.min(100, value)" max="100" />
-      <div class="limit-row">
-        <span class="limit-display">{{ totalPoints }} / {{ list?.pointsLimit }} pts</span>
-        <input
-          class="limit-input"
-          type="number"
-          :value="list?.pointsLimit"
-          min="250"
-          step="250"
-          @change="(event) => {
-            const nextValue = Number((event.target as HTMLInputElement).value)
-            if (Number.isFinite(nextValue) && nextValue > 0) {
-              updatePointsLimit(nextValue)
-            }
-          }"
-        />
-      </div>
-    </div>
     <div class="sub-title">{{ armyDef?.name }}</div>
-    <div id="list-header-cta" class="button"><slot name="button"></slot></div>
   </div>
+  <div id="list-header-cta" class="button"><slot name="button"></slot></div>
 </template>
 
 <style lang="css" scoped>
-.header {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 0.5rem;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+.list-header {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-color: var(--ea-tertiary);
+  color: var(--ea-tertiary);
+  border-width: 2px 0 2px 0;
+  border-style: solid;
+  text-align: center;
+  /* background-color: var(--ea-primary); */
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 2rem;
+}
+
+.sub-title {
+  text-transform: uppercase;
+  font-size: 0.8rem;
 }
 
 .meta {
@@ -71,10 +56,5 @@ const value = computed(() => {
 
 .limit-input {
   width: 6rem;
-}
-
-.sub-title {
-  text-transform: uppercase;
-  font-size: 0.8rem;
 }
 </style>

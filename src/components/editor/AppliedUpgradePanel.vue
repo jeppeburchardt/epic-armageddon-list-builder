@@ -34,7 +34,9 @@ const characterUpgradeDef = computed(() => {
   return def?.type === 'character' ? def : null
 })
 
-const upgradeDef = computed(() => props.armyDef.upgrades.find((u) => u.name === props.upgrade.upgradeName))
+const upgradeDef = computed(() =>
+  props.armyDef.upgrades.find((u) => u.name === props.upgrade.upgradeName),
+)
 
 const fromUnitName = computed(() => {
   const def = upgradeDef.value
@@ -117,7 +119,14 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
     const first = instances[0]
     for (let i = 1; i < instances.length; i++) {
       for (const sel of first.weaponSelections) {
-        emit('weapon-change', props.upgrade.upgradeName, unitName, i, sel.slotIndex, sel.chosenWeaponName)
+        emit(
+          'weapon-change',
+          props.upgrade.upgradeName,
+          unitName,
+          i,
+          sel.slotIndex,
+          sel.chosenWeaponName,
+        )
       }
     }
   }
@@ -125,60 +134,106 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
 </script>
 
 <template>
-  <div class="applied-upgrade-content">
+  <div class="upgrades stack-small">
     <UnitPanel
       v-if="upgrade.type === 'replace' && replaceUpgrade"
       :name="`${fromUnitName} → ${replaceUpgrade.replacingUnits.unitName}`"
       :min="0"
       :max="replaceMax"
-      :has-same-config-option="replaceUpgrade.replacingUnits.instances.length > 1 && hasChoices(replaceUpgrade.replacingUnits.unitName)"
+      :has-same-config-option="
+        replaceUpgrade.replacingUnits.instances.length > 1 &&
+        hasChoices(replaceUpgrade.replacingUnits.unitName)
+      "
       :unit-amount="replaceUpgrade.replacedCount"
       :same-config="getSameConfig(replaceUpgrade.replacingUnits.unitName)"
       :cost="replaceCostPerUnit"
       :cost-sign="true"
       @update:unit-amount="(val) => emit('replace-count-change', val)"
-      @update:same-config="(val) => setSameConfig(replaceUpgrade!.replacingUnits.unitName, val, replaceUpgrade!.replacingUnits.instances)"
+      @update:same-config="
+        (val) =>
+          setSameConfig(
+            replaceUpgrade!.replacingUnits.unitName,
+            val,
+            replaceUpgrade!.replacingUnits.instances,
+          )
+      "
     >
-      <template v-if="replaceUpgrade.replacedCount > 0 && hasChoices(replaceUpgrade.replacingUnits.unitName)">
-        <template v-if="getSameConfig(replaceUpgrade.replacingUnits.unitName) && replaceUpgrade.replacingUnits.instances.length > 0">
+      <template
+        v-if="
+          replaceUpgrade.replacedCount > 0 && hasChoices(replaceUpgrade.replacingUnits.unitName)
+        "
+        #options
+      >
+        <template
+          v-if="
+            getSameConfig(replaceUpgrade.replacingUnits.unitName) &&
+            replaceUpgrade.replacingUnits.instances.length > 0
+          "
+        >
           <UnitInstanceEditor
             :name="replaceUpgrade.replacingUnits.unitName"
             :weapon-slots="getWeaponSlots(replaceUpgrade.replacingUnits.unitName)"
             :instance="replaceUpgrade.replacingUnits.instances[0]"
-            @weapon-change="(slotIdx, weapon) => {
-              for (let i = 0; i < replaceUpgrade!.replacingUnits.instances.length; i++) {
-                emit('weapon-change', upgrade.upgradeName, replaceUpgrade!.replacingUnits.unitName, i, slotIdx, weapon)
+            @weapon-change="
+              (slotIdx, weapon) => {
+                for (let i = 0; i < replaceUpgrade!.replacingUnits.instances.length; i++) {
+                  emit(
+                    'weapon-change',
+                    upgrade.upgradeName,
+                    replaceUpgrade!.replacingUnits.unitName,
+                    i,
+                    slotIdx,
+                    weapon,
+                  )
+                }
               }
-            }"
+            "
           />
         </template>
         <template v-else>
-          <template v-for="(inst, instIdx) in replaceUpgrade.replacingUnits.instances" :key="instIdx">
+          <template
+            v-for="(inst, instIdx) in replaceUpgrade.replacingUnits.instances"
+            :key="instIdx"
+          >
             <UnitInstanceEditor
               :name="`${replaceUpgrade.replacingUnits.unitName} ${instIdx + 1}`"
               :weapon-slots="getWeaponSlots(replaceUpgrade.replacingUnits.unitName)"
               :instance="inst"
-              @weapon-change="(slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, replaceUpgrade!.replacingUnits.unitName, instIdx, slotIdx, weapon)"
+              @weapon-change="
+                (slotIdx, weapon) =>
+                  emit(
+                    'weapon-change',
+                    upgrade.upgradeName,
+                    replaceUpgrade!.replacingUnits.unitName,
+                    instIdx,
+                    slotIdx,
+                    weapon,
+                  )
+              "
             />
           </template>
         </template>
       </template>
     </UnitPanel>
 
-    <div v-else-if="upgrade.type === 'character' && characterUpgrade">
+    <template v-else-if="upgrade.type === 'character' && characterUpgrade">
       <select
         :value="characterUpgrade.chosenCharacterName ?? ''"
-        @change="(event) => {
-          const value = (event.target as HTMLSelectElement).value
-          emit('update-character', value || null)
-        }"
+        @change="
+          (event) => {
+            const value = (event.target as HTMLSelectElement).value
+            emit('update-character', value || null)
+          }
+        "
       >
         <option value="">Select character</option>
-        <option v-for="option in characterOptions" :key="option.name" :value="option.name">{{ option.label }}</option>
+        <option v-for="option in characterOptions" :key="option.name" :value="option.name">
+          {{ option.label }}
+        </option>
       </select>
-    </div>
+    </template>
 
-    <div v-else-if="upgrade.type === 'add'" class="add-section">
+    <template v-else-if="upgrade.type === 'add'">
       <UnitPanel
         v-for="ute in upgrade.addedUnits"
         :key="ute.unitName"
@@ -192,17 +247,19 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
         @update:unit-amount="(val) => emit('add-count-change', ute.unitName, val)"
         @update:same-config="(val) => setSameConfig(ute.unitName, val, ute.instances)"
       >
-        <template v-if="hasChoices(ute.unitName) && ute.instances.length > 0">
+        <template #options v-if="hasChoices(ute.unitName) && ute.instances.length > 0">
           <template v-if="getSameConfig(ute.unitName)">
             <UnitInstanceEditor
               :name="ute.unitName"
               :weapon-slots="getWeaponSlots(ute.unitName)"
               :instance="ute.instances[0]"
-              @weapon-change="(slotIdx, weapon) => {
-                for (let i = 0; i < ute.instances.length; i++) {
-                  emit('weapon-change', upgrade.upgradeName, ute.unitName, i, slotIdx, weapon)
+              @weapon-change="
+                (slotIdx, weapon) => {
+                  for (let i = 0; i < ute.instances.length; i++) {
+                    emit('weapon-change', upgrade.upgradeName, ute.unitName, i, slotIdx, weapon)
+                  }
                 }
-              }"
+              "
             />
           </template>
           <template v-else>
@@ -211,26 +268,33 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
                 :name="`${ute.unitName} ${instIdx + 1}`"
                 :weapon-slots="getWeaponSlots(ute.unitName)"
                 :instance="inst"
-                @weapon-change="(slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, ute.unitName, instIdx, slotIdx, weapon)"
+                @weapon-change="
+                  (slotIdx, weapon) =>
+                    emit(
+                      'weapon-change',
+                      upgrade.upgradeName,
+                      ute.unitName,
+                      instIdx,
+                      slotIdx,
+                      weapon,
+                    )
+                "
               />
             </template>
           </template>
         </template>
       </UnitPanel>
+    </template>
+    <div class="buttons">
+      <button type="button" class="remove-upgrade-button" @click.prevent="emit('remove')">
+        Remove {{ upgrade.upgradeName }}
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.applied-upgrade-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.add-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.upgrades {
+  margin-top: 0.5rem;
 }
 </style>

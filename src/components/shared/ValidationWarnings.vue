@@ -14,52 +14,33 @@ const severity = computed(() => {
 </script>
 
 <template>
-  <div class="validation-warnings">
-    <p class="validation-message" :class="`severity-${severity}`">
-      <template v-if="results.length === 0"> List is valid </template>
-      <template v-else>
-        {{ results[0].message }}
-      </template>
-      <span v-if="results.length > 1" class="issue-count">{{ results.length - 1 }} more issues</span>
-    </p>
-  </div>
+  <p class="validation-message surface" :class="`severity-${severity}`">
+    <template v-if="results.length === 0"> List is valid </template>
+    <template v-else>
+      {{ results[0].message }}
+    </template>
+    <span v-if="results.length > 1" class="issue-count">{{ results.length - 1 }} more issues</span>
+  </p>
 </template>
 
 <style scoped>
-.validation-warnings {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
 .validation-message {
-  margin: 0;
   padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid transparent;
 }
 
 .severity-success {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
 }
 
 .severity-warn {
-  background: #fff7ed;
-  color: #9a3412;
-  border-color: #fed7aa;
+  background-color: var(--ea-primary);
 }
 
 .severity-error {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background-color: var(--ea-primary);
 }
 
 .issue-count {
-  color: var(--p-text-muted-color);
+  color: var(--ea--text-muted-color);
   margin-left: 0.5rem;
 }
 </style>

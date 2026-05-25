@@ -14,7 +14,9 @@ const router = useRouter()
 const injected = inject(listEditorKey)
 if (!injected) throw new Error('listEditorKey not provided')
 const { armyDef } = injected
-const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDef.value.units) : []))
+const unitGroups = computed(() =>
+  armyDef.value ? groupUnitsForReference(armyDef.value.units) : [],
+)
 </script>
 
 <template>
@@ -64,7 +66,9 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
         <h3 class="unit-group-heading">{{ group.title }}</h3>
         <UnitsTable
           :units="group.units"
-          :unit-gpr-route="(unit) => ({ name: 'list-unit-gpr', params: { id: props.id, unitName: unit.name } })"
+          :unit-gpr-route="
+            (unit) => ({ name: 'list-unit-gpr', params: { id: props.id, unitName: unit.name } })
+          "
         />
       </div>
     </section>
@@ -85,7 +89,7 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
 .not-found {
   text-align: center;
   padding: 3rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,7 +110,7 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
 }
 
 .army-meta {
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   font-size: 0.9rem;
 }
 
@@ -119,7 +123,7 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
   font-weight: 600;
   margin: 0 0 0.75rem;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--p-surface-border);
+  border-bottom: 1px solid var(--ea-surface-border);
 }
 
 .restrictions-list {
@@ -139,7 +143,7 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
 
 .rule-text {
   margin: 0;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   line-height: 1.5;
 }
 
@@ -154,8 +158,8 @@ const unitGroups = computed(() => (armyDef.value ? groupUnitsForReference(armyDe
 }
 
 .secondary-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
   border-radius: 0.375rem;
   padding: 0.45rem 0.75rem;

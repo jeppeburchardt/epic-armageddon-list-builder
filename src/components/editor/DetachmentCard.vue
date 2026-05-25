@@ -7,7 +7,7 @@ import UpgradePickerDialog from './UpgradePickerDialog.vue'
 import type { ArmyDef, UpgradeDef } from '@/entities/army'
 import type { Entry } from '@/entities/list'
 import { calculateEntryPoints } from '@/entities/points'
-import { deriveBaseUnits, deriveFormationUnits, deriveUpgradeUnits } from '@/entities/composition'
+import { deriveBaseUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
 import { toRomanNumeral } from '@/entities/romanNumerals'
 import { useMediaQuery } from '@vueuse/core'
@@ -70,89 +70,103 @@ function isTransportUpgrade(upgradeName: string): boolean {
 </script>
 
 <template>
-  <article class="detachment-card" :class="{ 'warning-card': transportWarning }">
-    <div class="entry">
-      <div class="info">
-        <div class="primary">
-          <h3 class="name">
-            <span class="detachment-number-badge">{{ toRomanNumeral(detachmentNumber) }}</span>
-            <span>{{ entry.detachmentName }}</span>
-          </h3>
-          <PointsBadge :used="entryPoints" />
-        </div>
-        <div class="buttons">
-          <button
-            v-if="availableUpgradesCount > 0"
-            type="button"
-            class="primary-button"
-            @click="showUpgradePicker = true"
-          >
-            {{ isSmallScreen ? 'Add' : 'Add Upgrade' }}
-          </button>
-          <button type="button" class="secondary-button" :disabled="isFirst" @click="emit('move-up')">Move up</button>
-          <button type="button" class="secondary-button" :disabled="isLast" @click="emit('move-down')">Move down</button>
-          <button type="button" class="danger-button" @click="emit('remove')">
-            {{ isSmallScreen ? 'Remove' : 'Remove detachment' }}
-          </button>
-        </div>
-        <div class="instances">
-          <div v-for="unit in deriveFormationUnits(entry, armyDef)" :key="unit.unitName" class="instance">
-            <span>{{ unit.instances.length }} {{ unit.unitName }}</span>
-          </div>
-        </div>
+  <article
+    class="detachment-card surface p-large stack-large"
+    :class="{ 'warning-card': transportWarning }"
+  >
+    <div class="info">
+      <div class="header">
+        <span class="detachment-number-badge">{{ toRomanNumeral(detachmentNumber) }}</span>
+        <span>{{ entry.detachmentName }}</span>
+        <PointsBadge :used="entryPoints" />
       </div>
 
-      <div class="upgrades">
-        <details open>
-          <summary class="details-summary">
-            Base units
-            <span class="tag-list">
-              <span v-for="unit in deriveBaseUnits(entry)" :key="unit.unitName" class="tag-chip">{{ unit.instances.length }}x{{ unit.unitName }}</span>
-            </span>
-          </summary>
-          <BaseUnitsPanel
-            :base-units="entry.baseUnits"
-            :detachment-name="entry.detachmentName"
-            :army-def="armyDef"
-            @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
-            @weapon-change="(unitName, instIdx, slotIdx, weapon) => emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)"
-          />
-        </details>
-
-        <details
-          v-for="upgrade in entry.appliedUpgrades"
-          :key="upgrade.upgradeName"
-          :open="activePanel === upgrade.upgradeName"
+      <!-- <div class="instances">
+        <div
+          v-for="unit in deriveFormationUnits(entry, armyDef)"
+          :key="unit.unitName"
+          class="instance"
         >
-          <summary class="details-summary">
-            <span class="tag-list">
-              <span :class="{ warning: isTransportUpgrade(upgrade.upgradeName) && !!transportWarning }">{{ upgrade.upgradeName }}</span>
-              <span v-for="unit in deriveUpgradeUnits(upgrade)" :key="unit.unitName" class="tag-chip">{{ unit.instances.length }}x{{ unit.unitName }}</span>
-            </span>
-            <button
-              type="button"
-              class="remove-upgrade-button"
-              @click.prevent="emit('remove-upgrade', upgrade.upgradeName)"
-            >
-              Remove
-            </button>
-          </summary>
-          <AppliedUpgradePanel
-            :upgrade="upgrade"
-            :army-def="armyDef"
-            @remove="emit('remove-upgrade', upgrade.upgradeName)"
-            @replace-count-change="(count) => emit('replace-count-change', upgrade.upgradeName, count)"
-            @add-count-change="(unitName, count) => emit('add-count-change', upgrade.upgradeName, unitName, count)"
-            @weapon-change="(_upgName, unitName, instIdx, slotIdx, weapon) => emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)"
-            @update-character="(charName) => emit('update-character', upgrade.upgradeName, charName)"
-          />
-        </details>
-
-        <p v-if="transportResult" class="transport-warning" :class="transportResult.type">
-          {{ transportResult.message }}
-        </p>
-      </div>
+          <span>{{ unit.instances.length }} {{ unit.unitName }}</span>
+        </div>
+      </div> -->
     </div>
+
+    <details class="surface p-small">
+      <summary class="details-summary">
+        <span class="tag-list">
+          <span v-for="unit in deriveBaseUnits(entry)" :key="unit.unitName">
+            {{ unit.instances.length }} {{ unit.unitName }}
+          </span>
+        </span>
+      </summary>
+      <BaseUnitsPanel
+        :base-units="entry.baseUnits"
+        :detachment-name="entry.detachmentName"
+        :army-def="armyDef"
+        @count-change="(unitName, count) => emit('base-count-change', unitName, count)"
+        @weapon-change="
+          (unitName, instIdx, slotIdx, weapon) =>
+            emit('weapon-change', 'base', unitName, instIdx, slotIdx, weapon)
+        "
+      />
+    </details>
+
+    <details
+      v-for="upgrade in entry.appliedUpgrades"
+      :key="upgrade.upgradeName"
+      :open="activePanel === upgrade.upgradeName"
+      class="surface p-small"
+    >
+      <summary class="details-summary">
+        <span class="tag-list">
+          <span :class="{ warning: isTransportUpgrade(upgrade.upgradeName) && !!transportWarning }">
+            {{ upgrade.upgradeName }}:
+          </span>
+          <span v-for="unit in deriveUpgradeUnits(upgrade)" :key="unit.unitName">
+            {{ unit.instances.length }} {{ unit.unitName }}
+          </span>
+        </span>
+      </summary>
+      <AppliedUpgradePanel
+        :upgrade="upgrade"
+        :army-def="armyDef"
+        @remove="emit('remove-upgrade', upgrade.upgradeName)"
+        @replace-count-change="(count) => emit('replace-count-change', upgrade.upgradeName, count)"
+        @add-count-change="
+          (unitName, count) => emit('add-count-change', upgrade.upgradeName, unitName, count)
+        "
+        @weapon-change="
+          (_upgName, unitName, instIdx, slotIdx, weapon) =>
+            emit('weapon-change', upgrade.upgradeName, unitName, instIdx, slotIdx, weapon)
+        "
+        @update-character="(charName) => emit('update-character', upgrade.upgradeName, charName)"
+      />
+    </details>
+
+    <div class="buttons">
+      <button
+        v-if="availableUpgradesCount > 0"
+        type="button"
+        class="primary-button"
+        @click="showUpgradePicker = true"
+      >
+        {{ isSmallScreen ? 'Add' : 'Add Upgrade' }}
+      </button>
+      <button type="button" class="secondary-button" :disabled="isFirst" @click="emit('move-up')">
+        Move up
+      </button>
+      <button type="button" class="secondary-button" :disabled="isLast" @click="emit('move-down')">
+        Move down
+      </button>
+      <button type="button" class="danger-button" @click="emit('remove')">
+        {{ isSmallScreen ? 'Remove' : 'Remove detachment' }}
+      </button>
+    </div>
+
+    <p v-if="transportResult" class="transport-warning" :class="transportResult.type">
+      {{ transportResult.message }}
+    </p>
   </article>
 
   <UpgradePickerDialog
@@ -166,38 +180,36 @@ function isTransportUpgrade(upgradeName: string): boolean {
 
 <style scoped>
 .detachment-card {
-  border: 1px solid var(--p-surface-border);
-  border-radius: 0.5rem;
-  background: var(--p-surface-0);
-  padding: 0.9rem;
-}
-
-.entry {
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-}
-
-.warning {
-  color: var(--p-message-warn-color);
+  border-left: 4px solid var(--ea-tertiary);
+  &.warning-card {
+    border-color: var(--ea-primary);
+  }
 }
 
 .warning-card {
-  outline: 1px solid var(--p-message-warn-outlined-color);
+  outline: 1px solid var(--ea-message-warn-outlined-color);
 }
 
 .info {
-  width: 220px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   gap: 0.5rem;
 }
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  color: var(--ea-tertiary);
+  border-bottom: 1px solid;
+  padding-bottom: 0.5rem;
+}
 
 .buttons {
   display: flex;
   gap: 0.5rem;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .instances {
@@ -205,32 +217,6 @@ function isTransportUpgrade(upgradeName: string): boolean {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-}
-
-@media (max-width: 600px) {
-  .entry {
-    flex-direction: column;
-  }
-
-  .info {
-    width: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .primary {
-    flex: 1 2 auto;
-  }
-
-  .buttons {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .instances {
-    width: 100%;
-    flex-direction: row;
-  }
 }
 
 .name {
@@ -241,27 +227,19 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .detachment-number-badge {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  background: #000;
-  color: #fff;
+  min-width: 1em;
+  height: 1em;
+  border-radius: 1px;
+  background: var(--ea-tertiary);
+  color: #000;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
   flex-shrink: 0;
-}
-
-.upgrades {
-  flex: 1 2 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  padding: 0 2px;
 }
 
 .details-summary {
@@ -281,11 +259,11 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .tag-chip {
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 999px;
   padding: 0.1rem 0.45rem;
   font-size: 0.75rem;
-  background: var(--p-surface-100);
+  background: var(--ea-surface-100);
 }
 
 .primary-button,
@@ -299,14 +277,14 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .primary-button {
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
 }
 
 .secondary-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
 }
 

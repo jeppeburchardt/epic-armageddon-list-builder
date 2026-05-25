@@ -31,14 +31,14 @@ import { RouterLink } from 'vue-router'
 .not-found-title {
   margin: 0;
   font-size: 2rem;
-  color: var(--p-text-color);
+  color: var(--ea-text-color);
 }
 
 .home-link {
   text-decoration: none;
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
   border-radius: 0.375rem;
   padding: 0.45rem 0.75rem;
 }

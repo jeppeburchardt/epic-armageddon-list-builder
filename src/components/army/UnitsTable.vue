@@ -65,7 +65,11 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
             <!-- Unit stat cells only on the first weapon row -->
             <template v-if="wi === 0">
               <td :rowspan="weaponRows(unit).length" class="unit-name-cell">
-                <RouterLink v-if="props.unitGprRoute" :to="props.unitGprRoute(unit)" class="unit-link">
+                <RouterLink
+                  v-if="props.unitGprRoute"
+                  :to="props.unitGprRoute(unit)"
+                  class="unit-link"
+                >
                   {{ unit.name }}
                 </RouterLink>
                 <template v-else>{{ unit.name }}</template>
@@ -114,7 +118,7 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
 }
 
 .unit-row--striped td {
-  background: var(--p-surface-50);
+  background: var(--ea-surface-50);
 }
 
 .unit-name-cell {
@@ -122,7 +126,7 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
 }
 
 .unit-link {
-  color: var(--p-primary-color);
+  color: var(--ea-primary-color);
   text-decoration: none;
 }
 
@@ -131,7 +135,7 @@ function weaponRows(unit: UnitDef): WeaponRow[] {
 }
 
 .weapon-alt {
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   font-style: italic;
 }
 

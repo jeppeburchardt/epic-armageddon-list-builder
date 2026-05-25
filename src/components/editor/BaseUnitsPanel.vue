@@ -92,7 +92,7 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
     "
   >
     <!-- Per-instance weapon editors (only for units with choice slots) -->
-    <template v-if="hasChoices(ute.unitName)">
+    <template v-if="hasChoices(ute.unitName)" #options>
       <template v-if="getSameConfig(ute.unitName) && ute.instances.length > 0">
         <UnitInstanceEditor
           :name="ute.unitName"
@@ -124,18 +124,12 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
 </template>
 
 <style scoped>
-.base-units-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
 .sync-toggle {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   margin-bottom: 0.4rem;
 }
 
@@ -153,7 +147,7 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
 
 .unit-fixed-count {
   font-size: 0.85rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   min-width: 2rem;
   text-align: right;
 }
@@ -169,7 +163,7 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
   gap: 0.5rem;
 
   padding-top: 1rem;
-  border-left: 2px solid var(--p-surface-border);
+  border-left: 2px solid var(--ea-surface-border);
 }
 
 .instance-item {
@@ -183,6 +177,6 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
 
 .instance-label {
   font-size: 0.75rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 </style>

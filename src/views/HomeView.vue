@@ -36,7 +36,9 @@ function confirmDelete(id: string) {
 
     <div v-if="lists.length === 0" class="empty-state">
       <p>No army lists yet. Create your first list to get started!</p>
-      <button type="button" class="action-button" @click="showCreateDialog = true">Create List</button>
+      <button type="button" class="action-button" @click="showCreateDialog = true">
+        Create List
+      </button>
     </div>
 
     <div v-else class="lists-grid">
@@ -51,10 +53,7 @@ function confirmDelete(id: string) {
       />
     </div>
 
-    <CreateListDialog
-      v-model:visible="showCreateDialog"
-      @submit="handleCreate"
-    />
+    <CreateListDialog v-model:visible="showCreateDialog" @submit="handleCreate" />
   </div>
 </template>
 
@@ -86,7 +85,7 @@ function confirmDelete(id: string) {
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -94,9 +93,9 @@ function confirmDelete(id: string) {
 }
 
 .action-button {
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
   border-radius: 0.375rem;
   padding: 0.45rem 0.75rem;
   font: inherit;

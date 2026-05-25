@@ -35,7 +35,7 @@ const route = useRoute()
 <style scoped>
 .list-tab-bar {
   display: flex;
-  border-bottom: 1px solid var(--p-surface-border);
+  border-bottom: 1px solid var(--ea-surface-border);
   margin-bottom: 1rem;
 }
 
@@ -45,7 +45,7 @@ const route = useRoute()
   gap: 0.4rem;
   padding: 0.6rem 1.25rem;
   text-decoration: none;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   font-size: 0.875rem;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
@@ -56,12 +56,12 @@ const route = useRoute()
 }
 
 .tab-item:hover {
-  color: var(--p-text-color);
+  color: var(--ea-text-color);
 }
 
 .tab-item.active {
-  color: var(--p-primary-color);
-  border-bottom-color: var(--p-primary-color);
+  color: var(--ea-primary-color);
+  border-bottom-color: var(--ea-primary-color);
   font-weight: 500;
 }
 </style>

@@ -24,7 +24,9 @@ const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.valu
 
   <div v-else class="army-view">
     <div class="army-header">
-      <button type="button" class="back-button no-print" aria-label="Back" @click="router.back()">←</button>
+      <button type="button" class="back-button no-print" aria-label="Back" @click="router.back()">
+        ←
+      </button>
       <div class="army-title-block">
         <h1 class="army-name">{{ army.name }}</h1>
         <span class="army-meta">Strategy Rating: {{ army.strategyRating }}</span>
@@ -84,7 +86,7 @@ const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.valu
 .not-found {
   text-align: center;
   padding: 3rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -109,7 +111,7 @@ const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.valu
 
 .army-meta {
   font-size: 0.875rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .army-section {
@@ -120,7 +122,7 @@ const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.valu
   font-size: 1.1rem;
   margin: 0 0 0.75rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid var(--p-surface-border);
+  border-bottom: 1px solid var(--ea-surface-border);
 }
 
 .restrictions-list {
@@ -141,7 +143,7 @@ const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.valu
 .rule-text {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .unit-group + .unit-group {
@@ -156,8 +158,8 @@ const unitGroups = computed(() => (army.value ? groupUnitsForReference(army.valu
 
 .back-button,
 .secondary-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
   border-radius: 0.375rem;
   padding: 0.35rem 0.65rem;

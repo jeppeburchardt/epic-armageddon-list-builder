@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useSlots } from 'vue'
+
 const props = defineProps<{
   hasSameConfigOption: boolean
   name: string
@@ -15,6 +17,8 @@ const emit = defineEmits<{
   (e: 'update:unit-amount', val: number): void
 }>()
 
+const slots = useSlots()
+
 function parseAndEmitAmount(event: Event) {
   const input = event.target as HTMLInputElement
   const parsed = input.valueAsNumber
@@ -28,7 +32,7 @@ function parseAndEmitAmount(event: Event) {
 </script>
 
 <template>
-  <div class="unit">
+  <div class="surface p-small stack-small">
     <div class="header">
       <input
         class="amount"
@@ -43,22 +47,16 @@ function parseAndEmitAmount(event: Event) {
       <span v-if="cost !== undefined" class="cost-tag">
         {{ costSign && cost > 0 ? '+' : '' }}{{ cost }}pts
       </span>
-      <label v-if="hasSameConfigOption" class="config-toggle">
-        use same weapon options
-        <input v-model="sameConfig" type="checkbox" />
-      </label>
     </div>
-    <div class="options"><slot></slot></div>
+    <div v-if="slots.options" class="options"><slot name="options"></slot></div>
+    <label v-if="hasSameConfigOption" class="config-toggle">
+      use same weapon options
+      <input v-model="sameConfig" type="checkbox" />
+    </label>
   </div>
 </template>
 
 <style scoped>
-.unit {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .header {
   display: flex;
   align-items: center;
@@ -77,17 +75,17 @@ function parseAndEmitAmount(event: Event) {
 .cost-tag {
   font-size: 0.75rem;
   flex-shrink: 0;
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  background: var(--p-surface-100);
+  background: var(--ea-surface-100);
 }
 
 .config-toggle {
   display: flex;
   align-items: center;
   font-size: 0.8rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   gap: 0.25rem;
 }
 

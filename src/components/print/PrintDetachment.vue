@@ -57,7 +57,8 @@ function fixedWeaponRows(unitName: string): WeaponRow[] {
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
   return def.weaponSlots.map((slot) => {
     if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      const label =
+        slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
       return { label, range: slot.range, firepower: slot.firepower }
     }
     return {
@@ -73,11 +74,13 @@ function instanceWeaponRows(unitName: string, instance: UnitInstance): WeaponRow
   if (!def || def.weaponSlots.length === 0) return [{ label: '—', range: '—', firepower: '—' }]
   return def.weaponSlots.map((slot, idx) => {
     if (slot.kind === 'fixed') {
-      const label = slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
+      const label =
+        slot.count && slot.count > 1 ? `${slot.count}× ${slot.weaponName}` : slot.weaponName
       return { label, range: slot.range, firepower: slot.firepower }
     }
     const sel = instance.weaponSelections.find((s) => s.slotIndex === idx)
-    const chosen = slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
+    const chosen =
+      slot.choices.find((c) => c.weaponName === sel?.chosenWeaponName) ?? slot.choices[0]
     return { label: chosen.weaponName, range: chosen.range, firepower: chosen.firepower }
   })
 }
@@ -107,15 +110,17 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
       const shaded = (displayIndex + 1) % 2 === 0
       displayIndex += 1
 
-      return [{
-        key: `${ute.unitName}-${uteIndex}`,
-        unitName: ute.unitName,
-        qty: ute.instances.length,
-        rows: fixedWeaponRows(ute.unitName),
-        unitDef,
-        specialRules,
-        shaded,
-      }]
+      return [
+        {
+          key: `${ute.unitName}-${uteIndex}`,
+          unitName: ute.unitName,
+          qty: ute.instances.length,
+          rows: fixedWeaponRows(ute.unitName),
+          unitDef,
+          specialRules,
+          shaded,
+        },
+      ]
     }
 
     return groupedChoiceUnits(ute).map((group, groupIndex) => {
@@ -140,7 +145,9 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   <section class="print-detachment">
     <header class="det-header">
       <span>
-        <span v-if="detachmentNumberLabel" class="detachment-number-badge">{{ detachmentNumberLabel }}</span>
+        <span v-if="detachmentNumberLabel" class="detachment-number-badge">{{
+          detachmentNumberLabel
+        }}</span>
         {{ entry.detachmentName }}
       </span>
       <span class="det-points">{{ entryPoints }}pts</span>
@@ -197,7 +204,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
 <style scoped>
 .print-detachment {
   page-break-inside: avoid;
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 0.5rem;
   padding: 0.5rem;
 }
@@ -238,7 +245,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
 
 .units-table th,
 .units-table td {
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--ea-surface-200);
   padding: 0.25rem 0.5rem;
   text-align: left;
   white-space: nowrap;
@@ -246,11 +253,11 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
 }
 
 .unit-row-even td {
-  background: var(--p-surface-100);
+  background: var(--ea-surface-100);
 }
 
 .units-table th {
-  background: var(--p-surface-200);
+  background: var(--ea-surface-200);
   font-weight: 600;
 }
 
@@ -265,8 +272,8 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   font-size: 0.65rem;
   padding: 0 0.3rem;
   line-height: 1.4;
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 999px;
-  background: var(--p-surface-100);
+  background: var(--ea-surface-100);
 }
 </style>

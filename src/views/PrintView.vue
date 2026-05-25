@@ -125,7 +125,7 @@ function getDetachmentNumber(entryId: string): number {
 .not-found {
   text-align: center;
   padding: 3rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -172,7 +172,7 @@ function getDetachmentNumber(entryId: string): number {
 .restrictions-summary {
   margin-bottom: 0.75rem;
   font-size: 0.85rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .restriction-line {
@@ -191,7 +191,7 @@ function getDetachmentNumber(entryId: string): number {
 }
 
 .totals-row {
-  border-top: 2px solid var(--p-surface-border);
+  border-top: 2px solid var(--ea-surface-border);
   padding-top: 0.5rem;
   margin-top: 0.5rem;
   font-size: 0.95rem;
@@ -207,14 +207,14 @@ function getDetachmentNumber(entryId: string): number {
 }
 
 .primary-button {
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
 }
 
 .secondary-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
 }
 </style>

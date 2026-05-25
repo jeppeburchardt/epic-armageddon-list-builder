@@ -30,7 +30,8 @@ const choiceSlots = computed<ChoiceSlotEntry[]>(() =>
         slot.kind === 'choice'
           ? slot.choices.map((c) => ({
               weaponName: c.weaponName,
-              label: c.additionalCost > 0 ? `${c.weaponName} (+${c.additionalCost}pts)` : c.weaponName,
+              label:
+                c.additionalCost > 0 ? `${c.weaponName} (+${c.additionalCost}pts)` : c.weaponName,
               additionalCost: c.additionalCost,
             }))
           : [],
@@ -47,30 +48,26 @@ function currentChoice(choiceSlotIdx: number): string {
 </script>
 
 <template>
-  <fieldset class="unit-instance-editor">
-    <legend>{{ name }}</legend>
-    <label v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" class="weapon-choice">
+  <div class="unit-instance-editor surface p-large stack-large">
+    <div class="header">{{ name }}</div>
+    <label v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" class="stack-small">
       <span>{{ slot.name ?? `Weapon ${slotIdx + 1}` }}</span>
       <select
         :value="currentChoice(slotIdx)"
-        @change="(event) => emit('weapon-change', slot.realIndex, (event.target as HTMLSelectElement).value)"
+        @change="
+          (event) =>
+            emit('weapon-change', slot.realIndex, (event.target as HTMLSelectElement).value)
+        "
       >
-        <option v-for="choice in slot.choices" :key="choice.weaponName" :value="choice.weaponName">{{ choice.label }}</option>
+        <option v-for="choice in slot.choices" :key="choice.weaponName" :value="choice.weaponName">
+          {{ choice.label }}
+        </option>
       </select>
     </label>
-  </fieldset>
+  </div>
 </template>
 
 <style scoped>
-.unit-instance-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  border: 1px solid var(--p-surface-border);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-}
-
 .weapon-choice {
   display: flex;
   flex-direction: column;

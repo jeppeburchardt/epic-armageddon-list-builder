@@ -32,11 +32,19 @@ const chartHeight = 120
 const chartPadding = 16
 const chartMin = computed(() => {
   if (!gpr.value) return 0
-  return Math.min(...gpr.value.contributingPriceValues, gpr.value.predictedMean, unit.value?.cost ?? 0)
+  return Math.min(
+    ...gpr.value.contributingPriceValues,
+    gpr.value.predictedMean,
+    unit.value?.cost ?? 0,
+  )
 })
 const chartMax = computed(() => {
   if (!gpr.value) return 0
-  return Math.max(...gpr.value.contributingPriceValues, gpr.value.predictedMean, unit.value?.cost ?? 0)
+  return Math.max(
+    ...gpr.value.contributingPriceValues,
+    gpr.value.predictedMean,
+    unit.value?.cost ?? 0,
+  )
 })
 const chartSpan = computed(() => Math.max(chartMax.value - chartMin.value, 1))
 
@@ -53,7 +61,11 @@ function formatNumber(value: number): string {
 <template>
   <div v-if="!armyDef || !unit" class="not-found">
     <p>Unit not found.</p>
-    <button type="button" class="secondary-button" @click="router.push({ name: 'list-reference', params: { id } })">
+    <button
+      type="button"
+      class="secondary-button"
+      @click="router.push({ name: 'list-reference', params: { id } })"
+    >
       Back to reference
     </button>
   </div>
@@ -88,7 +100,12 @@ function formatNumber(value: number): string {
     <section v-if="gpr" class="gpr-section">
       <h2 class="section-heading">Score distribution</h2>
       <p class="score-line">Model score: {{ gpr.score }} · Quality: {{ gpr.quality }}</p>
-      <svg class="score-chart" :viewBox="`0 0 ${chartWidth} ${chartHeight}`" role="img" aria-label="Score chart">
+      <svg
+        class="score-chart"
+        :viewBox="`0 0 ${chartWidth} ${chartHeight}`"
+        role="img"
+        aria-label="Score chart"
+      >
         <line :x1="chartPadding" :x2="chartWidth - chartPadding" y1="96" y2="96" class="axis" />
         <circle
           v-for="(value, index) in gpr.contributingPriceValues"
@@ -98,7 +115,13 @@ function formatNumber(value: number): string {
           r="2.5"
           class="score-point"
         />
-        <line :x1="toChartX(gpr.predictedMean)" :x2="toChartX(gpr.predictedMean)" y1="20" y2="96" class="mean-line" />
+        <line
+          :x1="toChartX(gpr.predictedMean)"
+          :x2="toChartX(gpr.predictedMean)"
+          y1="20"
+          y2="96"
+          class="mean-line"
+        />
         <line
           v-if="contributingAverage !== null"
           :x1="toChartX(contributingAverage)"
@@ -143,7 +166,7 @@ function formatNumber(value: number): string {
   line-height: 1;
   cursor: pointer;
   padding: 0;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .unit-name {
@@ -152,7 +175,7 @@ function formatNumber(value: number): string {
 
 .unit-cost {
   margin: 0.2rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .gpr-section {
@@ -163,7 +186,7 @@ function formatNumber(value: number): string {
   font-size: 1.1rem;
   margin: 0 0 0.75rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid var(--p-surface-border);
+  border-bottom: 1px solid var(--ea-surface-border);
 }
 
 .neighbour-list {
@@ -179,27 +202,27 @@ function formatNumber(value: number): string {
 .score-chart {
   width: 100%;
   height: auto;
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 0.375rem;
-  background: var(--p-surface-0);
+  background: var(--ea-surface-0);
 }
 
 .axis {
-  stroke: var(--p-surface-border);
+  stroke: var(--ea-surface-border);
   stroke-width: 1;
 }
 
 .score-point {
-  fill: var(--p-primary-color);
+  fill: var(--ea-primary-color);
 }
 
 .mean-line {
-  stroke: var(--p-green-500, #10b981);
+  stroke: var(--ea-green-500, #10b981);
   stroke-width: 2;
 }
 
 .average-line {
-  stroke: var(--p-orange-500, #f59e0b);
+  stroke: var(--ea-orange-500, #f59e0b);
   stroke-width: 2;
   stroke-dasharray: 4 2;
 }
@@ -208,14 +231,14 @@ function formatNumber(value: number): string {
   margin-top: 0.6rem;
   display: flex;
   gap: 1rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   font-size: 0.9rem;
 }
 
 .not-found {
   text-align: center;
   padding: 3rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -225,14 +248,14 @@ function formatNumber(value: number): string {
 .secondary-button {
   border-radius: 0.375rem;
   padding: 0.45rem 0.75rem;
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
   cursor: pointer;
 }
 
 .empty-hint {
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   margin: 0;
 }
 </style>

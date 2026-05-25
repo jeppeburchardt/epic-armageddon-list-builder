@@ -3,7 +3,7 @@
 <template>
   <div class="app-layout">
     <header class="app-header no-print">
-      <div class="header-inner">
+      <div class="header-inner header">
         <RouterLink to="/" class="app-title">EA Army Builder</RouterLink>
         <nav class="header-nav desktop-only">
           <RouterLink to="/">Lists</RouterLink>
@@ -31,14 +31,11 @@
 }
 
 .app-header {
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
-  padding: 0 1rem;
   height: 3.5rem;
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--ea-tertiary);
 }
 
 .header-inner {
@@ -48,14 +45,14 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  padding: 0 2rem;
 }
 
 .app-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: inherit;
+  color: var(--ea-tertiary);
   text-decoration: none;
-  letter-spacing: 0.02em;
 }
 
 .header-nav {
@@ -77,7 +74,7 @@
 
 .app-main {
   flex: 1;
-  padding: 1rem;
+  padding: 2rem;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -96,8 +93,8 @@
   left: 0;
   right: 0;
   height: 4rem;
-  background: var(--p-surface-card);
-  border-top: 1px solid var(--p-surface-border);
+  background: var(--ea-surface-card);
+  border-top: 1px solid var(--ea-surface-border);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -111,12 +108,12 @@
   gap: 0.2rem;
   font-size: 0.7rem;
   text-decoration: none;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   padding: 0.5rem 1rem;
 }
 
 .bottom-nav-item.router-link-active {
-  color: var(--p-primary-color);
+  color: var(--ea-primary-color);
 }
 
 .desktop-only {

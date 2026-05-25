@@ -29,20 +29,29 @@ const usedPoints = computed(() => {
       <PointsBadge :used="usedPoints" :limit="list.pointsLimit" />
     </div>
     <h3 class="card-title">{{ list.name }}</h3>
-    <p class="card-subtitle">{{ list.entries.length }} detachment{{ list.entries.length !== 1 ? 's' : '' }}</p>
+    <p class="card-subtitle">
+      {{ list.entries.length }} detachment{{ list.entries.length !== 1 ? 's' : '' }}
+    </p>
     <div class="card-actions">
       <button type="button" class="action-button" @click="$emit('edit', list.id)">Edit</button>
       <button type="button" class="secondary-button" @click="$emit('view', list.id)">View</button>
-      <button type="button" class="danger-button" aria-label="Delete list" @click="$emit('delete', list.id)">Delete</button>
+      <button
+        type="button"
+        class="danger-button"
+        aria-label="Delete list"
+        @click="$emit('delete', list.id)"
+      >
+        Delete
+      </button>
     </div>
   </article>
 </template>
 
 <style scoped>
 .list-card {
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 0.5rem;
-  background: var(--p-surface-0);
+  background: var(--ea-surface-0);
   padding: 0.75rem 1rem;
 }
 
@@ -56,7 +65,7 @@ const usedPoints = computed(() => {
 .army-name {
   font-size: 0.75rem;
   text-transform: capitalize;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
   font-weight: 500;
   letter-spacing: 0.04em;
 }
@@ -67,7 +76,7 @@ const usedPoints = computed(() => {
 
 .card-subtitle {
   margin: 0.25rem 0 0.75rem;
-  color: var(--p-text-muted-color);
+  color: var(--ea-text-muted-color);
 }
 
 .card-actions {
@@ -86,14 +95,14 @@ const usedPoints = computed(() => {
 }
 
 .action-button {
-  border: 1px solid var(--p-primary-color);
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  border: 1px solid var(--ea-primary-color);
+  background: var(--ea-primary-color);
+  color: var(--ea-primary-contrast-color);
 }
 
 .secondary-button {
-  border: 1px solid var(--p-surface-border);
-  background: var(--p-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
   color: inherit;
 }
 

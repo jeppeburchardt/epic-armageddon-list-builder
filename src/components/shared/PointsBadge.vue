@@ -19,11 +19,11 @@ const isOverBudget = computed(() => props.limit !== undefined && props.used > pr
 .points-badge {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--p-surface-border);
+  border: 1px solid var(--ea-surface-border);
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
   font-size: 0.75rem;
-  background: var(--p-surface-100);
+  background: var(--ea-surface-100);
 }
 
 .points-badge--warn {
