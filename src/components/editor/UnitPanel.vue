@@ -32,7 +32,7 @@ function parseAndEmitAmount(event: Event) {
 </script>
 
 <template>
-  <div class="surface p-small stack-small">
+  <div class="unit surface p-small stack-small">
     <div class="header">
       <input
         class="amount"
