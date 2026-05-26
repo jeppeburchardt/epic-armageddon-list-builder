@@ -92,13 +92,14 @@ function isTransportUpgrade(upgradeName: string): boolean {
       </div> -->
     </div>
 
-    <details class="surface p-small" open>
+    <details class="surface p-small">
       <summary class="details-summary">
         <span class="tag-list">
           <span v-for="unit in deriveBaseUnits(entry)" :key="unit.unitName">
             {{ unit.instances.length }} {{ unit.unitName }}
           </span>
         </span>
+        <span class="toggle-indicator" aria-hidden="true"></span>
       </summary>
       <BaseUnitsPanel
         :base-units="entry.baseUnits"
@@ -127,6 +128,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
             {{ unit.instances.length }} {{ unit.unitName }}
           </span>
         </span>
+        <span class="toggle-indicator" aria-hidden="true"></span>
       </summary>
       <AppliedUpgradePanel
         :upgrade="upgrade"
@@ -248,6 +250,33 @@ function isTransportUpgrade(upgradeName: string): boolean {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+  &::marker,
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.toggle-indicator {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.toggle-indicator::after {
+  color: #1c1b1b;
+  font-size: 0.75em;
+  font-weight: 700;
+  content: '+';
+}
+
+details[open] .toggle-indicator::after {
+  content: '−';
 }
 
 .tag-list {
