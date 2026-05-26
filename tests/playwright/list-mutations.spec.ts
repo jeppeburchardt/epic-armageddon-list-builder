@@ -60,8 +60,8 @@ test('covers list editor mutations with the Playwright test army', async ({ page
 
   await supportDronePanel.locator('input.amount').fill('1')
   await missileDronePanel.locator('input.amount').fill('1')
-  await expect(addUpgradePanel).toContainText('1xSupport Drone')
-  await expect(addUpgradePanel).toContainText('1xMissile Drone')
+  await expect(addUpgradePanel).toContainText('1 Support Drone')
+  await expect(addUpgradePanel).toContainText('1 Missile Drone')
 
   await supportDronePanel.getByRole('combobox').selectOption('Melta Pod')
   await expect(supportDronePanel.getByRole('combobox')).toHaveValue('Melta Pod')
@@ -77,7 +77,7 @@ test('covers list editor mutations with the Playwright test army', async ({ page
     .first()
 
   await eliteTankPanel.locator('input.amount').fill('2')
-  await expect(replaceUpgradePanel).toContainText('2xElite Test Tank')
+  await expect(replaceUpgradePanel).toContainText('2 Elite Test Tank')
 
   await eliteTankPanel.getByRole('combobox').selectOption('Heavy Plasma')
   await expect(eliteTankPanel.getByRole('combobox')).toHaveValue('Heavy Plasma')
