@@ -61,8 +61,8 @@ Key domain concepts:
 
 This workflow fires whenever any label is added to or removed from an issue. Most of those events are irrelevant — the agent must filter for the two meaningful cases:
 
-- **Event A — Phase 1**: `${{ github.event.action }}` is `labeled` and `${{ github.event.label.name }}` is `Feature Request`
-- **Event B — Phase 2**: `${{ github.event.action }}` is `unlabeled` and `${{ github.event.label.name }}` is `needs-clarification`
+- **Event A — Phase 1**: event action is `labeled` and event label name is `Feature Request`
+- **Event B — Phase 2**: event action is `unlabeled` and event label name is `needs-clarification`
 
 If the current event does not match either of the two patterns above, stop immediately and do nothing.
 
