@@ -36,6 +36,9 @@ test('covers list editor mutations with the Playwright test army', async ({ page
 
   const mutableCard = detachmentCard(page, 'Mutable Detachment')
   const baseUnitsPanel = mutableCard.locator('details').first()
+
+  await baseUnitsPanel.locator('summary').click()
+
   const baseTankPanel = baseUnitsPanel.locator('.unit').filter({ hasText: 'Test Tank' }).first()
 
   await baseTankPanel.locator('input.amount').fill('3')
