@@ -269,7 +269,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .toggle-indicator::after {
-  color: #1c1b1b;
+  color: var(--ea--surface-1);
   font-size: 0.75em;
   font-weight: 700;
   content: '+';
