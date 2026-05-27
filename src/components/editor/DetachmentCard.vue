@@ -92,7 +92,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
       </div> -->
     </div>
 
-    <details class="surface p-small">
+    <details class="surface p-small" open>
       <summary class="details-summary">
         <span class="tag-list">
           <span v-for="unit in deriveBaseUnits(entry)" :key="unit.unitName">

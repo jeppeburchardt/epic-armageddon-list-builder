@@ -1,104 +1,207 @@
-import { expect, test } from '@playwright/test'
-import { addDetachment, addUpgrade, createPlaywrightTestList, detachmentCard } from './helpers'
+import { test, expect } from '@playwright/test'
+import {
+  addDetachment,
+  addUpgrade,
+  createPlaywrightTestList,
+  detachmentCard,
+  resetLists,
+} from './helpers'
 
-test('creates and deletes a Playwright test list from the home page', async ({ page }) => {
-  await createPlaywrightTestList(page, 'Delete Me')
-  await page.goto('/')
+test.describe('List Home Management', () => {
+  test.beforeEach(async ({ page }) => {
+    await resetLists(page)
+  })
 
-  const listCard = page.locator('.list-card').filter({ hasText: 'Delete Me' })
-  await expect(listCard).toBeVisible()
+  test('shows a created list on the home page', async ({ page }) => {
+    await test.step('Create the list', async () => {
+      await createPlaywrightTestList(page, 'Delete Me')
+    })
 
-  page.once('dialog', (dialog) => dialog.accept())
-  await listCard.getByRole('button', { name: 'Delete list' }).click()
+    await test.step('Navigate to home and confirm the list card is visible', async () => {
+      await page.goto('/')
+      await expect(page.locator('.list-card').filter({ hasText: 'Delete Me' })).toContainText(
+        'Delete Me',
+      )
+    })
+  })
 
-  await expect(page.getByText('Delete Me')).not.toBeVisible()
-  await expect(
-    page.getByText('No army lists yet. Create your first list to get started!'),
-  ).toBeVisible()
+  test('deletes a list and shows the empty state', async ({ page }) => {
+    await test.step('Create the list', async () => {
+      await createPlaywrightTestList(page, 'Delete Me')
+      await page.goto('/')
+    })
+
+    await test.step('Delete the list', async () => {
+      const listCard = page.locator('.list-card').filter({ hasText: 'Delete Me' })
+      page.once('dialog', (dialog) => dialog.accept())
+      await listCard.getByRole('button', { name: 'Delete list' }).click()
+    })
+
+    await test.step('Verify the list is removed and the empty state is displayed', async () => {
+      await expect(page.getByText('Delete Me')).not.toBeVisible()
+      await expect(
+        page.getByText('No army lists yet. Create your first list to get started!'),
+      ).toBeVisible()
+    })
+  })
 })
 
-test('covers list editor mutations with the Playwright test army', async ({ page }) => {
-  await createPlaywrightTestList(page, 'Mutation Coverage')
+test.describe('Detachment Ordering', () => {
+  test.beforeEach(async ({ page }) => {
+    await createPlaywrightTestList(page, 'Ordering Test')
+    await addDetachment(page, 'Mutable Detachment')
+    await addDetachment(page, 'Support Detachment', 'Support')
+  })
 
-  await addDetachment(page, 'Mutable Detachment')
-  await addDetachment(page, 'Support Detachment', 'Support')
+  test('moves a detachment up', async ({ page }) => {
+    await detachmentCard(page, 'Support Detachment')
+      .getByRole('button', { name: 'Move up' })
+      .click()
+    await expect(page.locator('.detachment-card').nth(0)).toContainText('Support Detachment')
+    await expect(page.locator('.detachment-card').nth(1)).toContainText('Mutable Detachment')
+  })
 
-  await expect(page.locator('.detachment-card').nth(0)).toContainText('Mutable Detachment')
-  await expect(page.locator('.detachment-card').nth(1)).toContainText('Support Detachment')
+  test('moves a detachment down', async ({ page }) => {
+    await detachmentCard(page, 'Support Detachment')
+      .getByRole('button', { name: 'Move up' })
+      .click()
+    await detachmentCard(page, 'Support Detachment')
+      .getByRole('button', { name: 'Move down' })
+      .click()
+    await expect(page.locator('.detachment-card').nth(0)).toContainText('Mutable Detachment')
+    await expect(page.locator('.detachment-card').nth(1)).toContainText('Support Detachment')
+  })
 
-  await detachmentCard(page, 'Support Detachment').getByRole('button', { name: 'Move up' }).click()
-  await expect(page.locator('.detachment-card').nth(0)).toContainText('Support Detachment')
+  test('removes a detachment', async ({ page }) => {
+    await detachmentCard(page, 'Support Detachment')
+      .getByRole('button', { name: /Remove detachment|Remove/ })
+      .click()
+    await expect(page.locator('.detachment-card')).toHaveCount(1)
+    await expect(page.locator('.detachment-card').first()).toContainText('Mutable Detachment')
+  })
+})
 
-  await detachmentCard(page, 'Support Detachment')
-    .getByRole('button', { name: 'Move down' })
-    .click()
-  await expect(page.locator('.detachment-card').nth(0)).toContainText('Mutable Detachment')
+test.describe('Unit Counts and Weapon Selections', () => {
+  test.beforeEach(async ({ page }) => {
+    await createPlaywrightTestList(page, 'Unit Test')
+    await addDetachment(page, 'Mutable Detachment')
+  })
 
-  const mutableCard = detachmentCard(page, 'Mutable Detachment')
-  const baseUnitsPanel = mutableCard.locator('details').first()
+  test('changes the base unit count', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
+    const baseTankPanel = card
+      .locator('details')
+      .first()
+      .locator('.unit')
+      .filter({ hasText: 'Test Tank' })
+      .first()
 
-  await baseUnitsPanel.locator('summary').click()
+    await baseTankPanel.locator('input.amount').fill('3')
+    await expect(card).toContainText('3 Test Tank')
+  })
 
-  const baseTankPanel = baseUnitsPanel.locator('.unit').filter({ hasText: 'Test Tank' }).first()
+  test('selects a weapon for a base unit', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
+    const baseTankPanel = card
+      .locator('details')
+      .first()
+      .locator('.unit')
+      .filter({ hasText: 'Test Tank' })
+      .first()
 
-  await baseTankPanel.locator('input.amount').fill('3')
-  await expect(mutableCard).toContainText('3 Test Tank')
+    await baseTankPanel.getByRole('combobox').selectOption('Plasma Cannon')
+    await expect(baseTankPanel.getByRole('combobox')).toHaveValue('Plasma Cannon')
+  })
+})
 
-  await baseTankPanel.getByRole('combobox').selectOption('Plasma Cannon')
-  await expect(baseTankPanel.getByRole('combobox')).toHaveValue('Plasma Cannon')
+test.describe('Upgrades', () => {
+  test.beforeEach(async ({ page }) => {
+    await createPlaywrightTestList(page, 'Upgrade Test')
+    await addDetachment(page, 'Mutable Detachment')
+  })
 
-  await addUpgrade(mutableCard, 'Test Support Upgrade')
-  const addUpgradePanel = mutableCard
-    .locator('details')
-    .filter({ hasText: 'Test Support Upgrade' })
-    .first()
-  const supportDronePanel = addUpgradePanel
-    .locator('.unit')
-    .filter({ hasText: 'Support Drone' })
-    .first()
-  const missileDronePanel = addUpgradePanel
-    .locator('.unit')
-    .filter({ hasText: 'Missile Drone' })
-    .first()
+  test('applies an add-type upgrade and sets unit counts and weapons', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
 
-  await supportDronePanel.locator('input.amount').fill('1')
-  await missileDronePanel.locator('input.amount').fill('1')
-  await expect(addUpgradePanel).toContainText('1 Support Drone')
-  await expect(addUpgradePanel).toContainText('1 Missile Drone')
+    await test.step('Add the upgrade', async () => {
+      await addUpgrade(card, 'Test Support Upgrade')
+    })
 
-  await supportDronePanel.getByRole('combobox').selectOption('Melta Pod')
-  await expect(supportDronePanel.getByRole('combobox')).toHaveValue('Melta Pod')
+    const upgradePanel = card.locator('details').filter({ hasText: 'Test Support Upgrade' }).first()
+    const supportDronePanel = upgradePanel
+      .locator('.unit')
+      .filter({ hasText: 'Support Drone' })
+      .first()
+    const missileDronePanel = upgradePanel
+      .locator('.unit')
+      .filter({ hasText: 'Missile Drone' })
+      .first()
 
-  await addUpgrade(mutableCard, 'Test Retrofit')
-  const replaceUpgradePanel = mutableCard
-    .locator('details')
-    .filter({ hasText: 'Test Retrofit' })
-    .first()
-  const eliteTankPanel = replaceUpgradePanel
-    .locator('.unit')
-    .filter({ hasText: 'Test Tank → Elite Test Tank' })
-    .first()
+    await test.step('Set unit counts', async () => {
+      await supportDronePanel.locator('input.amount').fill('1')
+      await missileDronePanel.locator('input.amount').fill('1')
+      await expect(upgradePanel).toContainText('1 Support Drone')
+      await expect(upgradePanel).toContainText('1 Missile Drone')
+    })
 
-  await eliteTankPanel.locator('input.amount').fill('2')
-  await expect(replaceUpgradePanel).toContainText('2 Elite Test Tank')
+    await test.step('Select a weapon for the Support Drone', async () => {
+      await supportDronePanel.getByRole('combobox').selectOption('Melta Pod')
+      await expect(supportDronePanel.getByRole('combobox')).toHaveValue('Melta Pod')
+    })
+  })
 
-  await eliteTankPanel.getByRole('combobox').selectOption('Heavy Plasma')
-  await expect(eliteTankPanel.getByRole('combobox')).toHaveValue('Heavy Plasma')
+  test('applies a replace-type upgrade and sets count and weapon', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
 
-  await addUpgrade(mutableCard, 'Test Commander')
-  const characterUpgradePanel = mutableCard
-    .locator('details')
-    .filter({ hasText: 'Test Commander' })
-    .first()
-  await characterUpgradePanel.getByRole('combobox').selectOption('Test Supreme Commander')
-  await expect(characterUpgradePanel.getByRole('combobox')).toHaveValue('Test Supreme Commander')
+    await test.step('Add the upgrade', async () => {
+      await addUpgrade(card, 'Test Retrofit')
+    })
 
-  await characterUpgradePanel.getByRole('button', { name: 'Remove' }).click()
-  await expect(mutableCard.locator('details').filter({ hasText: 'Test Commander' })).toHaveCount(0)
+    const upgradePanel = card.locator('details').filter({ hasText: 'Test Retrofit' }).first()
+    const eliteTankPanel = upgradePanel
+      .locator('.unit')
+      .filter({ hasText: 'Test Tank → Elite Test Tank' })
+      .first()
 
-  await detachmentCard(page, 'Support Detachment')
-    .getByRole('button', { name: /Remove detachment|Remove/ })
-    .click()
-  await expect(page.locator('.detachment-card')).toHaveCount(1)
-  await expect(page.locator('.detachment-card').first()).toContainText('Mutable Detachment')
+    await test.step('Set replacement count', async () => {
+      await eliteTankPanel.locator('input.amount').fill('2')
+      await expect(upgradePanel).toContainText('2 Elite Test Tank')
+    })
+
+    await test.step('Select a weapon for the Elite Test Tank', async () => {
+      await eliteTankPanel.getByRole('combobox').selectOption('Heavy Plasma')
+      await expect(eliteTankPanel.getByRole('combobox')).toHaveValue('Heavy Plasma')
+    })
+  })
+
+  test('applies a character upgrade and selects a character', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
+
+    await test.step('Add the upgrade', async () => {
+      await addUpgrade(card, 'Test Commander')
+    })
+
+    const upgradePanel = card.locator('details').filter({ hasText: 'Test Commander' }).first()
+
+    await test.step('Select a character name', async () => {
+      await upgradePanel.getByRole('combobox').selectOption('Test Supreme Commander')
+      await expect(upgradePanel.getByRole('combobox')).toHaveValue('Test Supreme Commander')
+    })
+  })
+
+  test('removes an applied upgrade', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
+
+    await test.step('Add the upgrade', async () => {
+      await addUpgrade(card, 'Test Commander')
+    })
+
+    const upgradePanel = card.locator('details').filter({ hasText: 'Test Commander' }).first()
+
+    await test.step('Remove the upgrade', async () => {
+      await upgradePanel.getByRole('button', { name: 'Remove' }).click()
+    })
+
+    await expect(card.locator('details').filter({ hasText: 'Test Commander' })).toHaveCount(0)
+  })
 })

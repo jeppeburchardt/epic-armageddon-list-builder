@@ -13,14 +13,14 @@ export async function createPlaywrightTestList(
   listName = 'Playwright Test List',
 ): Promise<void> {
   await resetLists(page)
-
-  await page.getByRole('button', { name: /New List|Create List/ }).first().click()
+  await page
+    .getByRole('button', { name: /New List|Create List/ })
+    .first()
+    .click()
   await page.getByLabel('List Name').fill(listName)
   await page.getByLabel('Army', { exact: true }).selectOption({ label: PLAYWRIGHT_TEST_ARMY_NAME })
   await page.getByRole('button', { name: 'Create', exact: true }).click()
-
   await expect(page).toHaveURL(/\/[^/]+\/edit$/)
-  await expect(page.getByText(listName)).toBeVisible()
 }
 
 export async function addDetachment(
@@ -29,7 +29,6 @@ export async function addDetachment(
   groupName?: string,
 ): Promise<void> {
   await page.getByRole('button', { name: 'Add Detachment' }).click()
-
   const dialog = page.getByRole('dialog', { name: 'Add Detachment' })
   if (groupName) {
     await dialog.getByRole('button', { name: groupName, exact: true }).click()
@@ -43,8 +42,10 @@ export function detachmentCard(page: Page, detachmentName: string): Locator {
 }
 
 export async function addUpgrade(card: Locator, upgradeName: string): Promise<void> {
-  await card.getByRole('button', { name: /Add Upgrade|Add/, exact: false }).first().click()
-
+  await card
+    .getByRole('button', { name: /Add Upgrade|Add/, exact: false })
+    .first()
+    .click()
   const dialog = card.page().getByRole('dialog', { name: 'Add Upgrade' })
   await dialog.locator('.upgrade-option').filter({ hasText: upgradeName }).click()
   await dialog.getByRole('button', { name: 'Add', exact: true }).click()

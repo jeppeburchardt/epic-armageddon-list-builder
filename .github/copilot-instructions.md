@@ -8,15 +8,15 @@ A mobile-first web SPA for building army lists for the Epic Armageddon tabletop 
 
 ## Tech stack
 
-| Concern | Technology |
-|---|---|
-| Build tool | Vite |
-| Framework | Vue 3 (`<script setup>` + Composition API) |
-| Language | TypeScript (strict mode) |
+| Concern          | Technology                                                |
+| ---------------- | --------------------------------------------------------- |
+| Build tool       | Vite                                                      |
+| Framework        | Vue 3 (`<script setup>` + Composition API)                |
+| Language         | TypeScript (strict mode)                                  |
 | State management | Pinia (though reactive state lives mostly in composables) |
-| UI components | Native Vue/HTML components |
-| Routing | Vue Router 4 |
-| ID generation | `uuid` (`v4`) |
+| UI components    | Native Vue/HTML components                                |
+| Routing          | Vue Router 4                                              |
+| ID generation    | `uuid` (`v4`)                                             |
 
 ## Architecture: hexagonal (ports & adapters)
 
@@ -58,6 +58,7 @@ components → composables → use-cases → ports ← infrastructure
 ## Domain model summary
 
 ### `ArmyDef` (static, from JSON)
+
 Describes what choices are available: detachments, upgrades, unit definitions, weapon definitions, army-level restrictions (e.g. max 30% of points on Support detachments).
 
 - `DetachmentDef` — name, group, mandatory units (`UnitCount` — fixed count or min/max range), available upgrades, restrictions
@@ -66,12 +67,14 @@ Describes what choices are available: detachments, upgrades, unit definitions, w
 - `WeaponSlot` — discriminated union: `{ kind: 'fixed', weaponName, count? }` or `{ kind: 'choice', choices: WeaponOption[] }`
 
 ### `ArmyList` (user-created, persisted)
+
 - `Entry` — one detachment instance: `id`, `detachmentName`, `baseUnits: UnitTypeEntry[]`, `appliedUpgrades: AppliedUpgrade[]`
 - `AppliedUpgrade` — discriminated union: `{ type: 'add', addedUnits: UnitTypeEntry[] }` or `{ type: 'replace', replacedCount, replacingUnits: UnitTypeEntry }`
 - `UnitTypeEntry` — `{ unitName, instances: UnitInstance[] }` — `instances.length` is the effective count
 - `UnitInstance` — `{ weaponSelections: WeaponSelection[] }` — one entry per choice weapon slot; units with no choice slots have an empty array
 
 ### Key derivations (pure functions in `entities/`)
+
 - `deriveFormationUnits(entry, armyDef)` → effective composition after applying upgrades
 - `calculateEntryPoints(entry, armyDef)` → cost with replace deductions and weapon option additions
 - `validateList(list, armyDef)` → `ValidationResult[]` (warnings for group % exceeded, transport capacity mismatches)
@@ -86,12 +89,12 @@ Weapon selections are **per individual unit instance** — each model in a forma
 
 ## Routes
 
-| Path | View | Description |
-|---|---|---|
-| `/` | `HomeView` | List of saved army lists |
-| `/edit/:id` | `EditorView` | Full list editor |
-| `/view/:id` | `PrintView` | Printer-friendly view with unit stats |
-| `/army/:slug` | `ArmyView` | Human-readable army reference |
+| Path          | View         | Description                           |
+| ------------- | ------------ | ------------------------------------- |
+| `/`           | `HomeView`   | List of saved army lists              |
+| `/edit/:id`   | `EditorView` | Full list editor                      |
+| `/view/:id`   | `PrintView`  | Printer-friendly view with unit stats |
+| `/army/:slug` | `ArmyView`   | Human-readable army reference         |
 
 ---
 
@@ -102,6 +105,7 @@ Weapon selections are **per individual unit instance** — each model in a forma
 3. The new army will automatically appear in the "New List" dialog
 
 ### Army JSON structure
+
 ```jsonc
 {
   "name": "Army Name",
@@ -135,6 +139,27 @@ Weapon selections are **per individual unit instance** — each model in a forma
 ## Playwright expectations
 
 - End-to-end coverage lives in `tests/playwright/` and runs with `npm run test:e2e`
-- Prefer the dedicated `Playwright Test Army` (`/tmp/workspace/jeppeburchardt/epic-armageddon-list-builder/src/data/armies/playwright-test-army.json`) for mutation-oriented tests so assertions do not depend on live army definitions that may change over time
+- Prefer the dedicated `Playwright Test Army` (`src/data/armies/playwright-test-army.json`) for mutation-oriented tests so assertions do not depend on live army definitions that may change over time
 - When adding or updating Playwright tests, cover every user-visible mutation the feature introduces (for example list creation/deletion, detachment changes, upgrades, counts, and weapon selections)
 - All future user-facing features must ship with Playwright coverage for their new behavior
+
+### Test structure
+
+Group related tests under a `test.describe()` block and share setup with `test.beforeEach()`. Use `test.step()` inside multi-action tests to label phases clearly. One spec file per feature area.
+
+```
+tests/playwright/
+  helpers.ts                  ← shared setup helpers (resetLists, createPlaywrightTestList, addDetachment, addUpgrade, detachmentCard)
+  list-creation.spec.ts
+  list-mutations.spec.ts      ← describe blocks: List Home Management, Detachment Ordering, Unit Counts, Upgrades
+  detachment-details.spec.ts
+  gpr-transparency.spec.ts
+```
+
+**Locators** — prefer role-based locators (`getByRole`, `getByLabel`, `getByText`). CSS class selectors are acceptable inside named dialogs or shared helpers where no semantic alternative exists.
+
+**Assertions** — use auto-retrying web-first assertions. Prefer `toContainText` / `toHaveValue` / `toHaveCount` / `toHaveURL` over `toBeVisible()` unless visibility itself is what is under test.
+
+**State** — always call `resetLists(page)` (or `createPlaywrightTestList` which calls it) at the start of each test or `beforeEach` to ensure a clean `localStorage` state.
+
+**`<details>` panels** — the base units panel on a `DetachmentCard` starts **open** by default. Upgrade panels open when the upgrade is added (`activePanel` binding). Assert `toHaveAttribute('open', '')` for open and `not.toHaveAttribute('open')` for closed; never click `summary` to "open" a panel that is already open.
