@@ -319,9 +319,15 @@ details[open] .toggle-indicator::after {
 
 .danger-button,
 .remove-upgrade-button {
-  border: 1px solid #dc2626;
-  background: #fff;
-  color: #dc2626;
+  border: 1px solid var(--ea-tertiary);
+  background: transparent;
+  color: var(--ea-tertiary);
+}
+
+.danger-button:hover,
+.remove-upgrade-button:hover {
+  background: var(--ea-tertiary);
+  color: #1c1b1b;
 }
 
 .secondary-button:disabled {

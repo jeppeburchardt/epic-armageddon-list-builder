@@ -4,7 +4,9 @@
   <div class="app-layout">
     <header class="app-header no-print">
       <div class="header-inner header">
-        <RouterLink to="/" class="app-title">EA Army Builder</RouterLink>
+        <RouterLink to="/" class="app-title">
+          <span class="app-title-mark">EA</span>Army Builder
+        </RouterLink>
         <nav class="header-nav desktop-only">
           <RouterLink to="/">Lists</RouterLink>
         </nav>
@@ -53,6 +55,23 @@
   font-weight: 700;
   color: var(--ea-tertiary);
   text-decoration: none;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.app-title-mark {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--ea-tertiary);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
 }
 
 .header-nav {

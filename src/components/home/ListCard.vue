@@ -50,9 +50,10 @@ const usedPoints = computed(() => {
 <style scoped>
 .list-card {
   border: 1px solid var(--ea-surface-border);
-  border-radius: 0.5rem;
+  border-radius: var(--ea-radius-md);
   background: var(--ea-surface-0);
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
+  box-shadow: var(--ea-shadow-card);
 }
 
 .card-header {
@@ -107,8 +108,13 @@ const usedPoints = computed(() => {
 }
 
 .danger-button {
-  border: 1px solid #dc2626;
-  background: #fff;
-  color: #dc2626;
+  border: 1px solid var(--ea-tertiary);
+  background: transparent;
+  color: var(--ea-tertiary);
+}
+
+.danger-button:hover {
+  background: var(--ea-tertiary);
+  color: #1c1b1b;
 }
 </style>
