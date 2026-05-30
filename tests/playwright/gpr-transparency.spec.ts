@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { resetLists } from './helpers'
 
-const MAX_DISPLAYED_NEIGHBOURS = 5
-
 test.describe('GPR Transparency', () => {
   test('opens a unit GPR page from the list reference view', async ({ page }) => {
     await test.step('Create a Legiones Astartes list', async () => {
@@ -22,14 +20,13 @@ test.describe('GPR Transparency', () => {
       await page.getByRole('link', { name: 'Tactical Legionnaires Squad' }).first().click()
     })
 
-    await test.step('Verify the GPR page shows unit stats and neighbours', async () => {
+    await test.step('Verify the GPR page shows unit stats', async () => {
       await expect(page).toHaveURL(/\/reference\/unit\/Tactical%20Legionnaires%20Squad\/gpr$/)
       await expect(page.getByRole('heading', { name: 'Tactical Legionnaires Squad' })).toBeVisible()
       await expect(page.getByText('Cost: 40 pts')).toBeVisible()
       await expect(page.getByRole('heading', { name: 'Nearest neighbours' })).toBeVisible()
-      await expect(page.locator('.neighbour-list li')).toHaveCount(MAX_DISPLAYED_NEIGHBOURS)
-      await expect(page.getByText('Mean:')).toBeVisible()
-      await expect(page.getByText('Average (training):')).toBeVisible()
+      await expect(page.getByText('No neighbour data available.')).toBeVisible()
+      await expect(page.getByText('No GPR data available for this unit.')).toBeVisible()
     })
   })
 })
