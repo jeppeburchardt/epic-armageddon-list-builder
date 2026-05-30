@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "validate": "tsx scripts/validate-armies.ts",
+    "test:unit": "tsx --tsconfig tsconfig.app.json --test tests/unit/**/*.test.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

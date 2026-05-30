@@ -32,6 +32,19 @@ function makeInstances(unitName: string, count: number, armyDef: ArmyDef): UnitI
   return Array.from({ length: count }, () => defaultInstance(unitName, armyDef))
 }
 
+function clampBaseUnitCount(
+  armyDef: ArmyDef,
+  detachmentName: string,
+  unitName: string,
+  newCount: number,
+): number {
+  const detachment = armyDef.detachments.find((d) => d.name === detachmentName)
+  const unitCount = detachment?.units.find((u) => u.unitName === unitName)
+  if (!unitCount) return newCount
+  if ('count' in unitCount) return unitCount.count
+  return Math.max(unitCount.min, Math.min(unitCount.max, newCount))
+}
+
 function getListOrThrow(repo: ListRepository, listId: string): ArmyList {
   const list = repo.getById(listId)
   if (!list) throw new Error(`List not found: ${listId}`)
@@ -119,17 +132,18 @@ export function updateBaseUnitCount(
     ...list,
     entries: list.entries.map((entry) => {
       if (entry.id !== entryId) return entry
+      const clampedCount = clampBaseUnitCount(armyDef, entry.detachmentName, unitName, newCount)
       return {
         ...entry,
         baseUnits: entry.baseUnits.map((ute) => {
           if (ute.unitName !== unitName) return ute
           const currentCount = ute.instances.length
-          if (newCount === currentCount) return ute
-          if (newCount > currentCount) {
-            const extra = makeInstances(unitName, newCount - currentCount, armyDef)
+          if (clampedCount === currentCount) return ute
+          if (clampedCount > currentCount) {
+            const extra = makeInstances(unitName, clampedCount - currentCount, armyDef)
             return { ...ute, instances: [...ute.instances, ...extra] }
           }
-          return { ...ute, instances: ute.instances.slice(0, newCount) }
+          return { ...ute, instances: ute.instances.slice(0, clampedCount) }
         }),
       }
     }),

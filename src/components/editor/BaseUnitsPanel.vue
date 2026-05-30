@@ -35,12 +35,14 @@ function getDetachmentUnit(unitName: string) {
 
 function getMin(unitName: string): number {
   const uc = getDetachmentUnit(unitName)
-  return uc && 'min' in uc ? uc.min : 0
+  if (!uc) return 0
+  return 'min' in uc ? uc.min : uc.count
 }
 
 function getMax(unitName: string): number {
   const uc = getDetachmentUnit(unitName)
-  return uc && 'max' in uc ? uc.max : 99
+  if (!uc) return 99
+  return 'max' in uc ? uc.max : uc.count
 }
 
 function getUnitDef(unitName: string) {
