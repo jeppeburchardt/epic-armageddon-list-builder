@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSlots } from 'vue'
+import { computed, useSlots } from 'vue'
 
 const props = defineProps<{
   hasSameConfigOption: boolean
@@ -19,30 +19,49 @@ const emit = defineEmits<{
 
 const slots = useSlots()
 
-function parseAndEmitAmount(event: Event) {
-  const input = event.target as HTMLInputElement
-  const parsed = input.valueAsNumber
-  if (Number.isFinite(parsed)) {
-    const clamped = Math.max(props.min ?? -Infinity, Math.min(props.max ?? Infinity, parsed))
-    emit('update:unit-amount', clamped)
-    return
-  }
-  input.value = String(props.unitAmount)
+const minAmount = computed(() => props.min ?? -Infinity)
+const maxAmount = computed(() => props.max ?? Infinity)
+const canDecrement = computed(() => props.unitAmount > minAmount.value)
+const canIncrement = computed(() => props.unitAmount < maxAmount.value)
+
+function emitClampedAmount(nextAmount: number) {
+  const clamped = Math.max(minAmount.value, Math.min(maxAmount.value, nextAmount))
+  emit('update:unit-amount', clamped)
+}
+
+function decrementAmount() {
+  emitClampedAmount(props.unitAmount - 1)
+}
+
+function incrementAmount() {
+  emitClampedAmount(props.unitAmount + 1)
 }
 </script>
 
 <template>
   <div class="unit surface p-small stack-small">
     <div class="header">
-      <input
-        class="amount"
-        type="number"
-        :value="unitAmount"
-        :min="min"
-        :max="max"
-        step="1"
-        @input="parseAndEmitAmount"
-      />
+      <div class="amount-control">
+        <button
+          type="button"
+          class="amount-button"
+          :aria-label="`Decrease ${name} count`"
+          :disabled="!canDecrement"
+          @click="decrementAmount"
+        >
+          -
+        </button>
+        <span class="amount-value">{{ unitAmount }}</span>
+        <button
+          type="button"
+          class="amount-button"
+          :aria-label="`Increase ${name} count`"
+          :disabled="!canIncrement"
+          @click="incrementAmount"
+        >
+          +
+        </button>
+      </div>
       <div class="name">{{ name }}</div>
       <span v-if="cost !== undefined" class="cost-tag">
         {{ costSign && cost > 0 ? '+' : '' }}{{ cost }}pts
@@ -63,8 +82,38 @@ function parseAndEmitAmount(event: Event) {
   gap: 0.5rem;
 }
 
-.amount {
-  width: 130px;
+.amount-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--ea-gold-bright);
+  border-radius: var(--ea-radius-pill);
+  overflow: hidden;
+}
+
+.amount-button {
+  appearance: none;
+  border: 0;
+  background: var(--ea-gold-dim);
+  color: var(--ea--surface-1);
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.amount-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.amount-value {
+  min-width: 2.5rem;
+  padding: 0.35rem 0.75rem;
+  text-align: center;
+  color: var(--ea-gold-bright);
+  font-weight: 600;
 }
 
 .name {
