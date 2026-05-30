@@ -88,7 +88,20 @@
             }
           ]
         }
-      ]
+      ],
+      "gprTrainingInfo": {
+        "predictedMean": 98.50,
+        "uncertainty": 7.25,
+        "score": 0.85,
+        "quality": "Good",
+        "topNearestNeighbours": [
+          { "name": "Elite Test Tank", "price": 120.0, "distance": 0.15 },
+          { "name": "Support Platform", "price": 50.0, "distance": 0.42 }
+        ],
+        "contributingPriceValues": [120, 50, 100, 95, 110],
+        "trainingSetSize": 12,
+        "modelKernel": "RBF"
+      }
     },
     {
       "name": "Elite Test Tank",
