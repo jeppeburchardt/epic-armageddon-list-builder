@@ -19,12 +19,12 @@ test.describe('GPR Transparency', () => {
 
     await test.step('Navigate to the Reference tab and open a unit GPR page', async () => {
       await page.getByRole('link', { name: 'Reference' }).click()
-      await page.getByRole('link', { name: 'Tactical Squad' }).first().click()
+      await page.getByRole('link', { name: 'Tactical Legionnaires Squad' }).first().click()
     })
 
     await test.step('Verify the GPR page shows unit stats and neighbours', async () => {
-      await expect(page).toHaveURL(/\/reference\/unit\/Tactical%20Squad\/gpr$/)
-      await expect(page.getByRole('heading', { name: 'Tactical Squad' })).toBeVisible()
+      await expect(page).toHaveURL(/\/reference\/unit\/Tactical%20Legionnaires%20Squad\/gpr$/)
+      await expect(page.getByRole('heading', { name: 'Tactical Legionnaires Squad' })).toBeVisible()
       await expect(page.getByText('Cost: 40 pts')).toBeVisible()
       await expect(page.getByRole('heading', { name: 'Nearest neighbours' })).toBeVisible()
       await expect(page.locator('.neighbour-list li')).toHaveCount(MAX_DISPLAYED_NEIGHBOURS)
