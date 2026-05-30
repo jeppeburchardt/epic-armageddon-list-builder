@@ -100,6 +100,25 @@ test.describe('Unit Counts and Weapon Selections', () => {
     await expect(card).toContainText('3 Test Tank')
   })
 
+  test('clamps the base unit count to detachment min and max', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
+    const baseTankAmountInput = card
+      .locator('details')
+      .first()
+      .locator('.unit')
+      .filter({ hasText: 'Test Tank' })
+      .first()
+      .locator('input.amount')
+
+    await baseTankAmountInput.fill('99')
+    await expect(baseTankAmountInput).toHaveValue('3')
+    await expect(card).toContainText('3 Test Tank')
+
+    await baseTankAmountInput.fill('0')
+    await expect(baseTankAmountInput).toHaveValue('1')
+    await expect(card).toContainText('1 Test Tank')
+  })
+
   test('selects a weapon for a base unit', async ({ page }) => {
     const card = detachmentCard(page, 'Mutable Detachment')
     const baseTankPanel = card
