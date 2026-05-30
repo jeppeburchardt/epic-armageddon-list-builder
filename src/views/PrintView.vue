@@ -3,8 +3,10 @@ import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
+import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
 import { listEditorKey } from '@/composables/useListEditor'
 import type { Entry } from '@/entities/list'
+import { deriveFormationUnits } from '@/entities/composition'
 
 defineProps<{ id: string }>()
 const router = useRouter()
@@ -60,6 +62,19 @@ function getDetachmentNumber(entryId: string): number {
   console.warn(`Missing detachment number for entry ${entryId} in print view`)
   return 0
 }
+
+const listSpecialRules = computed(() => {
+  if (!armyDef.value || !list.value) return []
+  const usedRuleNames = new Set<string>()
+  for (const entry of list.value.entries) {
+    for (const ute of deriveFormationUnits(entry, armyDef.value)) {
+      const unitDef = armyDef.value.units.find((u) => u.name === ute.unitName)
+      const names = unitDef?.specialRuleNames ?? unitDef?.traits ?? []
+      for (const name of names) usedRuleNames.add(name)
+    }
+  }
+  return armyDef.value.unitSpecialRules.filter((r) => usedRuleNames.has(r.title))
+})
 </script>
 
 <template>
@@ -112,6 +127,12 @@ function getDetachmentNumber(entryId: string): number {
     <!-- Totals -->
     <div class="totals-row">
       <strong>Total: {{ totalPoints }} / {{ list.pointsLimit }} pts</strong>
+    </div>
+
+    <!-- Unit Special Rules -->
+    <div v-if="listSpecialRules.length > 0" class="special-rules-section">
+      <h4 class="special-rules-heading">Unit Special Rules</h4>
+      <SpecialRulesTable :rules="listSpecialRules" />
     </div>
   </div>
 </template>
@@ -196,6 +217,15 @@ function getDetachmentNumber(entryId: string): number {
   margin-top: 0.5rem;
   font-size: 0.95rem;
   text-align: right;
+}
+
+.special-rules-section {
+  margin-top: 1.5rem;
+}
+
+.special-rules-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
 }
 
 .primary-button,
