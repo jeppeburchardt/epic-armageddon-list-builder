@@ -96,26 +96,37 @@ test.describe('Unit Counts and Weapon Selections', () => {
       .filter({ hasText: 'Test Tank' })
       .first()
 
-    await baseTankPanel.locator('input.amount').fill('3')
+    await expect(baseTankPanel.locator('input.amount')).toHaveCount(0)
+    await baseTankPanel.getByRole('button', { name: 'Increase Test Tank count' }).click()
+    await baseTankPanel.getByRole('button', { name: 'Increase Test Tank count' }).click()
+    await expect(baseTankPanel.locator('.amount-value')).toHaveText('3')
     await expect(card).toContainText('3 Test Tank')
   })
 
-  test('clamps the base unit count to detachment min and max', async ({ page }) => {
+  test('disables the base unit count buttons at detachment min and max', async ({ page }) => {
     const card = detachmentCard(page, 'Mutable Detachment')
-    const baseTankAmountInput = card
+    const baseTankPanel = card
       .locator('details')
       .first()
       .locator('.unit')
       .filter({ hasText: 'Test Tank' })
       .first()
-      .locator('input.amount')
+    const decreaseButton = baseTankPanel.getByRole('button', { name: 'Decrease Test Tank count' })
+    const increaseButton = baseTankPanel.getByRole('button', { name: 'Increase Test Tank count' })
 
-    await baseTankAmountInput.fill('99')
-    await expect(baseTankAmountInput).toHaveValue('3')
+    await expect(decreaseButton).toBeDisabled()
+    await expect(increaseButton).toBeEnabled()
+
+    await increaseButton.click()
+    await increaseButton.click()
+    await expect(baseTankPanel.locator('.amount-value')).toHaveText('3')
+    await expect(increaseButton).toBeDisabled()
     await expect(card).toContainText('3 Test Tank')
 
-    await baseTankAmountInput.fill('0')
-    await expect(baseTankAmountInput).toHaveValue('1')
+    await decreaseButton.click()
+    await decreaseButton.click()
+    await expect(baseTankPanel.locator('.amount-value')).toHaveText('1')
+    await expect(decreaseButton).toBeDisabled()
     await expect(card).toContainText('1 Test Tank')
   })
 
@@ -157,8 +168,13 @@ test.describe('Upgrades', () => {
       .first()
 
     await test.step('Set unit counts', async () => {
-      await supportDronePanel.locator('input.amount').fill('1')
-      await missileDronePanel.locator('input.amount').fill('1')
+      await expect(
+        supportDronePanel.getByRole('button', { name: 'Decrease Support Drone count' }),
+      ).toBeDisabled()
+      await supportDronePanel.getByRole('button', { name: 'Increase Support Drone count' }).click()
+      await missileDronePanel.getByRole('button', { name: 'Increase Missile Drone count' }).click()
+      await expect(supportDronePanel.locator('.amount-value')).toHaveText('1')
+      await expect(missileDronePanel.locator('.amount-value')).toHaveText('1')
       await expect(upgradePanel).toContainText('1 Support Drone')
       await expect(upgradePanel).toContainText('1 Missile Drone')
     })
@@ -183,7 +199,16 @@ test.describe('Upgrades', () => {
       .first()
 
     await test.step('Set replacement count', async () => {
-      await eliteTankPanel.locator('input.amount').fill('2')
+      await expect(
+        eliteTankPanel.getByRole('button', { name: /Decrease .*Elite Test Tank count/ }),
+      ).toBeDisabled()
+      await eliteTankPanel
+        .getByRole('button', { name: /Increase .*Elite Test Tank count/ })
+        .click()
+      await eliteTankPanel
+        .getByRole('button', { name: /Increase .*Elite Test Tank count/ })
+        .click()
+      await expect(eliteTankPanel.locator('.amount-value')).toHaveText('2')
       await expect(upgradePanel).toContainText('2 Elite Test Tank')
     })
 
