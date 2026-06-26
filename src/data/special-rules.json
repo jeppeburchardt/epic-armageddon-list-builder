@@ -15,7 +15,52 @@
     },
     {
         "title": "Thick Rear Armour",
-        "paragraphs": []
+        "paragraphs": [
+            "Most vehicles carry their heaviest protection at the front and are more vulnerable to attacks that strike their flanks or rear. Units with thick rear armour are protected by armour that is as strong at the back as it is at the front. Because of this, an enemy unit attacking a unit with thick rear armour in an assault does not receive the normal +1 to hit bonus for attacking the target in the rear."
+        ]
+    },
+    {
+        "title": "Walker",
+        "paragraphs": [
+            "Some vehicles and War Engines move on articulated legs rather than tracks, wheels or anti-grav motors; these units are referred to as walkers. Walkers are able to pick their way over obstacles that would stop other vehicles, and so treat difficult ground as if it were clear terrain, moving through it at their full speed. They must still take a dangerous terrain test as normal if they move over dangerous terrain."
+        ]
+    },
+    {
+        "title": "Skimmer",
+        "paragraphs": [
+            "Skimmers use anti-grav motors that allow them to skim over the ground and any obstacles in their path. Skimmers may move over any type of terrain and over any other units, whether friend or enemy, with no penalty, and ignore the effects of difficult and dangerous terrain. A skimmer must, however, finish its move in a position where it could be deployed normally, and may not, for example, end its move on top of impassable terrain or another unit.",
+            "A skimmer may end its move \"popped up\" so that it can see and shoot over intervening terrain that would otherwise block its line of fire. While it is popped up the skimmer may be shot at by any enemy unit that could draw a line of fire to it, and may be targeted by anti-aircraft fire as if it were an aircraft."
+        ]
+    },
+    {
+        "title": "Jump Packs",
+        "paragraphs": [
+            "Troops equipped with jump packs are able to make great bounding leaps across the battlefield. A unit with a jump pack may make a special move of up to 30cms instead of its normal move. When it makes this special move the unit may move over enemy units and any type of terrain freely, in the same way that a skimmer can, and it ignores the effects of dangerous terrain. The unit must finish its move in a position where it could be deployed normally."
+        ]
+    },
+    {
+        "title": "Mounted",
+        "paragraphs": [
+            "Mounted units, such as bikes and cavalry, combine some of the speed and mobility of a vehicle with the flexibility of infantry. Mounted units are treated as infantry for all rules purposes, but are fast moving and so are able to cover ground far more quickly than troops on foot. In return for their speed they are less able to make use of cover and may not enter or move through terrain that would halt a mounted advance."
+        ]
+    },
+    {
+        "title": "Scout",
+        "paragraphs": [
+            "Scout units are specially trained to operate independently of the rest of their force, reconnoitring the battlefield and screening the advance of the main body of troops. A formation that includes one or more scout units may be set up as a garrison at the start of the game, allowing it to deploy further forward than normal troops. In addition, scout units have a zone of control that extends out to 15cms, rather than the usual 5cms, allowing them to control a far greater area of the battlefield and slow the enemy's advance."
+        ]
+    },
+    {
+        "title": "Invulnerable Save",
+        "paragraphs": [
+            "Some units are protected by force fields, arcane wards or other exotic defences that can turn aside even the most powerful blows. A unit with an invulnerable save is allowed to take its armour saving throw against any hit that strikes it, even from attacks such as macro-weapons that would normally deny a save. Unlike reinforced armour, this protection works against every type of attack, but the save itself is taken using the unit's normal armour value."
+        ]
+    },
+    {
+        "title": "Know no fear",
+        "paragraphs": [
+            "Space Marines are conditioned to feel no fear and to fight on against impossible odds where lesser warriors would break and run. To represent this, a broken Space Marine formation is allowed to regroup even if there are enemy units within 15cms of it, although it may only be given a Hold order on the turn that it does so. In addition, Space Marine formations remove one extra Blast marker than normal whenever they successfully regroup."
+        ]
     },
     {
         "title": "Commander",
