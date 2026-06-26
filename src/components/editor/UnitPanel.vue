@@ -85,49 +85,68 @@ function incrementAmount() {
 .amount-control {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--ea-gold-bright);
-  border-radius: var(--ea-radius-pill);
+  border: 1px solid var(--ea-surface-border);
+  border-radius: var(--ea-radius-md);
+  background: var(--ea-surface-0);
   overflow: hidden;
 }
 
 .amount-button {
   appearance: none;
   border: 0;
-  background: var(--ea-gold-dim);
-  color: var(--ea--surface-1);
+  background: var(--ea-surface-50);
+  color: var(--ea-text-color);
   min-width: 2.25rem;
   min-height: 2.25rem;
   font: inherit;
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.amount-button:first-child {
+  border-right: 1px solid var(--ea-surface-border);
+}
+
+.amount-button:last-child {
+  border-left: 1px solid var(--ea-surface-border);
+}
+
+.amount-button:hover:not(:disabled) {
+  background: #eef1f3;
+  color: var(--ea-accent);
 }
 
 .amount-button:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  color: var(--ea-text-faint-color);
+  opacity: 0.6;
 }
 
 .amount-value {
   min-width: 2.5rem;
   padding: 0.35rem 0.75rem;
   text-align: center;
-  color: var(--ea-gold-bright);
+  color: var(--ea-text-color);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .name {
   flex: 1 2 auto;
-  font-size: 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
 }
 
 .cost-tag {
   font-size: 0.75rem;
   flex-shrink: 0;
+  color: var(--ea-text-muted-color);
   border: 1px solid var(--ea-surface-border);
-  border-radius: 999px;
+  border-radius: var(--ea-radius-pill);
   padding: 0.1rem 0.5rem;
-  background: var(--ea-surface-100);
+  background: var(--ea-surface-0);
 }
 
 .config-toggle {

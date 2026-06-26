@@ -182,14 +182,15 @@ function isTransportUpgrade(upgradeName: string): boolean {
 
 <style scoped>
 .detachment-card {
-  border-left: 4px solid var(--ea-tertiary);
-  &.warning-card {
-    border-color: var(--ea-primary);
-  }
+  border: 1px solid var(--ea-surface-border);
+  border-left: 4px solid var(--ea-accent);
+  border-radius: var(--ea-radius-md);
+  box-shadow: var(--ea-shadow-card);
 }
 
 .warning-card {
-  outline: 1px solid var(--ea-message-warn-outlined-color);
+  border-left-color: var(--ea-attention-border);
+  outline: 1px solid var(--ea-attention-border);
 }
 
 .info {
@@ -198,13 +199,18 @@ function isTransportUpgrade(upgradeName: string): boolean {
   flex-shrink: 0;
   gap: 0.5rem;
 }
+
+.detachment-card > details {
+  border: 1px solid var(--ea-surface-border);
+  border-radius: var(--ea-radius-md);
+}
 .header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  justify-content: center;
-  color: var(--ea-tertiary);
-  border-bottom: 1px solid;
+  color: var(--ea-text-color);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ea-surface-border);
   padding-bottom: 0.5rem;
 }
 
@@ -229,11 +235,11 @@ function isTransportUpgrade(upgradeName: string): boolean {
 }
 
 .detachment-number-badge {
-  min-width: 1em;
-  height: 1em;
-  border-radius: 1px;
-  background: var(--ea-tertiary);
-  color: #000;
+  min-width: 1.5em;
+  height: 1.5em;
+  border-radius: var(--ea-radius-sm);
+  background: var(--ea-accent);
+  color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -306,28 +312,38 @@ details[open] .toggle-indicator::after {
 }
 
 .primary-button {
-  border: 1px solid var(--ea-primary-color);
+  border: 1px solid rgb(31 35 40 / 15%);
   background: var(--ea-primary-color);
   color: var(--ea-primary-contrast-color);
 }
 
+.primary-button:hover {
+  background: var(--ea-primary-hover);
+}
+
 .secondary-button {
   border: 1px solid var(--ea-surface-border);
-  background: var(--ea-surface-0);
-  color: inherit;
+  background: var(--ea-surface-50);
+  color: var(--ea-text-color);
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #eef1f3;
+  border-color: rgb(31 35 40 / 15%);
 }
 
 .danger-button,
 .remove-upgrade-button {
-  border: 1px solid var(--ea-tertiary);
-  background: transparent;
-  color: var(--ea-tertiary);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-50);
+  color: var(--ea-danger-fg);
 }
 
 .danger-button:hover,
 .remove-upgrade-button:hover {
-  background: var(--ea-tertiary);
-  color: #1c1b1b;
+  background: var(--ea-danger-emphasis);
+  border-color: var(--ea-danger-emphasis);
+  color: #ffffff;
 }
 
 .secondary-button:disabled {
@@ -338,16 +354,19 @@ details[open] .toggle-indicator::after {
 .transport-warning {
   margin-top: 0.75rem;
   padding: 0.4rem 0.6rem;
-  border-radius: 0.375rem;
+  border-radius: var(--ea-radius-md);
+  font-size: 0.8125rem;
 }
 
 .transport-warning.warn {
-  background: #fff7ed;
-  color: #9a3412;
+  background: var(--ea-attention-subtle);
+  color: var(--ea-attention-fg);
+  border: 1px solid var(--ea-attention-border);
 }
 
 .transport-warning.error {
-  background: #fef2f2;
-  color: #991b1b;
+  background: var(--ea-danger-subtle);
+  color: var(--ea-danger-fg);
+  border: 1px solid rgb(255 129 130 / 60%);
 }
 </style>

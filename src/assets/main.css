@@ -5,50 +5,76 @@
 }
 
 :root {
-  /* Surfaces — gunmetal greyscale, darker→lighter */
-  --ea--surface-1: #1c1b1b;
-  --ea--surface-2: #313030;
-  --ea--surface-3: #474646;
-  --ea--surface-4: #5f5e5e;
-  --ea--surface-5: #787776;
+  /* ---------------------------------------------------------------------
+   * GitHub Primer–inspired light theme.
+   * Surfaces step from the page canvas (subtle grey) up to white cards.
+   * ------------------------------------------------------------------- */
+  --ea--surface-1: #f6f8fa; /* page canvas (canvas.subtle) */
+  --ea--surface-2: #ffffff; /* cards / raised surfaces */
+  --ea--surface-3: #f6f8fa; /* nested panel */
+  --ea--surface-4: #eaeef2; /* deeper nested */
+  --ea--surface-5: #d8dee4; /* deepest nested */
 
   /* Canonical surface aliases (used throughout components) */
   --ea-surface-0: var(--ea--surface-2);
-  --ea-surface-50: #2a2929;
-  --ea-surface-100: #3a3939;
+  --ea-surface-50: #f6f8fa;
+  --ea-surface-100: #f6f8fa;
+  --ea-surface-200: #eaeef2;
   --ea-surface-card: var(--ea--surface-2);
-  --ea-surface-border: var(--ea--surface-3);
+  --ea-surface-border: #d0d7de; /* border.default */
+  --ea-surface-border-muted: #d8dee4; /* border.muted */
 
-  /* Brand hues */
-  --ea-primary: #9a031e;
-  --ea-secondary: #4a4e54;
-  --ea-tertiary: #c5a059;
+  /* Global navigation header (GitHub's dark top bar) */
+  --ea-header-bg: #1f2328;
+  --ea-header-fg: #ffffff;
+  --ea-header-fg-muted: rgb(255 255 255 / 70%);
+  --ea-header-border: #2f343a;
 
-  --ea-gold-bright: #d8b978;
-  --ea-gold-dim: #9c7c43;
-  --ea-crimson-bright: #c20a2b;
-  --ea-crimson-dim: #6f0216;
+  /* Brand / accent hues — green primary action, blue links (GitHub) */
+  --ea-primary: #1f883d; /* btn-primary / success emphasis */
+  --ea-primary-hover: #1a7f37;
+  --ea-secondary: #59636e;
+  --ea-tertiary: #0969da; /* accent.fg — links, active tabs */
+  --ea-accent: #0969da;
+  --ea-accent-hover: #0860ca;
+  --ea-accent-subtle: #ddf4ff; /* accent.subtle — selected rows */
+  --ea-accent-muted: #54aeff; /* accent.muted — selected borders */
+
+  /* Semantic states */
+  --ea-success-fg: #1a7f37;
+  --ea-success-emphasis: #1f883d;
+  --ea-success-subtle: #dafbe1;
+  --ea-danger-fg: #cf222e;
+  --ea-danger-emphasis: #cf222e;
+  --ea-danger-subtle: #ffebe9;
+  --ea-attention-fg: #9a6700;
+  --ea-attention-subtle: #fff8c5;
+  --ea-attention-border: #d4a72c;
 
   /* Semantic color aliases */
   --ea-primary-color: var(--ea-primary);
-  --ea-primary-contrast-color: #f4f1ec;
-  --ea-message-warn-outlined-color: var(--ea-tertiary);
+  --ea-primary-contrast-color: #ffffff;
+  --ea-message-warn-outlined-color: var(--ea-attention-fg);
 
   /* Text */
-  --ea--text-color: #dfe2ea;
-  --ea--text-muted-color: #a8abb2;
+  --ea--text-color: #1f2328; /* fg.default */
+  --ea--text-muted-color: #59636e; /* fg.muted */
   --ea-text-color: var(--ea--text-color);
   --ea-text-muted-color: var(--ea--text-muted-color);
-  --ea-text-faint-color: #74767d;
+  --ea-text-faint-color: #818b98; /* fg.subtle */
+  --ea-link-color: var(--ea-accent);
 
-  /* Typography */
-  --ea--font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --ea-font-display: 'Georgia', 'Times New Roman', serif;
+  /* Typography — GitHub system stack, no decorative serif headings */
+  --ea--font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji';
+  --ea-font-display: var(--ea--font-family);
   --ea-font-body: var(--ea--font-family);
-  --ea-font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
+  --ea-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
 
   /* Type scale */
-  --ea-text-display: 2rem;
+  --ea-text-display: 1.75rem;
   --ea-text-h1: 1.4rem;
   --ea-text-h2: 1.15rem;
   --ea-text-h3: 1rem;
@@ -56,16 +82,17 @@
   --ea-text-xs: 0.75rem;
 
   /* Radii & borders */
-  --ea-radius-sharp: 1px;
-  --ea-radius-sm: 0.375rem;
-  --ea-radius-md: 0.5rem;
+  --ea-radius-sharp: 3px;
+  --ea-radius-sm: 6px;
+  --ea-radius-md: 6px;
   --ea-radius-pill: 999px;
   --ea-border-radius: var(--ea-radius-sm);
 
-  /* Elevation */
-  --ea-shadow-card: 0 1px 2px rgb(0 0 0 / 35%);
-  --ea-shadow-dialog: 0 12px 40px rgb(0 0 0 / 55%);
-  --ea-accent-rail: 4px solid var(--ea-tertiary);
+  /* Elevation — Primer's restrained shadows */
+  --ea-shadow-card: 0 1px 0 rgb(31 35 40 / 4%);
+  --ea-shadow-medium: 0 3px 6px rgb(31 35 40 / 12%);
+  --ea-shadow-dialog: 0 8px 24px rgb(66 74 83 / 12%), 0 1px 3px rgb(27 31 36 / 12%);
+  --ea-accent-rail: 4px solid var(--ea-accent);
 }
 
 html,
@@ -74,6 +101,9 @@ body {
   padding: 0;
   font-family: var(--ea--font-family, system-ui, sans-serif);
   font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
   background-color: var(--ea--surface-1);
   color: var(--ea--text-color);
   min-height: 100dvh;
@@ -87,12 +117,51 @@ h5,
 h6,
 .header {
   font-family: var(--ea-font-display);
-  text-transform: uppercase;
-  color: var(--ea-tertiary);
+  color: var(--ea-text-color);
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.01em;
   margin: 0;
-  line-height: 1.18;
+  line-height: 1.25;
+}
+
+a {
+  color: var(--ea-link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Primer-style form controls */
+input[type='text'],
+input[type='number'],
+input[type='search'],
+input[type='email'],
+select,
+textarea {
+  font: inherit;
+  color: var(--ea-text-color);
+  background: var(--ea-surface-0);
+  border: 1px solid var(--ea-surface-border);
+  border-radius: var(--ea-radius-md);
+  padding: 0.34rem 0.7rem;
+  line-height: 1.4;
+  box-shadow: inset 0 1px 0 rgb(208 215 222 / 20%);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+input[type='text']:focus,
+input[type='number']:focus,
+input[type='search']:focus,
+input[type='email']:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--ea-accent);
+  box-shadow: 0 0 0 3px rgb(9 105 218 / 30%);
 }
 
 #app {

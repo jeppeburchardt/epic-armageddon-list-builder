@@ -60,8 +60,8 @@ const route = useRoute()
 }
 
 .tab-item.active {
-  color: var(--ea-primary-color);
-  border-bottom-color: var(--ea-primary-color);
-  font-weight: 500;
+  color: var(--ea-text-color);
+  border-bottom-color: #fd8c73;
+  font-weight: 600;
 }
 </style>
