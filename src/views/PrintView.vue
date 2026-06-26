@@ -3,8 +3,11 @@ import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import PrintDetachment from '@/components/print/PrintDetachment.vue'
+import SpecialRulesTable from '@/components/army/SpecialRulesTable.vue'
 import { listEditorKey } from '@/composables/useListEditor'
+import { deriveFormationUnits } from '@/entities/composition'
 import type { Entry } from '@/entities/list'
+import type { SpecialRuleDef } from '@/entities/army'
 
 defineProps<{ id: string }>()
 const router = useRouter()
@@ -60,6 +63,27 @@ function getDetachmentNumber(entryId: string): number {
   console.warn(`Missing detachment number for entry ${entryId} in print view`)
   return 0
 }
+
+const relevantSpecialRules = computed<SpecialRuleDef[]>(() => {
+  if (!armyDef.value) return []
+
+  const usedUnitNames = new Set<string>()
+  for (const entry of list.value?.entries ?? []) {
+    for (const ute of deriveFormationUnits(entry, armyDef.value)) {
+      usedUnitNames.add(ute.unitName)
+    }
+  }
+
+  const usedRuleNames = new Set<string>()
+  for (const unit of armyDef.value.units) {
+    if (!usedUnitNames.has(unit.name)) continue
+    for (const name of unit.specialRuleNames ?? unit.traits ?? []) {
+      usedRuleNames.add(name)
+    }
+  }
+
+  return armyDef.value.unitSpecialRules.filter((rule) => usedRuleNames.has(rule.title))
+})
 </script>
 
 <template>
@@ -107,6 +131,12 @@ function getDetachmentNumber(entryId: string): number {
           :detachment-number="getDetachmentNumber(entry.id)"
         />
       </template>
+    </div>
+
+    <!-- Special rules relevant to units in this list -->
+    <div v-if="relevantSpecialRules.length > 0" class="special-rules-section">
+      <h4>Special Rules</h4>
+      <SpecialRulesTable :rules="relevantSpecialRules" />
     </div>
 
     <!-- Totals -->
@@ -181,6 +211,15 @@ function getDetachmentNumber(entryId: string): number {
 
 .detachment-group-heading h2 {
   margin: 0;
+  font-size: 1rem;
+}
+
+.special-rules-section {
+  margin-top: 1rem;
+}
+
+.special-rules-section h4 {
+  margin: 0 0 0.5rem;
   font-size: 1rem;
 }
 
