@@ -3,9 +3,10 @@
 <template>
   <div class="app-layout">
     <header class="app-header no-print">
-      <div class="header-inner header">
+      <div class="header-inner">
         <RouterLink to="/" class="app-title">
-          <span class="app-title-mark">EA</span>Army Builder
+          <span class="app-title-mark">EA</span>
+          <span class="app-title-text">Army Builder</span>
         </RouterLink>
         <nav class="header-nav desktop-only">
           <RouterLink to="/">Lists</RouterLink>
@@ -37,39 +38,44 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--ea-tertiary);
+  background: var(--ea-header-bg);
+  border-bottom: 1px solid var(--ea-header-border);
 }
 
 .header-inner {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 0 2rem;
+  gap: 1rem;
+  padding: 0 1.5rem;
 }
 
 .app-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--ea-tertiary);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ea-header-fg);
   text-decoration: none;
-  letter-spacing: 0.06em;
   display: flex;
   align-items: center;
   gap: 0.55rem;
 }
 
+.app-title:hover {
+  text-decoration: none;
+}
+
 .app-title-mark {
   width: 28px;
   height: 28px;
-  border: 2px solid var(--ea-tertiary);
-  border-radius: 2px;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: -0.02em;
   flex-shrink: 0;
 }
@@ -80,21 +86,24 @@
 }
 
 .header-nav a {
-  color: inherit;
+  color: var(--ea-header-fg-muted);
   text-decoration: none;
-  opacity: 0.85;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--ea-radius-md);
 }
 
 .header-nav a:hover,
 .header-nav a.router-link-active {
-  opacity: 1;
+  color: var(--ea-header-fg);
+  text-decoration: none;
 }
 
 .app-main {
   flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 1.5rem;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   padding-bottom: calc(1rem + 4rem);
@@ -132,7 +141,7 @@
 }
 
 .bottom-nav-item.router-link-active {
-  color: var(--ea-primary-color);
+  color: var(--ea-accent);
 }
 
 .desktop-only {

@@ -96,25 +96,35 @@ const usedPoints = computed(() => {
 }
 
 .action-button {
-  border: 1px solid var(--ea-primary-color);
+  border: 1px solid rgb(31 35 40 / 15%);
   background: var(--ea-primary-color);
   color: var(--ea-primary-contrast-color);
 }
 
+.action-button:hover {
+  background: var(--ea-primary-hover);
+}
+
 .secondary-button {
   border: 1px solid var(--ea-surface-border);
-  background: var(--ea-surface-0);
-  color: inherit;
+  background: var(--ea-surface-50);
+  color: var(--ea-text-color);
+}
+
+.secondary-button:hover {
+  background: #eef1f3;
+  border-color: rgb(31 35 40 / 15%);
 }
 
 .danger-button {
-  border: 1px solid var(--ea-tertiary);
-  background: transparent;
-  color: var(--ea-tertiary);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-50);
+  color: var(--ea-danger-fg);
 }
 
 .danger-button:hover {
-  background: var(--ea-tertiary);
-  color: #1c1b1b;
+  background: var(--ea-danger-emphasis);
+  border-color: var(--ea-danger-emphasis);
+  color: #ffffff;
 }
 </style>

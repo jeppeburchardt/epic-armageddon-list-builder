@@ -222,12 +222,18 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   width: 1.4rem;
   height: 1.4rem;
   margin-right: 0.35rem;
-  border-radius: 999px;
-  background: #000;
-  color: #fff;
+  border-radius: var(--ea-radius-sm);
+  background: var(--ea-accent);
+  color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
-  font-family: 'Times New Roman', Times, serif;
+}
+
+@media print {
+  .detachment-number-badge {
+    background: #000;
+    color: #fff;
+  }
 }
 
 .det-points {

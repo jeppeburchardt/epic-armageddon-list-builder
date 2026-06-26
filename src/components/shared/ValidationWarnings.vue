@@ -24,11 +24,13 @@ const severity = computed(() => {
 
 <style scoped>
 .validation-message {
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--ea-radius-sm);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--ea-radius-md);
   font-size: 0.875rem;
   margin-bottom: 1rem;
-  background: var(--ea--surface-2);
+  border: 1px solid var(--ea-surface-border);
+  background: var(--ea-surface-0);
+  color: var(--ea-text-color);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -41,24 +43,36 @@ const severity = computed(() => {
   flex-shrink: 0;
 }
 
+.severity-success {
+  border-color: rgb(74 194 107 / 40%);
+  background: var(--ea-success-subtle);
+}
+
 .severity-success .dot {
-  background: var(--ea-tertiary);
+  background: var(--ea-success-emphasis);
 }
 
-.severity-warn,
+.severity-warn {
+  border-color: var(--ea-attention-border);
+  background: var(--ea-attention-subtle);
+}
+
+.severity-warn .dot {
+  background: var(--ea-attention-fg);
+}
+
 .severity-error {
-  background: var(--ea-primary);
-  color: var(--ea-primary-contrast-color);
+  border-color: rgb(255 129 130 / 60%);
+  background: var(--ea-danger-subtle);
 }
 
-.severity-warn .dot,
 .severity-error .dot {
-  background: var(--ea-primary-contrast-color);
+  background: var(--ea-danger-emphasis);
 }
 
 .issue-count {
   margin-left: auto;
   font-size: 0.75rem;
-  opacity: 0.8;
+  color: var(--ea-text-muted-color);
 }
 </style>

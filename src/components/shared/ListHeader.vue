@@ -8,43 +8,63 @@ const { list, armyDef, totalPoints } = injected
 </script>
 
 <template>
-  <div class="list-header header surface">
-    <div class="lh-points">{{ totalPoints }} / {{ list?.pointsLimit }} pts</div>
-    <div class="lh-title">{{ list?.name }}</div>
-    <div class="lh-sub">{{ armyDef?.name }}</div>
+  <div class="list-header">
+    <div class="lh-main">
+      <h1 class="lh-title">{{ list?.name }}</h1>
+      <div class="lh-meta">
+        <span class="lh-sub">{{ armyDef?.name }}</span>
+        <span class="lh-dot" aria-hidden="true">·</span>
+        <span class="lh-points">{{ totalPoints }} / {{ list?.pointsLimit }} pts</span>
+      </div>
+    </div>
+    <div id="list-header-cta" class="lh-cta"><slot name="button"></slot></div>
   </div>
-  <div id="list-header-cta" class="button"><slot name="button"></slot></div>
 </template>
 
 <style lang="css" scoped>
 .list-header {
-  padding: 1rem 0;
-  border-color: var(--ea-tertiary);
-  color: var(--ea-tertiary);
-  border-width: 2px 0;
-  border-style: solid;
-  text-align: center;
-  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
   margin-bottom: 1rem;
+  border-bottom: 1px solid var(--ea-surface-border);
+}
+
+.lh-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.lh-title {
+  font-size: var(--ea-text-display);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ea-text-color);
+}
+
+.lh-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ea-text-muted-color);
+  font-size: var(--ea-text-sm);
+}
+
+.lh-dot {
+  color: var(--ea-text-faint-color);
 }
 
 .lh-points {
   font-family: var(--ea-font-mono);
-  font-size: 0.85rem;
-  opacity: 0.85;
+  font-size: 0.8125rem;
 }
 
-.lh-title {
-  font-family: var(--ea-font-display);
-  text-transform: uppercase;
-  font-size: var(--ea-text-display);
-  letter-spacing: 0.03em;
-  line-height: 1.1;
-}
-
-.lh-sub {
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+.lh-cta {
+  flex-shrink: 0;
 }
 </style>

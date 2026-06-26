@@ -20,15 +20,18 @@ const isOverBudget = computed(() => props.limit !== undefined && props.used > pr
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--ea-surface-border);
-  border-radius: 999px;
-  padding: 0.1rem 0.5rem;
+  border-radius: var(--ea-radius-pill);
+  padding: 0.05rem 0.6rem;
   font-size: 0.75rem;
-  background: var(--ea-surface-100);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ea-text-muted-color);
+  background: var(--ea-surface-0);
 }
 
 .points-badge--warn {
-  color: #9a3412;
-  border-color: #fdba74;
-  background: #ffedd5;
+  color: var(--ea-attention-fg);
+  border-color: var(--ea-attention-border);
+  background: var(--ea-attention-subtle);
 }
 </style>
