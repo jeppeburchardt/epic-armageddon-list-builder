@@ -19,6 +19,7 @@
   --ea-surface-0: var(--ea--surface-2);
   --ea-surface-50: #f6f8fa;
   --ea-surface-100: #f6f8fa;
+  --ea-surface-200: #eaeef2;
   --ea-surface-card: var(--ea--surface-2);
   --ea-surface-border: #d0d7de; /* border.default */
   --ea-surface-border-muted: #d8dee4; /* border.muted */
@@ -36,6 +37,8 @@
   --ea-tertiary: #0969da; /* accent.fg — links, active tabs */
   --ea-accent: #0969da;
   --ea-accent-hover: #0860ca;
+  --ea-accent-subtle: #ddf4ff; /* accent.subtle — selected rows */
+  --ea-accent-muted: #54aeff; /* accent.muted — selected borders */
 
   /* Semantic states */
   --ea-success-fg: #1a7f37;

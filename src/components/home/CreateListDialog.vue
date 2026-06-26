@@ -95,8 +95,9 @@ function confirm() {
 .dialog {
   width: min(95vw, 480px);
   background: var(--ea-surface-0);
-  border-radius: 0.5rem;
+  border-radius: var(--ea-radius-md);
   border: 1px solid var(--ea-surface-border);
+  box-shadow: var(--ea-shadow-dialog);
   padding: 1rem;
 }
 

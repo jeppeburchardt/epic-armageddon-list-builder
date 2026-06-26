@@ -116,8 +116,9 @@ function confirm() {
 .dialog {
   width: min(95vw, 480px);
   background: var(--ea-surface-0);
-  border-radius: 0.5rem;
+  border-radius: var(--ea-radius-md);
   border: 1px solid var(--ea-surface-border);
+  box-shadow: var(--ea-shadow-dialog);
   padding: 1rem;
 }
 
@@ -141,10 +142,14 @@ function confirm() {
   background: var(--ea-surface-0);
 }
 
-.upgrade-option:hover,
+.upgrade-option:hover {
+  border-color: var(--ea-accent-muted);
+  background: var(--ea-surface-50);
+}
+
 .upgrade-option.selected {
-  border-color: var(--ea-primary-color);
-  background: var(--ea-primary-50);
+  border-color: var(--ea-accent);
+  background: var(--ea-accent-subtle);
 }
 
 .option-header {

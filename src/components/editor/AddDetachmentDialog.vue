@@ -129,8 +129,9 @@ function confirm() {
 .dialog {
   width: min(95vw, 520px);
   background: var(--ea-surface-0);
-  border-radius: 0.5rem;
+  border-radius: var(--ea-radius-md);
   border: 1px solid var(--ea-surface-border);
+  box-shadow: var(--ea-shadow-dialog);
   padding: 1rem;
 }
 
@@ -153,9 +154,14 @@ function confirm() {
   cursor: pointer;
 }
 
+.group-tab:hover {
+  background: var(--ea-surface-50);
+}
+
 .group-tab.active {
-  border-color: var(--ea-primary-color);
-  color: var(--ea-primary-color);
+  border-color: var(--ea-accent);
+  background: var(--ea-accent-subtle);
+  color: var(--ea-accent);
 }
 
 .det-list {
@@ -174,10 +180,14 @@ function confirm() {
   background: var(--ea-surface-0);
 }
 
-.det-option:hover,
+.det-option:hover {
+  border-color: var(--ea-accent-muted);
+  background: var(--ea-surface-50);
+}
+
 .det-option.selected {
-  border-color: var(--ea-primary-color);
-  background: var(--ea-primary-50);
+  border-color: var(--ea-accent);
+  background: var(--ea-accent-subtle);
 }
 
 .det-header {
