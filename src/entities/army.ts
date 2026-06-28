@@ -123,10 +123,13 @@ export function groupUnitsForReference(units: UnitDef[]): UnitReferenceGroup[] {
 
 // ─── Detachment / upgrade definitions ────────────────────────────────────────
 
-/** Represents a unit count that may be fixed or a variable range */
-export type UnitCount =
-  | { unitName: string; count: number }
-  | { unitName: string; min: number; max: number }
+/** Represents a unit count that may be fixed, a variable range, or both (a default count adjustable within min/max) */
+export type UnitCount = {
+  unitName: string
+  count?: number
+  min?: number
+  max?: number
+}
 
 export interface ReplaceSpec {
   fromUnitName: string
