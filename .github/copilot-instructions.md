@@ -8,15 +8,17 @@ A mobile-first web SPA for building army lists for the Epic Armageddon tabletop 
 
 ## Tech stack
 
-| Concern          | Technology                                                |
-| ---------------- | --------------------------------------------------------- |
-| Build tool       | Vite                                                      |
-| Framework        | Vue 3 (`<script setup>` + Composition API)                |
-| Language         | TypeScript (strict mode)                                  |
-| State management | Pinia (though reactive state lives mostly in composables) |
-| UI components    | Native Vue/HTML components                                |
-| Routing          | Vue Router 4                                              |
-| ID generation    | `uuid` (`v4`)                                             |
+| Concern           | Technology                                                 |
+| ----------------- | ----------------------------------------------------------- |
+| Build tool        | Vite                                                       |
+| Framework         | Vue 3 (`<script setup>` + Composition API)                |
+| Language          | TypeScript (strict mode)                                  |
+| State management  | Pinia (though reactive state lives mostly in composables) |
+| UI components     | Native Vue/HTML components                                |
+| Routing           | Vue Router 4                                               |
+| ID generation     | `uuid` (`v4`)                                              |
+| Utilities         | `@vueuse/core`                                             |
+| Schema validation | `zod` (army JSON validation, see `npm run validate`)       |
 
 ## Architecture: hexagonal (ports & adapters)
 
@@ -61,15 +63,15 @@ components → composables → use-cases → ports ← infrastructure
 
 Describes what choices are available: detachments, upgrades, unit definitions, weapon definitions, army-level restrictions (e.g. max 30% of points on Support detachments).
 
-- `DetachmentDef` — name, group, mandatory units (`UnitCount` — fixed count or min/max range), available upgrades, restrictions
-- `UpgradeDef` — discriminated union: `{ type: 'add', adds: AddSpec[] }` or `{ type: 'replace', replaces: ReplaceSpec }`
-- `UnitDef` — name, cost, type, speed, armour, cc, ff, `weaponSlots: WeaponSlot[]`, transportType, transportCapacity
-- `WeaponSlot` — discriminated union: `{ kind: 'fixed', weaponName, count? }` or `{ kind: 'choice', choices: WeaponOption[] }`
+- `DetachmentDef` — name, group, mandatory units (`UnitCount` — fixed count or min/max range), available upgrades, restrictions (e.g. `max_per_list`)
+- `UpgradeDef` — discriminated union: `{ type: 'add', adds: AddSpec[] }`, `{ type: 'replace', replaces: ReplaceSpec }`, or `{ type: 'character', characterNames: string[] }`
+- `UnitDef` — name, cost, type, speed, armour, cc, ff, `weaponSlots: WeaponSlot[]`, optional `transportation: { cost?, type?, capacity?, capabilities? }`, optional `gprTrainingInfo` (see GPR transparency below)
+- `WeaponSlot` — discriminated union: `{ kind: 'fixed', weaponName, range, firepower, count? }` or `{ kind: 'choice', choices: WeaponOption[] }`
 
 ### `ArmyList` (user-created, persisted)
 
 - `Entry` — one detachment instance: `id`, `detachmentName`, `baseUnits: UnitTypeEntry[]`, `appliedUpgrades: AppliedUpgrade[]`
-- `AppliedUpgrade` — discriminated union: `{ type: 'add', addedUnits: UnitTypeEntry[] }` or `{ type: 'replace', replacedCount, replacingUnits: UnitTypeEntry }`
+- `AppliedUpgrade` — discriminated union: `{ type: 'add', addedUnits: UnitTypeEntry[] }`, `{ type: 'replace', replacedCount, replacingUnits: UnitTypeEntry }`, or `{ type: 'character', chosenCharacterName: string | null }`
 - `UnitTypeEntry` — `{ unitName, instances: UnitInstance[] }` — `instances.length` is the effective count
 - `UnitInstance` — `{ weaponSelections: WeaponSelection[] }` — one entry per choice weapon slot; units with no choice slots have an empty array
 
@@ -89,20 +91,31 @@ Weapon selections are **per individual unit instance** — each model in a forma
 
 ## Routes
 
-| Path          | View         | Description                           |
-| ------------- | ------------ | ------------------------------------- |
-| `/`           | `HomeView`   | List of saved army lists              |
-| `/edit/:id`   | `EditorView` | Full list editor                      |
-| `/view/:id`   | `PrintView`  | Printer-friendly view with unit stats |
-| `/army/:slug` | `ArmyView`   | Human-readable army reference         |
+| Path                                 | View                 | Description                                         |
+| ------------------------------------- | -------------------- | ---------------------------------------------------- |
+| `/`                                   | `HomeView`           | List of saved army lists                             |
+| `/army/:slug`                         | `ArmyView`           | Human-readable army reference                        |
+| `/:id`                                | `ListLayout`         | Shell for a single list; redirects to `view`         |
+| `/:id/view`                           | `PrintView`          | Printer-friendly view with unit stats                |
+| `/:id/edit`                           | `EditorView`         | Full list editor                                     |
+| `/:id/reference`                      | `ListReferenceView`  | Army reference scoped to the list's army             |
+| `/:id/reference/unit/:unitName/gpr`   | `UnitGprView`        | GPR transparency view for a single unit (see below)  |
+| `/:pathMatch(.*)*`                    | `NotFoundView`       | 404 fallback                                         |
+
+`ListLayout` instantiates `useListEditor(id)` once and `provide`s it under `listEditorKey`; the four child views and their components `inject(listEditorKey)` rather than re-instantiating the editor composable.
+
+### GPR transparency
+
+`UnitDef.gprTrainingInfo` (optional) holds the output of a Gaussian Process Regression model used to sanity-check a unit's hand-authored point cost against stat-derived predictions: `predictedMean`, `uncertainty`, `score`, `quality`, `topNearestNeighbours`, `contributingPriceValues`, `trainingSetSize`, `modelKernel`. `UnitGprView` (using `components/army/GprChart.vue`) renders this for army-reference users; units without training data show an empty-state instead of erroring.
 
 ---
 
 ## Adding a new army
 
-1. Create `src/data/armies/<kebab-case-name>.json` following the `ArmyDef` schema in `src/entities/army.ts`
-2. Import it in `src/infrastructure/StaticJsonArmyLoader.ts` and add it to the `armies` array
-3. The new army will automatically appear in the "New List" dialog
+1. Create `src/data/armies/<kebab-case-name>.json` matching `RawArmyDefSchema` in `src/infrastructure/armySchema.ts` (the raw, on-disk shape — a subset of `ArmyDef`; `unitSpecialRules` is computed at load time, not authored)
+2. Import it in `src/infrastructure/StaticJsonArmyLoader.ts` and add it to the `armies` array (it gets parsed through `RawArmyDefSchema` and enriched there)
+3. Run `npm run validate` (`scripts/validate-armies.ts`) to check the new file and `src/data/special-rules.json` against their zod schemas before committing
+4. The new army will automatically appear in the "New List" dialog
 
 ### Army JSON structure
 
@@ -117,10 +130,11 @@ Weapon selections are **per individual unit instance** — each model in a forma
   ],
   "detachments": [...],
   "upgrades": [...],
-  "units": [...],
-  "weapons": [...]
+  "units": [...]                     // weapon profiles live inline on each unit's weaponSlots, not a separate top-level array
 }
 ```
+
+Unit special rules are resolved against the shared `src/data/special-rules.json` file by matching each unit's `specialRuleNames` (or legacy `traits`) to a rule `title`; the matched set becomes `ArmyDef.unitSpecialRules`.
 
 ---
 

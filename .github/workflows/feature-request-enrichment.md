@@ -47,14 +47,15 @@ The project is a Vue 3 + TypeScript SPA with a **hexagonal (ports & adapters) ar
 - `components/` — UI layer, calls composables only
 - `infrastructure/` — driven adapters (localStorage, static JSON army data)
 - `data/armies/` — static JSON army definition files
-- Routes: `/` (HomeView — list of saved armies), `/edit/:id` (EditorView), `/view/:id` (PrintView), `/army/:slug` (ArmyView)
+- Routes: `/` (HomeView — list of saved armies), `/army/:slug` (ArmyView), `/:id` (ListLayout shell) with children `/:id/view` (PrintView), `/:id/edit` (EditorView), `/:id/reference` (ListReferenceView), `/:id/reference/unit/:unitName/gpr` (UnitGprView)
 
 Key domain concepts:
 - **ArmyList** — a named list with a points limit, containing multiple `Entry` (detachment instances)
-- **Entry** — one detachment: base units, applied upgrades (add/replace type)
+- **Entry** — one detachment: base units, applied upgrades (add/replace/character type)
 - **WeaponSelections** are **per individual unit instance** — each model independently tracks its chosen weapon
 - All data is auto-saved to `localStorage`
-- Army definitions are static JSON files; adding a new army requires a JSON file + one import in `StaticJsonArmyLoader.ts`
+- Army definitions are static JSON files validated against zod schemas (`npm run validate`); adding a new army requires a JSON file + one import in `StaticJsonArmyLoader.ts`
+- Units may carry `gprTrainingInfo` (Gaussian Process Regression data) used to sanity-check hand-authored point costs, surfaced via the GPR transparency view
 - End-to-end tests use Playwright (`npm run test:e2e`); mutation tests use `playwright-test-army.json`
 
 ## Trigger context
