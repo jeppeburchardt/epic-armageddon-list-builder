@@ -130,6 +130,26 @@ test.describe('Unit Counts and Weapon Selections', () => {
     await expect(card).toContainText('1 Test Tank')
   })
 
+  test('allows incrementing a hybrid count/min/max base unit up to its max', async ({ page }) => {
+    const card = detachmentCard(page, 'Mutable Detachment')
+    const predatorPanel = card
+      .locator('details')
+      .first()
+      .locator('.unit')
+      .filter({ hasText: 'Test Predator' })
+      .first()
+    const increaseButton = predatorPanel.getByRole('button', {
+      name: 'Increase Test Predator count',
+    })
+
+    await expect(predatorPanel.locator('.amount-value')).toHaveText('3')
+    await expect(increaseButton).toBeEnabled()
+
+    await increaseButton.click()
+    await expect(predatorPanel.locator('.amount-value')).toHaveText('4')
+    await expect(card).toContainText('4 Test Predator')
+  })
+
   test('selects a weapon for a base unit', async ({ page }) => {
     const card = detachmentCard(page, 'Mutable Detachment')
     const baseTankPanel = card

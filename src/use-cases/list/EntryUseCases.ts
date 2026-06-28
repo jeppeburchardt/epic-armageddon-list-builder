@@ -41,8 +41,11 @@ function clampBaseUnitCount(
   const detachment = armyDef.detachments.find((d) => d.name === detachmentName)
   const unitCount = detachment?.units.find((u) => u.unitName === unitName)
   if (!unitCount) return newCount
-  if ('count' in unitCount) return unitCount.count
-  return Math.max(unitCount.min, Math.min(unitCount.max, newCount))
+  const { min, max, count } = unitCount
+  if (min !== undefined && max !== undefined) {
+    return Math.max(min, Math.min(max, newCount))
+  }
+  return count ?? newCount
 }
 
 function getListOrThrow(repo: ListRepository, listId: string): ArmyList {
@@ -74,7 +77,7 @@ export function addEntry(
   if (!detDef) throw new Error(`Detachment not found: ${detachmentName}`)
 
   const baseUnits: UnitTypeEntry[] = detDef.units.map((uc) => {
-    const count = 'count' in uc ? uc.count : uc.min
+    const count = uc.count ?? uc.min ?? 0
     return {
       unitName: uc.unitName,
       instances: makeInstances(uc.unitName, count, armyDef),

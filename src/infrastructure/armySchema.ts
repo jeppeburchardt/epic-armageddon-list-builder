@@ -81,10 +81,16 @@ export const UnitDefSchema = z.object({
 
 // ─── Detachment / upgrade definitions ────────────────────────────────────────
 
-export const UnitCountSchema = z.union([
-  z.object({ unitName: z.string(), count: z.number() }),
-  z.object({ unitName: z.string(), min: z.number(), max: z.number() }),
-])
+export const UnitCountSchema = z
+  .object({
+    unitName: z.string(),
+    count: z.number().optional(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+  })
+  .refine((u) => u.count !== undefined || (u.min !== undefined && u.max !== undefined), {
+    message: 'UnitCount requires either count or both min and max',
+  })
 
 export const ReplaceSpecSchema = z.object({
   fromUnitName: z.string(),
