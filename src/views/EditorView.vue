@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import ValidationWarnings from '@/components/shared/ValidationWarnings.vue'
 import DetachmentCard from '@/components/editor/DetachmentCard.vue'
 import AddDetachmentDialog from '@/components/editor/AddDetachmentDialog.vue'
+import PointsProgressBar from '@/components/editor/PointsProgressBar.vue'
 import { listEditorKey } from '@/composables/useListEditor'
 
 defineProps<{ id: string }>()
@@ -14,6 +15,7 @@ if (!injected) throw new Error('listEditorKey not provided')
 const {
   list,
   armyDef,
+  totalPoints,
   validationResults,
   addEntry,
   removeEntry,
@@ -42,6 +44,14 @@ const showAddDetachment = ref(false)
         Add Detachment
       </button>
     </Teleport>
+
+    <!-- Points progress bar -->
+    <PointsProgressBar
+      :entries="list.entries"
+      :points-limit="list.pointsLimit"
+      :army-def="armyDef"
+      :total-points="totalPoints"
+    />
 
     <!-- Validation warnings -->
     <ValidationWarnings :results="validationResults" />

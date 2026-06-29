@@ -10,6 +10,7 @@ import { calculateEntryPoints } from '@/entities/points'
 import { deriveBaseUnits, deriveUpgradeUnits } from '@/entities/composition'
 import { validateTransportCapacity } from '@/entities/validation'
 import { toRomanNumeral } from '@/entities/romanNumerals'
+import { getGroupColor } from '@/entities/groupColors'
 import { useMediaQuery } from '@vueuse/core'
 
 const props = defineProps<{
@@ -54,6 +55,9 @@ const detachmentDef = computed(() =>
 )
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
+const groupColor = computed(() =>
+  detachmentDef.value ? getGroupColor(detachmentDef.value.group, props.armyDef) : undefined,
+)
 const transportResult = computed(() => validateTransportCapacity(props.entry, props.armyDef))
 const transportWarning = computed(() => transportResult.value?.message ?? null)
 
@@ -73,10 +77,14 @@ function isTransportUpgrade(upgradeName: string): boolean {
   <article
     class="detachment-card surface p-large stack-large"
     :class="{ 'warning-card': transportWarning }"
+    :style="groupColor && !transportWarning ? { borderLeftColor: groupColor } : {}"
   >
     <div class="info">
       <div class="header">
-        <span class="detachment-number-badge">{{ toRomanNumeral(detachmentNumber) }}</span>
+        <span
+          class="detachment-number-badge"
+          :style="groupColor ? { background: groupColor } : {}"
+        >{{ toRomanNumeral(detachmentNumber) }}</span>
         <span>{{ entry.detachmentName }}</span>
         <PointsBadge :used="entryPoints" />
       </div>
