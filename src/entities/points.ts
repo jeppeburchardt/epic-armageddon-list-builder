@@ -136,18 +136,26 @@ export function calculateAppliedUpgradePoints(upgrade: AppliedUpgrade, armyDef: 
 
 // ─── Detachment-level cost ────────────────────────────────────────────────────
 
+/** Returns a unit's base cost plus the cheapest option for each of its choice weapon slots */
+function unitMinCost(def: UnitDef): number {
+    return def.weaponSlots.reduce((sum, slot) => {
+        if (slot.kind !== 'choice') return sum
+        const cheapest = Math.min(...slot.choices.map((c) => c.additionalCost))
+        return sum + cheapest
+    }, def.cost)
+}
+
 /**
  * Returns the minimum points cost to field a detachment: the cost of its
  * mandatory base units at their minimum count (fixed `count`, or `min` for
- * variable-count units), with all choice weapon slots defaulted to their
- * cheapest (0 additional cost) option.
+ * variable-count units), with each choice weapon slot taking its cheapest option.
  */
 export function detachmentMinCost(detachmentDef: DetachmentDef, armyDef: ArmyDef): number {
     return detachmentDef.units.reduce((sum, uc) => {
         const def = findUnitDef(armyDef, uc.unitName)
         if (!def) return sum
         const minCount = uc.count ?? uc.min ?? 0
-        return sum + def.cost * minCount
+        return sum + unitMinCost(def) * minCount
     }, 0)
 }
 
