@@ -20,11 +20,13 @@ jobs:
       - name: Check for newer version
         id: versions
         run: |
-          PINNED=$(node -p "require('./package-lock.json').packages['node_modules/epic-armageddon-lists-data'].version")
+          PINNED=$(node -p "const pkg=require('./package.json'); const lock=require('./package-lock.json'); lock.packages?.['node_modules/epic-armageddon-lists-data']?.version ?? pkg.dependencies?.['epic-armageddon-lists-data'] ?? pkg.devDependencies?.['epic-armageddon-lists-data'] ?? ''")
           LATEST=$(npm view epic-armageddon-lists-data version)
           echo "pinned=$PINNED" >> $GITHUB_OUTPUT
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
-          if [ "$PINNED" != "$LATEST" ]; then
+          if [ -z "$PINNED" ]; then
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+          elif [ "$PINNED" != "$LATEST" ]; then
             echo "update_needed=true" >> $GITHUB_OUTPUT
           else
             echo "update_needed=false" >> $GITHUB_OUTPUT
