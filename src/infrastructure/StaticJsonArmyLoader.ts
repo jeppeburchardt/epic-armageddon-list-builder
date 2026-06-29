@@ -1,6 +1,7 @@
 import type { ArmyDef, SpecialRuleDef } from '@/entities/army'
 import type { ArmyLoader } from '@/ports/ArmyLoader'
-import legionesAstartes from '@/data/armies/legiones-astartes.json'
+import legionesAstartes from 'epic-armageddon-lists-data/legiones-astartes'
+import solarAuxilia from 'epic-armageddon-lists-data/solar-auxilia'
 import playwrightTestArmy from '@/data/armies/playwright-test-army.json'
 import spaceMarines from '@/data/armies/space-marine.json'
 import allSpecialRules from '@/data/special-rules.json'
@@ -34,6 +35,7 @@ const armies: ArmyDef[] = [
   enrichArmy(legionesAstartes, parsedRules),
   enrichArmy(playwrightTestArmy, parsedRules),
   enrichArmy(spaceMarines, parsedRules),
+  enrichArmy(solarAuxilia, parsedRules),
 ]
 
 export class StaticJsonArmyLoader implements ArmyLoader {

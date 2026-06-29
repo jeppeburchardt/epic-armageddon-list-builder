@@ -28,6 +28,7 @@ function printIssues(issues: ZodIssue[], indent: string): void {
 
 const ROOT = path.resolve(import.meta.dirname, '..')
 const ARMIES_DIR = path.join(ROOT, 'src/data/armies')
+const PACKAGED_ARMIES_DIR = path.join(ROOT, 'node_modules/epic-armageddon-lists-data/data')
 const SPECIAL_RULES_FILE = path.join(ROOT, 'src/data/special-rules.json')
 
 let hasErrors = false
@@ -58,11 +59,20 @@ function validateFile(
   printIssues(result.error.issues, '  ')
 }
 
-// Validate all army files
-const armyFiles = fs
-  .readdirSync(ARMIES_DIR)
-  .filter((f) => f.endsWith('.json'))
-  .map((f) => path.join(ARMIES_DIR, f))
+// Validate all army files (local + packaged from epic-armageddon-lists-data)
+const armyFiles = [
+  ...fs
+    .readdirSync(ARMIES_DIR)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => path.join(ARMIES_DIR, f)),
+  ...Object.values(
+    (
+      JSON.parse(
+        fs.readFileSync(path.join(PACKAGED_ARMIES_DIR, '..', 'package.json'), 'utf-8'),
+      ) as { exports: Record<string, string> }
+    ).exports,
+  ).map((relativePath) => path.join(PACKAGED_ARMIES_DIR, '..', relativePath)),
+]
 
 if (armyFiles.length === 0) {
   console.warn('No army JSON files found in src/data/armies/')
