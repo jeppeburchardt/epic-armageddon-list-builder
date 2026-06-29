@@ -5,6 +5,7 @@ import type { Entry, UnitInstance, UnitTypeEntry } from '@/entities/list'
 import { toRomanNumeral } from '@/entities/romanNumerals'
 import { calculateEntryPoints } from '@/entities/points'
 import { deriveFormationUnits } from '@/entities/composition'
+import { getGroupColor } from '@/entities/groupColors'
 
 const props = defineProps<{
   entry: Entry
@@ -13,6 +14,12 @@ const props = defineProps<{
 }>()
 
 const entryPoints = computed(() => calculateEntryPoints(props.entry, props.armyDef))
+const detachmentDef = computed(() =>
+  props.armyDef.detachments.find((d) => d.name === props.entry.detachmentName),
+)
+const groupColor = computed(() =>
+  detachmentDef.value ? getGroupColor(detachmentDef.value.group, props.armyDef) : undefined,
+)
 const derivedUnits = computed(() => deriveFormationUnits(props.entry, props.armyDef))
 const detachmentNumberLabel = computed(() =>
   props.detachmentNumber > 0 ? toRomanNumeral(props.detachmentNumber) : '',
@@ -145,9 +152,11 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   <section class="print-detachment">
     <header class="det-header">
       <span>
-        <span v-if="detachmentNumberLabel" class="detachment-number-badge">{{
-          detachmentNumberLabel
-        }}</span>
+        <span
+          v-if="detachmentNumberLabel"
+          class="detachment-number-badge"
+          :style="groupColor ? { background: groupColor } : {}"
+        >{{ detachmentNumberLabel }}</span>
         {{ entry.detachmentName }}
       </span>
       <span class="det-points">{{ entryPoints }}pts</span>
