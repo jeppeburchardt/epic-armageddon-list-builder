@@ -115,7 +115,12 @@ const relevantSpecialRules = computed<SpecialRuleDef[]>(() => {
     <!-- Restrictions summary -->
     <div v-if="armyDef.restrictions.length > 0" class="restrictions-summary">
       <p v-for="r in armyDef.restrictions" :key="r.type + r.group" class="restriction-line">
-        Max {{ r.maxPercentage }}% of points on {{ r.group }} detachments
+        <template v-if="r.type === 'max_group_percentage'">
+          Max {{ r.maxPercentage }}% of points on {{ r.group }} detachments
+        </template>
+        <template v-else-if="r.type === 'min_group_percentage'">
+          Min {{ r.minPercentage }}% of points on {{ r.group }} detachments
+        </template>
       </p>
     </div>
 
