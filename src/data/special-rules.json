@@ -1,83 +1,102 @@
 [
-    {
-        "title": "Reinforced Armour",
-        "paragraphs": [
-            "Units with reinforced armour are protected by armour many times thicker than that found on most armoured vehicles and have extremely robust internal construction too. Because of this they still take their saving throw when hit by macro-weapons (see 2.2.6). In addition, they may re-roll a failed save against any non-macro-weapon hit, including those inflicted during an assault."
-        ]
-    },
-    {
-        "title": "Teleport",
-        "paragraphs": [
-            "Units with the teleport ability can appear suddenly on the battlefield, either because they have access to technological or arcane devices that allow them to be instantaneously moved from one place to another, or because they are capable of hiding extremely well and then suddenly appear \"as if from nowhere\".",
-            "Formations where all of the units have this ability may be kept off the table, and can appear at the start of any turn. Simply place the unit anywhere you like on the table at the start of any turn, before determining who wins the strategy roll. The unit must be placed within 5cms of another unit from its own formation if there are any already in play. So, for example, if a whole formation teleported into play then the first unit could be placed anywhere, but any other units would need to be placed within 5cms of a unit that had already been placed. All units must be placed outside enemy zones of control. If placed in dangerous terrain then a dangerous terrain test must be taken when the unit is placed on the table.",
-            "Teleporting is an inherently dangerous business, and doesn’t always go as planned. To represent this roll a D6 for each unit that teleports into play. On a roll of a 1 the formation that the unit belongs to receives a Blast marker."
-        ]
-    },
-    {
-        "title": "Thick Rear Armour",
-        "paragraphs": [
-            "Most vehicles carry their heaviest protection at the front and are more vulnerable to attacks that strike their flanks or rear. Units with thick rear armour are protected by armour that is as strong at the back as it is at the front. Because of this, an enemy unit attacking a unit with thick rear armour in an assault does not receive the normal +1 to hit bonus for attacking the target in the rear."
-        ]
-    },
-    {
-        "title": "Walker",
-        "paragraphs": [
-            "Some vehicles and War Engines move on articulated legs rather than tracks, wheels or anti-grav motors; these units are referred to as walkers. Walkers are able to pick their way over obstacles that would stop other vehicles, and so treat difficult ground as if it were clear terrain, moving through it at their full speed. They must still take a dangerous terrain test as normal if they move over dangerous terrain."
-        ]
-    },
-    {
-        "title": "Skimmer",
-        "paragraphs": [
-            "Skimmers use anti-grav motors that allow them to skim over the ground and any obstacles in their path. Skimmers may move over any type of terrain and over any other units, whether friend or enemy, with no penalty, and ignore the effects of difficult and dangerous terrain. A skimmer must, however, finish its move in a position where it could be deployed normally, and may not, for example, end its move on top of impassable terrain or another unit.",
-            "A skimmer may end its move \"popped up\" so that it can see and shoot over intervening terrain that would otherwise block its line of fire. While it is popped up the skimmer may be shot at by any enemy unit that could draw a line of fire to it, and may be targeted by anti-aircraft fire as if it were an aircraft."
-        ]
-    },
-    {
-        "title": "Jump Packs",
-        "paragraphs": [
-            "Troops equipped with jump packs are able to make great bounding leaps across the battlefield. A unit with a jump pack may make a special move of up to 30cms instead of its normal move. When it makes this special move the unit may move over enemy units and any type of terrain freely, in the same way that a skimmer can, and it ignores the effects of dangerous terrain. The unit must finish its move in a position where it could be deployed normally."
-        ]
-    },
-    {
-        "title": "Mounted",
-        "paragraphs": [
-            "Mounted units, such as bikes and cavalry, combine some of the speed and mobility of a vehicle with the flexibility of infantry. Mounted units are treated as infantry for all rules purposes, but are fast moving and so are able to cover ground far more quickly than troops on foot. In return for their speed they are less able to make use of cover and may not enter or move through terrain that would halt a mounted advance."
-        ]
-    },
-    {
-        "title": "Scout",
-        "paragraphs": [
-            "Scout units are specially trained to operate independently of the rest of their force, reconnoitring the battlefield and screening the advance of the main body of troops. A formation that includes one or more scout units may be set up as a garrison at the start of the game, allowing it to deploy further forward than normal troops. In addition, scout units have a zone of control that extends out to 15cms, rather than the usual 5cms, allowing them to control a far greater area of the battlefield and slow the enemy's advance."
-        ]
-    },
-    {
-        "title": "Invulnerable Save",
-        "paragraphs": [
-            "Some units are protected by force fields, arcane wards or other exotic defences that can turn aside even the most powerful blows. A unit with an invulnerable save is allowed to take its armour saving throw against any hit that strikes it, even from attacks such as macro-weapons that would normally deny a save. Unlike reinforced armour, this protection works against every type of attack, but the save itself is taken using the unit's normal armour value."
-        ]
-    },
-    {
-        "title": "Know no fear",
-        "paragraphs": [
-            "Space Marines are conditioned to feel no fear and to fight on against impossible odds where lesser warriors would break and run. To represent this, a broken Space Marine formation is allowed to regroup even if there are enemy units within 15cms of it, although it may only be given a Hold order on the turn that it does so. In addition, Space Marine formations remove one extra Blast marker than normal whenever they successfully regroup."
-        ]
-    },
-    {
-        "title": "Commander",
-        "paragraphs": [
-            "A formation that contains a Commander may re-roll a failed strategy roll once per turn."
-        ]
-    },
-    {
-        "title": "Leader",
-        "paragraphs": [
-            "A formation that contains a Leader ignores the first Blast marker it would receive each turn."
-        ]
-    },
-    {
-        "title": "Supreme Commander",
-        "paragraphs": [
-            "An army may only include one Supreme Commander. The formation containing the Supreme Commander may re-roll strategy rolls once per turn, and the army counts as having one extra strategy point for the purpose of breaking off from an engagement."
-        ]
-    }
+  {
+    "title": "Reinforced Armour",
+    "paragraphs": [
+      "Units with reinforced armour are protected by armour many times thicker than that found on most armoured vehicles and have extremely robust internal construction too. Because of this they still take their saving throw when hit by macro-weapons (see Macro-Weapons). In addition, they may re-roll a failed save against any non-macro-weapon hit, including those inflicted during an assault."
+    ]
+  },
+  {
+    "title": "Teleport",
+    "paragraphs": [
+      "Units with the teleport ability can appear suddenly on the battlefield, either because they have access to technological or arcane devices that allow them to be instantaneously moved from one place to another, or because they are capable of hiding extremely well and then suddenly appear as if from nowhere.",
+      "Formations where all of the units have this ability may be kept off the table, and can appear at the start of any turn. Simply place the unit anywhere you like on the table at the start of any turn, before determining who wins the strategy roll. The unit must be placed within 5cms of another unit from its own formation if there are any already in play. So, for example, if a whole formation teleported into play then the first unit could be placed anywhere, but any other units would need to be placed within 5cms of a unit that had already been placed. All units must be placed outside enemy zones of control. If placed in dangerous terrain then a dangerous terrain test must be taken when the unit is placed on the table.",
+      "Teleporting is an inherently dangerous business, and doesn't always go as planned. To represent this roll a D6 for each unit that teleports into play. On a roll of a 1 the formation that the unit belongs to receives a Blast marker."
+    ]
+  },
+  {
+    "title": "Thick Rear Armour",
+    "paragraphs": [
+      "Some armoured units are noted as having thick rear armour. These vehicles have equally thick armour all round, and so ignore the -1 save modifier when they are caught in a crossfire."
+    ]
+  },
+  {
+    "title": "Walker",
+    "paragraphs": [
+      "Some vehicle units are noted as being walkers. They are able to negotiate dangerous terrain more easily than other vehicles. To represent this they may re-roll any failed dangerous terrain tests."
+    ]
+  },
+  {
+    "title": "Skimmer",
+    "paragraphs": [
+      "Some units are noted as being skimmers. These units are equipped with devices that allow them to hover a short distance above the ground, so that they can fly over terrain that would slow other units down. Note that skimmers do not follow any of the rules for aircraft in Section Aerospace Operations.",
+      "Skimmers may ignore dangerous or impassable terrain as they move. They may not land on impassable terrain, and if they land in dangerous terrain they must take a dangerous terrain test. Skimmers may also move over other friendly units as they move, but may not land on them. Enemy units and zones of control affect skimmers normally.",
+      "A skimmer may declare that it is popping up at the start of any action that it takes, including when the skimmer goes into overwatch. A skimmer may not pop up as part of a sustained fire action or a marshal action, but may pop-up when it goes onto overwatch. Popping up counts as movement for the purposes of triggering firing by enemy units on overwatch.",
+      "A skimmer that has popped up, pops down at the conclusion of the action. Skimmers on overwatch do not pop down until after they make their overwatch attack. Skimmers with a transport capacity may not embark or disembark units while they are popped up, and if they are destroyed while they are popped up then any units on board will be destroyed with no save.",
+      "A skimmer that has popped up is assumed to be flying high enough that nearby intervening terrain that is closer to the skimmer than the target does not block the line of fire. To check if the line of fire is blocked, simply measure the distance between the skimmer and the terrain, and then measure the distance between the terrain and the target unit. If the skimmer is nearer to the intervening terrain then the line of fire is not blocked. If the skimmer is further from the terrain, then work out the line of fire normally. If the distance is equal, then both the skimmer and the target unit can fire at each other, but they both count as being in cover and the cover to hit modifier will apply.",
+      "Skimmers may always choose to use their firefight value in an assault, even if there are enemy units in base contact with the skimmer. If they do this then the enemy must use their firefight value also. This represents the skimmer lifting off the ground out of reach of enemy ground units."
+    ]
+  },
+  {
+    "title": "Jump Packs",
+    "paragraphs": [
+      "Some units are noted as having jump packs. These units are equipped with special devices that allow them to fly for short distances, usually in a series of long hops.",
+      "Units equipped with jump packs may ignore dangerous or impassable terrain as they move (they jump over it). They may not land on impassable terrain, and if they land in dangerous terrain they must take a dangerous terrain test. Units equipped with jump packs may also move over other friendly units as they move, but may not land on them. Units with jump packs are affected by enemy units and zones of control normally, and cannot jump over enemy formations."
+    ]
+  },
+  {
+    "title": "Mounted",
+    "paragraphs": [
+      "Some infantry units are noted as being mounted, and will either ride on bikes or living creatures such as horses. Mounted units count as vehicles for terrain effects, and as infantry units for all other purposes."
+    ]
+  },
+  {
+    "title": "Scout",
+    "paragraphs": [
+      "Some units are noted as being scouts. These units are trained to operate on their own, scouting ahead of their formation to seek out the enemy. Scout units only have to remain within 20cm of another unit from their formation, rather than 5cm as would normally be the case. In addition, scouts are trained to spread out so they can cover a wide area, and so have a 10cm zone of control. Note that these abilities only apply to scout units and cannot be transferred to other units in the same formation or transport units carrying the scouts."
+    ]
+  },
+  {
+    "title": "Invulnerable Save",
+    "paragraphs": [
+      "Certain units or characters receive a special invulnerable save. These units either have protective devices or supernatural vitality that will allow them to survive an attack that would kill another creature. To represent this, units with an invulnerable save receive a second save of 6+ if they fail their first save for any reason. They may take this second save against any form of attack, even attacks that would normally not allow a save to be taken. No modifiers ever apply to the second save."
+    ]
+  },
+  {
+    "title": "Fearless",
+    "paragraphs": [
+      "Some units are either exceptionally brave or so crazed that they will never run away even when broken (though you can choose to have them make a withdrawal move if you want them to).",
+      "Units with this ability are immune to damage from losing an assault (both the additional hits and being wiped out if already broken) and from the damage inflicted by Blast markers if broken. When broken or otherwise forced to take a withdrawal move, these units may choose not to withdraw, and if the unit elects to withdraw it will be destroyed only if it ends its move within 5cm of the enemy rather than 15cm. Units that remain stationary do not take additional damage. Note that other units in the formation that do not have this ability will be affected normally by additional hits for Blast markers or losing an assault—just don't allocate any of the hits to the immune units, but hand them out as normal to units that are not.",
+      "Such units still count as part of a formation, and so will sometimes be dragged along as their formation withdraws even though they don't have to, simply in order to stay in formation. Finally, note that not needing to withdraw can mean that these units can end an assault still in an enemy zone of control, or even in base-to-base contact with the enemy."
+    ]
+  },
+  {
+    "title": "They Shall Know No Fear",
+    "paragraphs": [
+      "Space Marines are renowned for their tenacity and bravery. This is represented by the following rules:",
+      "It takes 2 Blast markers to suppress a Space Marine unit or kill a unit in a broken formation (ignore any leftover Blast markers).",
+      "Space Marine formations are only broken if they have 2 Blast markers per unit in the formation.",
+      "Space Marines formations only count half their number of Blaster markers in assault resolution (rounding down—note that assault resolution will not receive +1 for having no Blast markers if the formation has 1 Blast marker before rounding down). Halve the number of extra hits suffered by a Space Marine formation that loses an assault, rounding down in favour of the Space Marines.",
+      "When a broken Space Marine formation rallies, it receives a number of Blast markers equal to the number of units, rather than half this number. Space Marines with the Leader special ability remove 2 Blast markers instead of 1."
+    ]
+  },
+  {
+    "title": "Commander",
+    "paragraphs": [
+      "Some units and characters are noted as being commanders. Commanders can order up to three formations of troops to follow them when they make an assault, as long as all the formations have at least one unit within 5cm of a unit from the commander's formation.",
+      "Make a single initiative roll for all the formations, counting a -1 modifier if any have Blast markers. If the test is failed then the commander's formation receives a Blast marker and must take a hold action, but the other formations are unaffected (and may take an action later in the turn).",
+      "If the test is passed then all three formations may take an engage action. Treat the three formations as if they were a single formation for all rules purposes for the duration of the assault. A 2D6 roll is used to resolve a combined assault. If the attackers lose then each formation is broken. If they win then each formation receives a number of Blast markers equal to the casualties it suffered in the combat."
+    ]
+  },
+  {
+    "title": "Leader",
+    "paragraphs": [
+      "A formation that includes any leaders may remove one extra Blast marker for each leader whenever it regroups or successfully rallies."
+    ]
+  },
+  {
+    "title": "Supreme Commander",
+    "paragraphs": [
+      "Supreme Commanders represent high-level command units. They count as commanders and leaders (see Commander and Leader respectively). In addition, each supreme commander unit in the army allows a player to re-roll one failed initiative test (of any type) once per turn."
+    ]
+  }
 ]
