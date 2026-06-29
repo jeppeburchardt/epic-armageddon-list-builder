@@ -178,11 +178,17 @@ export interface DetachmentDef {
 
 // ─── Army definition ─────────────────────────────────────────────────────────
 
-export type ArmyRestriction = {
-  type: 'max_group_percentage'
-  group: string
-  maxPercentage: number
-}
+export type ArmyRestriction =
+  | {
+      type: 'max_group_percentage'
+      group: string
+      maxPercentage: number
+    }
+  | {
+      type: 'min_group_percentage'
+      group: string
+      minPercentage: number
+    }
 
 export interface SpecialRule {
   title: string

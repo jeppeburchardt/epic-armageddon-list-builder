@@ -137,11 +137,18 @@ export const DetachmentDefSchema = z.object({
 
 // ─── Army definition ─────────────────────────────────────────────────────────
 
-export const ArmyRestrictionSchema = z.object({
-  type: z.literal('max_group_percentage'),
-  group: z.string(),
-  maxPercentage: z.number(),
-})
+export const ArmyRestrictionSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('max_group_percentage'),
+    group: z.string(),
+    maxPercentage: z.number(),
+  }),
+  z.object({
+    type: z.literal('min_group_percentage'),
+    group: z.string(),
+    minPercentage: z.number(),
+  }),
+])
 
 export const SpecialRuleSchema = z.object({
   title: z.string(),

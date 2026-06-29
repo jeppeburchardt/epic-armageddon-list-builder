@@ -38,6 +38,9 @@ const unitGroups = computed(() =>
           <template v-if="r.type === 'max_group_percentage'">
             Max {{ r.maxPercentage }}% of points on <strong>{{ r.group }}</strong> detachments
           </template>
+          <template v-else-if="r.type === 'min_group_percentage'">
+            Min {{ r.minPercentage }}% of points on <strong>{{ r.group }}</strong> detachments
+          </template>
         </li>
       </ul>
     </section>

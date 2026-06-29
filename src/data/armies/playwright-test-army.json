@@ -3,7 +3,10 @@
   "slug": "playwright-test-army",
   "strategyRating": 3,
   "specialRules": [],
-  "restrictions": [],
+  "restrictions": [
+    { "type": "min_group_percentage", "group": "Core", "minPercentage": 10 },
+    { "type": "max_group_percentage", "group": "Support", "maxPercentage": 1 }
+  ],
   "detachments": [
     {
       "name": "Mutable Detachment",

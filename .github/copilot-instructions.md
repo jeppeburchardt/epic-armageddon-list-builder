@@ -126,7 +126,8 @@ Weapon selections are **per individual unit instance** — each model in a forma
   "strategyRating": 5,
   "specialRules": [{ "title": "", "text": "" }],
   "restrictions": [
-    { "type": "max_group_percentage", "group": "Support", "maxPercentage": 30 }
+    { "type": "max_group_percentage", "group": "Support", "maxPercentage": 30 },
+    { "type": "min_group_percentage", "group": "Core", "minPercentage": 25 }
   ],
   "detachments": [...],
   "upgrades": [...],

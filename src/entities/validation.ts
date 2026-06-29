@@ -16,12 +16,23 @@ export function validateArmyRestrictions(list: ArmyList, armyDef: ArmyDef): Vali
 
   for (const restriction of armyDef.restrictions) {
     const groupPoints = calculateGroupPoints(list.entries, restriction.group, armyDef)
-    const threshold = list.pointsLimit * (restriction.maxPercentage / 100)
-    if (groupPoints > threshold) {
-      results.push({
-        type: 'warning',
-        message: `${restriction.group} detachments cost ${groupPoints}pts — max ${restriction.maxPercentage}% of ${list.pointsLimit}pts (${threshold}pts).`,
-      })
+
+    if (restriction.type === 'max_group_percentage') {
+      const threshold = list.pointsLimit * (restriction.maxPercentage / 100)
+      if (groupPoints > threshold) {
+        results.push({
+          type: 'warning',
+          message: `${restriction.group} detachments cost ${groupPoints}pts — max ${restriction.maxPercentage}% of ${list.pointsLimit}pts (${threshold}pts).`,
+        })
+      }
+    } else {
+      const threshold = list.pointsLimit * (restriction.minPercentage / 100)
+      if (groupPoints < threshold) {
+        results.push({
+          type: 'warning',
+          message: `${restriction.group} detachments cost ${groupPoints}pts — min ${restriction.minPercentage}% of ${list.pointsLimit}pts (${threshold}pts).`,
+        })
+      }
     }
   }
 
