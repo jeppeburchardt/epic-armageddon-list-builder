@@ -1,4 +1,4 @@
-import type { ArmyDef, UnitDef, UpgradeDef, WeaponSlot } from './army'
+import type { ArmyDef, DetachmentDef, UnitDef, UpgradeDef, WeaponSlot } from './army'
 import type { AppliedUpgrade, ArmyList, Entry, UnitInstance, UnitTypeEntry } from './list'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -132,6 +132,23 @@ export function calculateAppliedUpgradePoints(upgrade: AppliedUpgrade, armyDef: 
     }
     // 'add' type
     return upgrade.addedUnits.reduce((sum, ute) => sum + unitTypeEntryCost(ute, armyDef), 0)
+}
+
+// ─── Detachment-level cost ────────────────────────────────────────────────────
+
+/**
+ * Returns the minimum points cost to field a detachment: the cost of its
+ * mandatory base units at their minimum count (fixed `count`, or `min` for
+ * variable-count units), with all choice weapon slots defaulted to their
+ * cheapest (0 additional cost) option.
+ */
+export function detachmentMinCost(detachmentDef: DetachmentDef, armyDef: ArmyDef): number {
+    return detachmentDef.units.reduce((sum, uc) => {
+        const def = findUnitDef(armyDef, uc.unitName)
+        if (!def) return sum
+        const minCount = uc.count ?? uc.min ?? 0
+        return sum + def.cost * minCount
+    }, 0)
 }
 
 // ─── List-level cost ─────────────────────────────────────────────────────────

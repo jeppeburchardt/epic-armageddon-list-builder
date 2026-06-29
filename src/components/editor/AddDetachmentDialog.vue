@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ArmyDef, DetachmentDef, UnitCount } from '@/entities/army'
+import { detachmentMinCost } from '@/entities/points'
 
 const visible = defineModel<boolean>('visible', { default: false })
 
@@ -34,6 +35,10 @@ const filteredDetachments = computed(() => {
   if (!activeGroup.value) return detachmentOptions
   return detachmentOptions.filter((det) => det.group === activeGroup.value)
 })
+
+function minCost(det: DetachmentDef): number {
+  return detachmentMinCost(det, props.armyDef)
+}
 
 function describeUnits(det: DetachmentDef): string {
   return det.units
@@ -91,6 +96,7 @@ function confirm() {
             >
               <div class="det-header">
                 <span class="det-name">{{ det.name }}</span>
+                <span class="det-min-cost">{{ minCost(det) }} pts</span>
                 <span class="group-tag">{{ det.group }}</span>
               </div>
               <p class="det-units">{{ describeUnits(det) }}</p>
@@ -200,6 +206,12 @@ function confirm() {
 .det-name {
   font-weight: 600;
   flex: 1;
+}
+
+.det-min-cost {
+  font-size: 0.8rem;
+  color: var(--ea-text-muted-color);
+  white-space: nowrap;
 }
 
 .group-tag {

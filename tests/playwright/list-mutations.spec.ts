@@ -7,6 +7,26 @@ import {
   resetLists,
 } from './helpers'
 
+test.describe('Add Detachment Dialog', () => {
+  test.beforeEach(async ({ page }) => {
+    await createPlaywrightTestList(page, 'Min Cost Test')
+    await page.getByRole('button', { name: 'Add Detachment' }).click()
+  })
+
+  test('shows the minimum points cost next to each detachment', async ({ page }) => {
+    const dialog = page.getByRole('dialog', { name: 'Add Detachment' })
+
+    await expect(
+      dialog.locator('.det-option').filter({ hasText: 'Mutable Detachment' }),
+    ).toContainText('340 pts')
+
+    await dialog.getByRole('button', { name: 'Support', exact: true }).click()
+    await expect(
+      dialog.locator('.det-option').filter({ hasText: 'Support Detachment' }),
+    ).toContainText('50 pts')
+  })
+})
+
 test.describe('List Home Management', () => {
   test.beforeEach(async ({ page }) => {
     await resetLists(page)
