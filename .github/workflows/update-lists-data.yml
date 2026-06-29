@@ -44,7 +44,7 @@ jobs:
         if: steps.versions.outputs.update_needed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: update/epic-armageddon-lists-data-${{ steps.versions.outputs.latest }}
           commit-message: "chore(deps): update epic-armageddon-lists-data to v${{ steps.versions.outputs.latest }}"
           title: "chore(deps): update epic-armageddon-lists-data to v${{ steps.versions.outputs.latest }}"
