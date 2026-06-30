@@ -48,29 +48,71 @@ function currentChoice(choiceSlotIdx: number): string {
 </script>
 
 <template>
-  <div class="unit-instance-editor surface p-large stack-large">
-    <div class="header">{{ name }}</div>
-    <label v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" class="stack-small">
-      <span>{{ slot.name ?? `Weapon ${slotIdx + 1}` }}</span>
-      <select
-        :value="currentChoice(slotIdx)"
-        @change="
-          (event) =>
-            emit('weapon-change', slot.realIndex, (event.target as HTMLSelectElement).value)
-        "
-      >
-        <option v-for="choice in slot.choices" :key="choice.weaponName" :value="choice.weaponName">
-          {{ choice.label }}
-        </option>
-      </select>
-    </label>
+  <div class="unit-instance-editor surface">
+    <span v-if="name" class="instance-name">{{ name }}</span>
+    <div class="weapon-choices">
+      <label v-for="(slot, slotIdx) in choiceSlots" :key="slotIdx" class="weapon-choice">
+        <span class="slot-name">{{ slot.name ?? `Weapon ${slotIdx + 1}` }}</span>
+        <select
+          :value="currentChoice(slotIdx)"
+          @change="
+            (event) =>
+              emit('weapon-change', slot.realIndex, (event.target as HTMLSelectElement).value)
+          "
+        >
+          <option
+            v-for="choice in slot.choices"
+            :key="choice.weaponName"
+            :value="choice.weaponName"
+          >
+            {{ choice.label }}
+          </option>
+        </select>
+      </label>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.unit-instance-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ea-surface-border);
+  border-radius: var(--ea-radius-md);
+}
+
+.instance-name {
+  flex: 1 1 8rem;
+  min-width: 0;
+  font-weight: 500;
+}
+
+.weapon-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  flex: 2 1 12rem;
+}
+
 .weapon-choice {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.slot-name {
+  font-size: 0.8rem;
+  color: var(--ea-text-muted-color);
+  white-space: nowrap;
+}
+
+.weapon-choice select {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 </style>

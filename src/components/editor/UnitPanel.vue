@@ -158,8 +158,8 @@ function incrementAmount() {
 }
 
 .options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 </style>

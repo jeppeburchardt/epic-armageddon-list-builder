@@ -161,6 +161,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
       </span>
       <span class="det-points">{{ entryPoints }}pts</span>
     </header>
+    <div class="units-table-scroll">
     <table class="units-table">
       <thead>
         <tr>
@@ -207,6 +208,7 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
         </template>
       </tbody>
     </table>
+    </div>
   </section>
 </template>
 
@@ -251,11 +253,22 @@ const displayGroups = computed<DisplayUnitGroup[]>(() => {
   font-weight: 600;
 }
 
+.units-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 0.5rem;
+}
+
 .units-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.8rem;
-  margin-bottom: 0.5rem;
+}
+
+@media print {
+  .units-table-scroll {
+    overflow-x: visible;
+  }
 }
 
 .units-table th,

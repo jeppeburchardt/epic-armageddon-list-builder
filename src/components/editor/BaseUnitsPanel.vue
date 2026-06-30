@@ -169,9 +169,6 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
 }
 
 .instance-item {
-  flex-basis: 32%;
-  flex-shrink: 1;
-
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
