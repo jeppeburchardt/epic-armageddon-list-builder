@@ -226,6 +226,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
   display: flex;
   gap: 0.5rem;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .instances {

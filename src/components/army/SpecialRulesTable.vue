@@ -7,37 +7,50 @@ defineProps<{
 </script>
 
 <template>
-  <div class="army-reference-table">
-    <table class="army-reference-table__native-table">
-      <thead>
-        <tr>
-          <th style="min-width: 160px">Rule</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="rule in rules" :key="rule.title">
-          <td>{{ rule.title }}</td>
-          <td class="rule-description">
-            <p v-for="(paragraph, index) in rule.paragraphs" :key="index">{{ paragraph }}</p>
-            <template v-if="rule.paragraphs.length === 0">—</template>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="special-rules-list">
+    <article v-for="rule in rules" :key="rule.title" class="special-rule">
+      <h3 class="special-rule__title">{{ rule.title }}</h3>
+      <p v-for="(paragraph, index) in rule.paragraphs" :key="index" class="special-rule__text">
+        {{ paragraph }}
+      </p>
+      <p v-if="rule.paragraphs.length === 0" class="special-rule__text special-rule__text--empty">
+        —
+      </p>
+    </article>
   </div>
 </template>
 
 <style scoped>
-.army-reference-table .army-reference-table__native-table td.rule-description {
-  white-space: normal;
+.special-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.rule-description p:not(:last-child) {
-  margin-bottom: 0.5rem;
+.special-rule {
+  border: 1px solid var(--ea-surface-border);
+  border-radius: var(--ea-border-radius);
+  padding: 0.75rem 1rem;
+  background: var(--ea-surface-card);
 }
 
-.rule-description p {
-  margin-top: 0;
+.special-rule__title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.special-rule__text {
+  margin: 0;
+  color: var(--ea-text-muted-color);
+  line-height: 1.5;
+}
+
+.special-rule__text + .special-rule__text {
+  margin-top: 0.5rem;
+}
+
+.special-rule__text--empty {
+  color: var(--ea-text-faint-color);
 }
 </style>

@@ -120,6 +120,7 @@
       "armour": "4+",
       "cc": "6+",
       "ff": "5+",
+      "specialRuleNames": ["Walker"],
       "weaponSlots": [
         {
           "kind": "fixed",
