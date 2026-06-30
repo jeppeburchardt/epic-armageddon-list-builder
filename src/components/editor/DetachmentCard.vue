@@ -125,7 +125,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
       v-for="upgrade in entry.appliedUpgrades"
       :key="upgrade.upgradeName"
       :open="activePanel === upgrade.upgradeName"
-      class="surface p-small"
+      class="upgrade-panel p-small"
     >
       <summary class="details-summary">
         <span class="tag-list">
@@ -208,10 +208,15 @@ function isTransportUpgrade(upgradeName: string): boolean {
   gap: 0.5rem;
 }
 
-.detachment-card > details {
+.detachment-card > details:not(.upgrade-panel) {
   border: 1px solid var(--ea-surface-border);
   border-radius: var(--ea-radius-md);
 }
+
+.upgrade-panel + .upgrade-panel {
+  border-top: 1px solid var(--ea-surface-border);
+}
+
 .header {
   display: flex;
   align-items: center;
