@@ -64,25 +64,27 @@ function confirm() {
       <div class="dialog" role="dialog" aria-modal="true" aria-label="Add Upgrade">
         <h2 class="dialog-title">Add Upgrade</h2>
 
-        <div v-if="availableUpgrades.length === 0" class="empty">
-          No upgrades available for this detachment.
-        </div>
+        <div class="dialog-scroll">
+          <div v-if="availableUpgrades.length === 0" class="empty">
+            No upgrades available for this detachment.
+          </div>
 
-        <div v-else class="upgrade-list">
-          <button
-            v-for="upgDef in availableUpgrades"
-            :key="upgDef.name"
-            type="button"
-            class="upgrade-option"
-            :class="{ selected: selectedUpgrade?.name === upgDef.name }"
-            @click="selectUpgrade(upgDef)"
-          >
-            <div class="option-header">
-              <span class="option-name">{{ upgDef.name }}</span>
-              <span class="option-type">{{ upgDef.type }}</span>
-            </div>
-            <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
-          </button>
+          <div v-else class="upgrade-list">
+            <button
+              v-for="upgDef in availableUpgrades"
+              :key="upgDef.name"
+              type="button"
+              class="upgrade-option"
+              :class="{ selected: selectedUpgrade?.name === upgDef.name }"
+              @click="selectUpgrade(upgDef)"
+            >
+              <div class="option-header">
+                <span class="option-name">{{ upgDef.name }}</span>
+                <span class="option-type">{{ upgDef.type }}</span>
+              </div>
+              <p class="option-description">{{ describeUpgrade(upgDef) }}</p>
+            </button>
+          </div>
         </div>
 
         <div class="actions">
@@ -115,6 +117,9 @@ function confirm() {
 
 .dialog {
   width: min(95vw, 480px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
   background: var(--ea-surface-0);
   border-radius: var(--ea-radius-md);
   border: 1px solid var(--ea-surface-border);
@@ -124,6 +129,12 @@ function confirm() {
 
 .dialog-title {
   margin: 0 0 0.75rem;
+  flex-shrink: 0;
+}
+
+.dialog-scroll {
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .upgrade-list {
@@ -185,6 +196,7 @@ function confirm() {
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
+  flex-shrink: 0;
 }
 
 .primary-button,
