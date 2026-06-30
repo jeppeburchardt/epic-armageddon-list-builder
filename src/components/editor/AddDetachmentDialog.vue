@@ -67,40 +67,42 @@ function confirm() {
       <div class="dialog" role="dialog" aria-modal="true" aria-label="Add Detachment">
         <h2 class="dialog-title">Add Detachment</h2>
 
-        <div v-if="detachmentOptions.length === 0" class="empty">
-          No detachments defined for this army.
-        </div>
-
-        <div v-else>
-          <div class="group-tabs">
-            <button
-              v-for="group in uniqueGroups"
-              :key="group"
-              type="button"
-              class="group-tab"
-              :class="{ active: activeGroup === group }"
-              @click="activeGroup = group"
-            >
-              {{ group }}
-            </button>
+        <div class="dialog-scroll">
+          <div v-if="detachmentOptions.length === 0" class="empty">
+            No detachments defined for this army.
           </div>
 
-          <div class="det-list">
-            <button
-              v-for="det in filteredDetachments"
-              :key="det.name"
-              type="button"
-              class="det-option"
-              :class="{ selected: selectedDetachment === det.name }"
-              @click="selectedDetachment = det.name"
-            >
-              <div class="det-header">
-                <span class="det-name">{{ det.name }}</span>
-                <span class="det-min-cost">{{ minCost(det) }} pts</span>
-                <span class="group-tag">{{ det.group }}</span>
-              </div>
-              <p class="det-units">{{ describeUnits(det) }}</p>
-            </button>
+          <div v-else>
+            <div class="group-tabs">
+              <button
+                v-for="group in uniqueGroups"
+                :key="group"
+                type="button"
+                class="group-tab"
+                :class="{ active: activeGroup === group }"
+                @click="activeGroup = group"
+              >
+                {{ group }}
+              </button>
+            </div>
+
+            <div class="det-list">
+              <button
+                v-for="det in filteredDetachments"
+                :key="det.name"
+                type="button"
+                class="det-option"
+                :class="{ selected: selectedDetachment === det.name }"
+                @click="selectedDetachment = det.name"
+              >
+                <div class="det-header">
+                  <span class="det-name">{{ det.name }}</span>
+                  <span class="det-min-cost">{{ minCost(det) }} pts</span>
+                  <span class="group-tag">{{ det.group }}</span>
+                </div>
+                <p class="det-units">{{ describeUnits(det) }}</p>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -134,6 +136,9 @@ function confirm() {
 
 .dialog {
   width: min(95vw, 520px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
   background: var(--ea-surface-0);
   border-radius: var(--ea-radius-md);
   border: 1px solid var(--ea-surface-border);
@@ -143,6 +148,12 @@ function confirm() {
 
 .dialog-title {
   margin: 0 0 0.75rem;
+  flex-shrink: 0;
+}
+
+.dialog-scroll {
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .group-tabs {
@@ -238,6 +249,7 @@ function confirm() {
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
+  flex-shrink: 0;
 }
 
 .primary-button,
