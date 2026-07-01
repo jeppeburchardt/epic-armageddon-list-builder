@@ -212,6 +212,7 @@ function isTransportUpgrade(upgradeName: string): boolean {
   border: 1px solid var(--ea-surface-border);
   border-radius: var(--ea-radius-md);
 }
+
 .header {
   display: flex;
   align-items: center;

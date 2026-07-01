@@ -297,4 +297,8 @@ function setSameConfig(unitName: string, value: boolean, instances: UnitInstance
 .upgrades {
   margin-top: 0.5rem;
 }
+
+.upgrades :deep(.unit + .unit) {
+  border-top: 1px solid var(--ea-surface-border);
+}
 </style>

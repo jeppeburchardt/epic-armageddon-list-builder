@@ -39,7 +39,7 @@ function incrementAmount() {
 </script>
 
 <template>
-  <div class="unit surface p-small stack-small">
+  <div class="unit p-small stack-small">
     <div class="header">
       <div class="amount-control">
         <button
